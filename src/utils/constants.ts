@@ -27,7 +27,7 @@ export {
 export const WEBPACK_CHUNK = "webpackChunkdiscord_app";
 export const REACT_GLOBAL = "Vencord.Webpack.Common.React";
 export const VENCORD_USER_AGENT = `Vencord/${gitHash}${gitRemote ? ` (https://github.com/${gitRemote})` : ""}`;
-export const SUPPORT_CHANNEL_ID = "1026515880080842772";
+export const SUPPORT_CHANNEL_ID = "1173342942858055721";
 
 export interface Dev {
     name: string;
