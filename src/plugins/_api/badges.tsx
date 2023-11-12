@@ -32,7 +32,7 @@ import { Forms, Toasts } from "@webpack/common";
 const CONTRIBUTOR_BADGE = "https://i.ibb.co/1nswys0/Equicord-Logo.png";
 
 const ContributorBadge: ProfileBadge = {
-    description: "Vencord Contributor",
+    description: "Equicord Contributor",
     image: CONTRIBUTOR_BADGE,
     position: BadgePosition.START,
     props: {
@@ -42,7 +42,7 @@ const ContributorBadge: ProfileBadge = {
         }
     },
     shouldShow: ({ user }) => isPluginDev(user.id),
-    link: "https://github.com/Vendicated/Vencord"
+    link: "https://patreon.com/equicord"
 };
 
 let DonorBadges = {} as Record<string, Pick<ProfileBadge, "image" | "description">[]>;
@@ -139,7 +139,7 @@ export default definePlugin({
                 const modalKey = openModal(props => (
                     <ErrorBoundary noop onError={() => {
                         closeModal(modalKey);
-                        VencordNative.native.openExternal("https://github.com/sponsors/Vendicated");
+                        VencordNative.native.openExternal("https://patreon.com/equicord");
                     }}>
                         <Modals.ModalRoot {...props}>
                             <Modals.ModalHeader>
@@ -153,7 +153,7 @@ export default definePlugin({
                                         }}
                                     >
                                         <Heart />
-                                        Vencord Donor
+                                        Equicord Donor
                                     </Forms.FormTitle>
                                 </Flex>
                             </Modals.ModalHeader>
@@ -174,10 +174,10 @@ export default definePlugin({
                                 </Flex>
                                 <div style={{ padding: "1em" }}>
                                     <Forms.FormText>
-                                        This Badge is a special perk for Vencord Donors
+                                        This Badge is a special perk for Equicord Donors
                                     </Forms.FormText>
                                     <Forms.FormText className={Margins.top20}>
-                                        Please consider supporting the development of Vencord by becoming a donor. It would mean a lot!!
+                                        Please consider supporting the development of Equicord by becoming a donor. It would mean a lot!
                                     </Forms.FormText>
                                 </div>
                             </Modals.ModalContent>
