@@ -29,7 +29,7 @@ import { closeModal, Modals, openModal } from "@utils/modal";
 import definePlugin from "@utils/types";
 import { Forms, Toasts } from "@webpack/common";
 
-const CONTRIBUTOR_BADGE = "https://cdn.discordapp.com/attachments/1033680203433660458/1092089947126780035/favicon.png";
+const CONTRIBUTOR_BADGE = "https://i.ibb.co/1nswys0/Equicord-Logo.png";
 
 const ContributorBadge: ProfileBadge = {
     description: "Vencord Contributor",
