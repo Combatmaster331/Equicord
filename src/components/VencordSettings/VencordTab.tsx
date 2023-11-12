@@ -97,7 +97,7 @@ function VencordSettings() {
         ];
 
     return (
-        <SettingsTab title="Vencord Settings">
+        <SettingsTab title="Equicord Settings">
             <DonateCard image={donateImage} />
             <Forms.FormSection title="Quick Actions">
                 <Card className={cl("quick-actions-card")}>
@@ -170,7 +170,7 @@ function NotificationSection({ settings }: { settings: typeof Settings["notifica
             <Forms.FormText className={Margins.bottom8}>
                 Some plugins may show you notifications. These come in two styles:
                 <ul>
-                    <li><strong>Vencord Notifications</strong>: These are in-app notifications</li>
+                    <li><strong>Equicord Notifications</strong>: These are in-app notifications</li>
                     <li><strong>Desktop Notifications</strong>: Native Desktop notifications (like when you get a ping)</li>
                 </ul>
             </Forms.FormText>
@@ -249,7 +249,7 @@ function DonateCard({ image }: DonateCardProps) {
         <Card className={cl("card", "donate")}>
             <div>
                 <Forms.FormTitle tag="h5">Support the Project</Forms.FormTitle>
-                <Forms.FormText>Please consider supporting the development of Vencord by donating!</Forms.FormText>
+                <Forms.FormText>Please consider supporting the development of Equicord by donating to Vendicated!</Forms.FormText>
                 <DonateButton style={{ transform: "translateX(-1em)" }} />
             </div>
             <img
