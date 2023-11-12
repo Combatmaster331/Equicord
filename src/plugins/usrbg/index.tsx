@@ -49,6 +49,7 @@ export default definePlugin({
     name: "USRBG",
     description: "Displays user banners from USRBG, allowing anyone to get a banner without Nitro",
     authors: [Devs.AutumnVN, Devs.pylix, Devs.TheKodeToad],
+    required: true,
     settings,
     patches: [
         {
