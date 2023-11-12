@@ -383,6 +383,10 @@ export const Devs = /* #__PURE__*/ Object.freeze({
         name: "ant0n",
         id: 145224646868860928n
     },
+    nexpid: {
+        name: "Nexpid",
+        id: 853550207039832084n
+    },
     FoxStorm1: {
         name: "FoxStorm1",
         id: 789872551731527690n
