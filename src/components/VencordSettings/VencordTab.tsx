@@ -31,8 +31,8 @@ import { SettingsTab, wrapTab } from "./shared";
 
 const cl = classNameFactory("vc-settings-");
 
-const DEFAULT_DONATE_IMAGE = "https://cdn.discordapp.com/emojis/1026533090627174460.png";
-const SHIGGY_DONATE_IMAGE = "https://media.discordapp.net/stickers/1039992459209490513.png";
+const DEFAULT_DONATE_IMAGE = "https://i.ibb.co/HFqtsML/Equicord-Logo.png";
+const SHIGGY_DONATE_IMAGE = "https://i.ibb.co/HFqtsML/Equicord-Logo.png";
 
 type KeysOfType<Object, Type> = {
     [K in keyof Object]: Object[K] extends Type ? K : never;
@@ -124,7 +124,7 @@ function VencordSettings() {
                             </Button>
                         )}
                         <Button
-                            onClick={() => VencordNative.native.openExternal("https://github.com/Vendicated/Vencord")}
+                            onClick={() => VencordNative.native.openExternal("https://github.com/Equicord/Equicord")}
                             size={Button.Sizes.SMALL}
                             disabled={settingsDirPending}>
                             Open in GitHub
