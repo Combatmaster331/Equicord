@@ -111,6 +111,7 @@ export default definePlugin({
     name: "GlobalBadges",
     description: "Adds global badges from other client mods",
     authors: [{ name: "HypedDomi", id: 354191516979429376n }, { name: "wolfieeeeeeee", id: 347096063569559553n }],
+    required: true
 
     start: () => addBadge(Badge),
     stop: () => removeBadge(Badge),
