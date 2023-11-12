@@ -29,10 +29,10 @@ import { closeModal, Modals, openModal } from "@utils/modal";
 import definePlugin from "@utils/types";
 import { Forms, Toasts } from "@webpack/common";
 
-const CONTRIBUTOR_BADGE = "https://i.ibb.co/mcfhBxG/Logo.png";
+const CONTRIBUTOR_BADGE = "https://i.ibb.co/RHqhhVG/Untitled-design-83-removebg-preview.png";
 
 const ContributorBadge: ProfileBadge = {
-    description: "Equicord Contributor",
+    description: "Vencord/Equicord Contributor",
     image: CONTRIBUTOR_BADGE,
     position: BadgePosition.START,
     props: {
@@ -42,7 +42,7 @@ const ContributorBadge: ProfileBadge = {
         }
     },
     shouldShow: ({ user }) => isPluginDev(user.id),
-    link: "https://patreon.com/equicord"
+    link: "https://github.com/sponsors/vendicated"
 };
 
 let DonorBadges = {} as Record<string, Pick<ProfileBadge, "image" | "description">[]>;
