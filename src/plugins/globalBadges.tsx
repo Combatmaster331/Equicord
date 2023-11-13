@@ -111,7 +111,7 @@ const showCustom = () => Vencord.Settings.plugins.GlobalBadges.showCustom;
 export default definePlugin({
     name: "GlobalBadges",
     description: "Adds global badges from other client mods",
-    authors: [Devs.HypedDomi Devs.Wolfie],
+    authors: [Devs.HypedDomi, Devs.Wolfie],
     required: true,
 
     start: () => addBadge(Badge),
