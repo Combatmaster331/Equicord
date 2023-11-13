@@ -15,7 +15,6 @@ env:
 
 jobs:
     Build:
-        if: github.repository == 'Equicord/Equicord'
         runs-on: ubuntu-latest
 
         steps:
@@ -51,6 +50,7 @@ jobs:
                   echo "release_tag=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
             - name: Upload DevBuild as release
+              if: github.repository == 'Equicord/Equicord'
               run: |
                   gh release create devbuild-$RELEASE_TAG
                   gh release upload devbuild-$RELEASE_TAG --clobber dist/*
