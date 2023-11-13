@@ -3,17 +3,21 @@
  * Copyright (c) 2023 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
+
 import { definePluginSettings } from "@api/Settings";
 import { Link } from "@components/Link";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { User } from "discord-types/general";
 import { DataFile } from "./types";
+
 const BASE_URL = "https://userpfp.github.io/UserPFP/source/data.json";
+
 let data: DataFile = {
     avatars: {},
     badges: {},
 };
+
 const settings = definePluginSettings({
     preferNitro: {
         description:
@@ -25,6 +29,7 @@ const settings = definePluginSettings({
         ],
     },
 });
+
 export default definePlugin({
     data,
     name: "UserPFP",

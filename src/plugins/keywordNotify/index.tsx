@@ -44,17 +44,17 @@ const settings = definePluginSettings({
 
             const elements = regexes.map((a, i) => {
                 const setValue = (v: string) => {
-                    let valuesCopy = [...values];
+                    const valuesCopy = [...values];
                     valuesCopy[i] = v;
                     setValues(valuesCopy);
-                }
+                };
 
                 return (
                     <>
                         <Forms.FormTitle tag="h4">Keyword Regex {i + 1}</Forms.FormTitle>
 
                         <Flex flexDirection="row">
-                            <div style={{flexGrow: 1}}>
+                            <div style={{ flexGrow: 1 }}>
                                 <TextInput
                                     placeholder={"example|regex"}
                                     spellCheck={false}
@@ -73,7 +73,7 @@ const settings = definePluginSettings({
                             </Button>
                         </Flex>
                     </>
-                )
+                );
             });
 
             return (
@@ -93,12 +93,12 @@ export default definePlugin({
     settings,
     patches: [
         {
-    	    find: "}_dispatch(",
-    	    replacement: {
+            find: "}_dispatch(",
+            replacement: {
                 match: /}_dispatch\((.{1,2}),.{1,2}\){/,
                 replace: "$&$1=$self.modify($1);"
-    	    }
-    	}
+            }
+        }
     ],
 
     async start() {
@@ -113,9 +113,9 @@ export default definePlugin({
     },
 
     modify(e) {
-        if (e.type == "MESSAGE_CREATE") {
+        if (e.type === "MESSAGE_CREATE") {
             this.applyRegexes(e.message);
-        } else if (e.type == "LOAD_MESSAGES_SUCCESS") {
+        } else if (e.type === "LOAD_MESSAGES_SUCCESS") {
             for (let msg = 0; msg < e.messages.length; ++msg) {
                 this.applyRegexes(e.messages[msg]);
             }

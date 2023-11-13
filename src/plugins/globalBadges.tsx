@@ -20,6 +20,7 @@ import { addBadge, BadgePosition, ProfileBadge, removeBadge } from "@api/Badges"
 import definePlugin, { OptionType } from "@utils/types";
 import { React, Tooltip } from "@webpack/common";
 import { User } from "discord-types/general";
+import { Devs } from "@utils/constants";
 
 type CustomBadge = string | {
     name: string;
@@ -110,7 +111,7 @@ const showCustom = () => Vencord.Settings.plugins.GlobalBadges.showCustom;
 export default definePlugin({
     name: "GlobalBadges",
     description: "Adds global badges from other client mods",
-    authors: [{ name: "HypedDomi", id: 354191516979429376n }, { name: "wolfieeeeeeee", id: 347096063569559553n }],
+    authors: [Devs.HypedDomi Devs.Wolfie],
     required: true,
 
     start: () => addBadge(Badge),
