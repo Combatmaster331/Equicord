@@ -17,6 +17,7 @@
 */
 
 import definePlugin, { OptionType } from "@utils/types";
+import { Devs } from "@utils/constants";
 
 const sounds = {
     click1: new Audio("https://github.com/HypedDomi/Vencord-Plugins/raw/main/Keyboard-Sounds/sounds/click1.wav"),
@@ -43,7 +44,7 @@ const keydown = (e: KeyboardEvent) => {
 export default definePlugin({
     name: "Keyboard Sounds",
     description: "Adds the Opera GX Keyboard Sounds to Discord",
-    authors: [{ name: "HypedDomi", id: 354191516979429376n }],
+    authors: [Devs.HypedDomi],
     start: () => document.addEventListener("keydown", keydown),
     stop: () => document.removeEventListener("keydown", keydown),
     options: {
