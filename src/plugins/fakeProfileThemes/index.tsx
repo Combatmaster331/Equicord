@@ -353,9 +353,10 @@ const settings = definePluginSettings({
 });
 
 export default definePlugin({
-    name: "FakeProfileThemesAndEffects",
+    name: "FakeProfileThemes",
     description: "Allows profile theming and the usage of profile effects by hiding the colors and effect ID in your About Me using invisible 3y3 encoded characters",
     authors: [Devs.ryan],
+    required: true,
     patches: [
         {
             find: "UserProfileStore",
