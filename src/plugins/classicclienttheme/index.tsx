@@ -21,6 +21,7 @@ import "./clientTheme.css";
 import { definePluginSettings } from "@api/Settings";
 import definePlugin, { OptionType } from "@utils/types";
 import { Button } from "@webpack/common";
+import { Devs } from "@utils/constants";
 
 let ColorPicker: React.ComponentType<any> = () => null;
 
