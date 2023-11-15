@@ -80,7 +80,7 @@ const settings = definePluginSettings({
 
 export default definePlugin({
     name: "ClientTheme",
-    authors: [{ name: "F53", id: 280411966126948353n }],
+    authors: [Devs.F53],
     description: "Recreation of the old client theme experiment. Add a color to your Discord client theme",
     settings,
     patches: [
