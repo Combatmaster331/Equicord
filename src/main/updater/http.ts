@@ -52,6 +52,7 @@ async function calculateGitChanges() {
     const res = await githubGet(`/compare/${gitHash}...HEAD`);
 
     //const data = JSON.parse(res.data.toString("utf-8"));
+    console.info('calculateGitChanges:', res.data);
     return res.data.commits.map((c: any) => ({
         // github api only sends the long sha
         hash: c.sha.slice(0, 7),
@@ -78,14 +79,17 @@ async function fetchUpdates() {
 
 async function applyUpdates() {
     await Promise.all(PendingUpdates.map(
-        async ([name, data]) => writeFile(
-            join(__dirname, name),
-            await axios({
-                method: 'get',
-                responseType: 'arraybuffer',
-                url: data,
-            })
-        )
+        async ([name, data]) => {
+            console.info({ function: 'applyUpdates', name: name, url: data });
+            writeFile(
+                join(__dirname, name),
+                (await axios({
+                    method: 'get',
+                    responseType: 'arraybuffer',
+                    url: data,
+                })).data
+            );
+        }
     ));
     PendingUpdates = [];
     return true;
