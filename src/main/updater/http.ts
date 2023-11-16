@@ -25,7 +25,6 @@ import { join } from "path";
 import gitHash from "~git-hash";
 import gitRemote from "~git-remote";
 
-//import { get } from "../utils/simpleGet";
 import axios from "axios";
 import { serializeErrors, VENCORD_FILES } from "./common";
 
@@ -35,7 +34,7 @@ let PendingUpdates = [] as [string, string][];
 async function githubGet(endpoint: string) {
     return axios({
         method: 'get',
-        responseType: 'blob',
+        responseType: 'json',
         url: API_BASE + endpoint,
         headers: {
             Accept: "application/vnd.github+json",
@@ -52,8 +51,8 @@ async function calculateGitChanges() {
 
     const res = await githubGet(`/compare/${gitHash}...HEAD`);
 
-    const data = JSON.parse(res.data.toString("utf-8"));
-    return data.commits.map((c: any) => ({
+    //const data = JSON.parse(res.data.toString("utf-8"));
+    return res.data.commits.map((c: any) => ({
         // github api only sends the long sha
         hash: c.sha.slice(0, 7),
         author: c.author.login,
@@ -64,12 +63,12 @@ async function calculateGitChanges() {
 async function fetchUpdates() {
     const release = await githubGet("/releases/latest");
 
-    const data = JSON.parse(release.data.toString('utf-8'));
-    const hash = data.name.slice(data.name.lastIndexOf(" ") + 1);
+    //const data = JSON.parse(release.data.toString('utf-8'));
+    const hash = release.data.name.slice(release.data.name.lastIndexOf(" ") + 1);
     if (hash === gitHash)
         return false;
 
-    data.assets.forEach(({ name, browser_download_url }) => {
+    release.data.assets.forEach(({ name, browser_download_url }) => {
         if (VENCORD_FILES.some(s => name.startsWith(s))) {
             PendingUpdates.push([name, browser_download_url]);
         }
@@ -83,6 +82,7 @@ async function applyUpdates() {
             join(__dirname, name),
             await axios({
                 method: 'get',
+                responseType: 'arraybuffer',
                 url: data,
             })
         )
