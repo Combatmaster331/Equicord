@@ -1,7 +1,0 @@
-@import url("https://userpfp.github.io/UserPFP/import.css");
-
-[style*="avatars"],
-[src*="avatars"] {
-    background-repeat: no-repeat;
-    background-size: contain;
-}
