@@ -79,6 +79,8 @@ async function syncSettings() {
 
 async function init() {
     await onceReady;
+
+    //Start Plugins
     startAllPlugins();
 
     syncSettings();
