@@ -83,6 +83,7 @@ async function init() {
     //Start Plugins
     startAllPlugins();
 
+    // Sync Settings
     syncSettings();
 
     if (!IS_WEB) {
