@@ -80,10 +80,8 @@ async function syncSettings() {
 async function init() {
     await onceReady;
 
-    //Start Plugins
     startAllPlugins();
 
-    // Sync Settings
     syncSettings();
 
     if (!IS_WEB) {
