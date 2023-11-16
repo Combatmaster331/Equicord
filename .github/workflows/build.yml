@@ -44,17 +44,9 @@ jobs:
               run: |
                   rm -rf dist/*-unpacked dist/monaco Vencord.user.css vencordDesktopRenderer.css vencordDesktopRenderer.css.map
 
-            - name: Get some values needed for the release
-              id: release_values
-              run: |
-                  echo "release_tag=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-
             - name: Upload DevBuild as release
               if: github.repository == 'Equicord/Equicord'
               run: |
-                  gh release create devbuild-$RELEASE_TAG
-                  gh release upload devbuild-$RELEASE_TAG --clobber dist/*
-                  gh release edit devbuild-$RELEASE_TAG --title "DevBuild $RELEASE_TAG"
+                  gh release upload latest --clobber dist/*
               env:
                   GITHUB_TOKEN: ${{ secrets.TOKEN }}
-                  RELEASE_TAG: ${{ env.release_tag }}
