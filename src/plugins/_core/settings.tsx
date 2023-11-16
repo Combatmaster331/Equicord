@@ -83,12 +83,12 @@ export default definePlugin({
         return [
             {
                 section: SectionTypes.HEADER,
-                label: "Vencord",
+                label: "Equicord",
                 className: "vc-settings-header"
             },
             {
                 section: "VencordSettings",
-                label: "Vencord",
+                label: "Equicord",
                 element: require("@components/VencordSettings/VencordTab").default,
                 className: "vc-settings"
             },
