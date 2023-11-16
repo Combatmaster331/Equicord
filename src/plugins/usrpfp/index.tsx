@@ -9,6 +9,7 @@ import { Link } from "@components/Link";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { User } from "discord-types/general";
+
 import { DataFile } from "./types";
 
 const BASE_URL = "https://userpfp.github.io/UserPFP/source/data.json";

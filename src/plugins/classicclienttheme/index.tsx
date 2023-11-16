@@ -19,9 +19,9 @@
 import "./clientTheme.css";
 
 import { definePluginSettings } from "@api/Settings";
+import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { Button } from "@webpack/common";
-import { Devs } from "@utils/constants";
 
 let ColorPicker: React.ComponentType<any> = () => null;
 
@@ -86,9 +86,9 @@ export default definePlugin({
     settings,
     patches: [
         {
-            find: "colorPickerFooter\:",
+            find: "colorPickerFooter",
             replacement: {
-                match: /function (\i).{0,200}colorPickerFooter\:/,
+                match: /function (\i).{0,200}colorPickerFooter/,
                 replace: "$self.ColorPicker=$1;$&"
             }
         }

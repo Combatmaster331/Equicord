@@ -1,9 +1,9 @@
-.keywordnotify-delete:hover {
-    color: var(--status-danger);
-}
-
 .keywordnotify-delete {
-    padding: 0px,
+    padding: 0;
     color: var(--primary-400);
     transition: color 0.2s ease-in-out;
+}
+
+.keywordnotify-delete:hover {
+    color: var(--status-danger);
 }

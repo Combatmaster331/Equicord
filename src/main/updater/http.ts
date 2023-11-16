@@ -18,6 +18,7 @@
 
 import { VENCORD_USER_AGENT } from "@utils/constants";
 import { IpcEvents } from "@utils/IpcEvents";
+import axios from "axios";
 import { ipcMain } from "electron";
 import { writeFile } from "fs/promises";
 import { join } from "path";
@@ -25,16 +26,16 @@ import { join } from "path";
 import gitHash from "~git-hash";
 import gitRemote from "~git-remote";
 
-import axios from "axios";
 import { serializeErrors, VENCORD_FILES } from "./common";
+
 
 const API_BASE = `https://api.github.com/repos/${gitRemote}`;
 let PendingUpdates = [] as [string, string][];
 
 async function githubGet(endpoint: string) {
     return axios({
-        method: 'get',
-        responseType: 'json',
+        method: "get",
+        responseType: "json",
         url: API_BASE + endpoint,
         headers: {
             Accept: "application/vnd.github+json",
@@ -51,7 +52,6 @@ async function calculateGitChanges() {
 
     const res = await githubGet(`/compare/${gitHash}...HEAD`);
 
-    //const data = JSON.parse(res.data.toString("utf-8"));
     return res.data.commits.map((c: any) => ({
         // github api only sends the long sha
         hash: c.sha.slice(0, 7),
@@ -63,7 +63,6 @@ async function calculateGitChanges() {
 async function fetchUpdates() {
     const release = await githubGet("/releases/latest");
 
-    //const data = JSON.parse(release.data.toString('utf-8'));
     const hash = release.data.name.slice(release.data.name.lastIndexOf(" ") + 1);
     if (hash === gitHash)
         return false;
@@ -82,8 +81,8 @@ async function applyUpdates() {
             writeFile(
                 join(__dirname, name),
                 (await axios({
-                    method: 'get',
-                    responseType: 'arraybuffer',
+                    method: "get",
+                    responseType: "arraybuffer",
                     url: data,
                 })).data
             );

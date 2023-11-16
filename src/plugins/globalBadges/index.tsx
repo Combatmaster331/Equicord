@@ -17,10 +17,10 @@
 */
 
 import { addBadge, BadgePosition, ProfileBadge, removeBadge } from "@api/Badges";
+import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { React, Tooltip } from "@webpack/common";
 import { User } from "discord-types/general";
-import { Devs } from "@utils/constants";
 
 type CustomBadge = string | {
     name: string;

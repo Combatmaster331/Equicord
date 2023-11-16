@@ -16,8 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import definePlugin, { OptionType } from "@utils/types";
 import { Devs } from "@utils/constants";
+import definePlugin, { OptionType } from "@utils/types";
 
 const sounds = {
     click1: new Audio("https://github.com/HypedDomi/Vencord-Plugins/raw/main/Keyboard-Sounds/sounds/click1.wav"),
@@ -54,7 +54,7 @@ export default definePlugin({
             markers: [0, 100],
             stickToMarkers: false,
             default: 100,
-            onChange: (value) => { for (const sound of Object.values(sounds)) sound.volume = value / 100; }
+            onChange: value => { for (const sound of Object.values(sounds)) sound.volume = value / 100; }
         }
     }
 });

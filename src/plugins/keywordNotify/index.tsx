@@ -4,18 +4,20 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import definePlugin, { OptionType } from "@utils/types";
-import { DataStore } from "@api/index";
-import { definePluginSettings } from "@api/Settings";
-import { DeleteIcon } from "@components/Icons";
-import { Devs } from "@utils/constants";
-import { Flex } from "@components/Flex";
-import { TextInput, useState, Forms, Button, UserStore, UserUtils } from "@webpack/common";
-import { useForceUpdater } from "@utils/react";
 import "./style.css";
 
-let regexes = [];
-let me = null;
+import { DataStore } from "@api/index";
+import { definePluginSettings } from "@api/Settings";
+import { Flex } from "@components/Flex";
+import { DeleteIcon } from "@components/Icons";
+import { Devs } from "@utils/constants";
+import { useForceUpdater } from "@utils/react";
+import definePlugin, { OptionType } from "@utils/types";
+import { Button, Forms, TextInput, UserStore, UserUtils, useState } from "@webpack/common";
+import { User } from "discord-types/general";
+
+let regexes: string[] = [];
+let me: User | null = null;
 
 async function setRegexes(idx: number, reg: string) {
     regexes[idx] = reg;
