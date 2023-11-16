@@ -24,7 +24,6 @@ import { join } from "path";
 
 import { DATA_DIR } from "./constants";
 import { crxToZip } from "./crxToZip";
-//import { get } from "./simpleGet";
 import axios from "axios";
 
 const extensionCacheDir = join(DATA_DIR, "ExtensionCache");
