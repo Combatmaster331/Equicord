@@ -65,7 +65,9 @@
     flex-direction: column;
     overflow: hidden scroll;
     max-height: 512px;
-    width: 352px; /* ((80 + 8 (grid gap)) * desired columns) (scrolled takes the extra 8 padding off conveniently) */
+    width: 352px;
+
+    /* ((80 + 8 (grid gap)) * desired columns) (scrolled takes the extra 8 padding off conveniently) */
     gap: 12px;
 }
 
@@ -73,4 +75,8 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px
+}
+
+.vc-decor-section-remove-margin {
+    margin-bottom: 0;
 }

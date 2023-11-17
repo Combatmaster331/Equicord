@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+// @ts-nocheck
+
 import { debounce } from "@utils/debounce";
 import { proxyLazy } from "@utils/lazy";
 import { useEffect, useState } from "@webpack/common";
