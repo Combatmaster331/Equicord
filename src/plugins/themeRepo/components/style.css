@@ -1,0 +1,97 @@
+.vc-themes-store-grid {
+    margin-top: 16px;
+    display: grid;
+    grid-gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.vc-themes-store-thumbnail-preview img {
+    aspect-ratio: 16 / 9;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.vc-themes-store-reached-end {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.vc-themes-store-header {
+    margin-bottom: 5%;
+}
+
+.vc-themes-store-card {
+    background-color: var(--background-secondary-alt);
+    color: var(--interactive-active);
+    border-radius: 8px;
+    display: block;
+    height: 100%;
+    width: 100%;
+    transition: 0.1s ease-out;
+    transition-property: box-shadow, transform, background, opacity;
+}
+
+.vc-themes-store-theme-tag {
+    background-color: #1f1f5a;
+    border-radius: 99999px;
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+.vc-themes-store-card-footer {
+    display: flex;
+    gap: 5px;
+    justify-items: center;
+    align-items: center;
+    padding: 5px;
+    margin-bottom: 2%;
+}
+
+.vc-themes-store-card-body {
+    padding: 12px;
+}
+
+.vc-themes-store-card:hover {
+    background-color: var(--background-tertiary);
+    transform: translateY(-1px);
+    box-shadow: var(--elevation-high);
+}
+
+.vc-themes-store-card-header {
+    margin-top: auto;
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+    height: 1.5rem;
+    align-items: center;
+    gap: 8px;
+}
+
+.vc-themes-store-name {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    flex-grow: 1;
+    gap: 8px;
+    cursor: "default";
+}
+
+.vc-themes-store-note {
+    height: 36px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    /* stylelint-disable-next-line property-no-unknown */
+    box-orient: vertical;
+}
+
+.vc-themes-store-filters {
+    display: grid;
+    grid-gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    margin-top: 2%;
+}

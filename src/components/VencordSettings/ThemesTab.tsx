@@ -28,6 +28,7 @@ import { useAwaiter } from "@utils/react";
 import { findByPropsLazy, findLazy } from "@webpack";
 import { Button, Card, FluxDispatcher, Forms, React, showToast, TabBar, TextArea, useEffect, useRef, useState } from "@webpack/common";
 import { UserThemeHeader } from "main/themes";
+import themeRepo, { ThemeRepo } from "plugins/themeRepo";
 import type { ComponentType, Ref, SyntheticEvent } from "react";
 
 import { AddonCard } from "./AddonCard";
@@ -147,7 +148,8 @@ function ThemeCard({ theme, enabled, onChange, onDelete }: ThemeCardProps) {
 
 enum ThemeTab {
     LOCAL,
-    ONLINE
+    ONLINE,
+    REPO
 }
 
 function ThemesTab() {
@@ -335,10 +337,22 @@ function ThemesTab() {
                 >
                     Online Themes
                 </TabBar.Item>
+                {
+                    (
+                        themeRepo.initialized
+                    ) &&
+                    <TabBar.Item
+                        className="vc-settings-tab-bar-item"
+                        id={ThemeTab.REPO}
+                    >
+                        Theme Repo
+                    </TabBar.Item>
+                }
             </TabBar>
 
             {currentTab === ThemeTab.LOCAL && renderLocalThemes()}
             {currentTab === ThemeTab.ONLINE && renderOnlineThemes()}
+            {currentTab === ThemeTab.REPO && <ThemeRepo />}
         </SettingsTab>
     );
 }
