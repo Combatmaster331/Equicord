@@ -25,6 +25,7 @@ import {
     useState
 } from "@webpack/common";
 import { UserThemeHeader } from "main/themes";
+import themeRepo, { ThemeRepo } from "plugins/themeRepo";
 import type { ComponentType, Ref, SyntheticEvent } from "react";
 
 import { AddonCard } from "./AddonCard";
@@ -106,7 +107,8 @@ export function ThemeCard({ theme, enabled, onChange, onDelete, showDelete, extr
 
 enum ThemeTab {
     LOCAL,
-    ONLINE
+    ONLINE,
+    REPO
 }
 
 function ThemesTab() {
@@ -248,10 +250,22 @@ function ThemesTab() {
                 <TabBar.Item className="vc-settings-tab-bar-item" id={ThemeTab.ONLINE}>
                     Online Themes
                 </TabBar.Item>
+                {
+                    (
+                        themeRepo.initialized
+                    ) &&
+                    <TabBar.Item
+                        className="vc-settings-tab-bar-item"
+                        id={ThemeTab.REPO}
+                    >
+                        Theme Repo
+                    </TabBar.Item>
+                }
             </TabBar>
 
             {currentTab === ThemeTab.LOCAL && renderLocalThemes()}
             {currentTab === ThemeTab.ONLINE && <OnlineThemes />}
+            {currentTab === ThemeTab.REPO && <ThemeRepo />}
         </SettingsTab>
     );
 }
