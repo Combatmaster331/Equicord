@@ -31,10 +31,12 @@ const dataStoreKey = "themeStore-bd-themes-json";
 const cl = classNameFactory("vc-themes-store-");
 
 const ThemeCard = ({ theme }: { theme: Theme; }) => {
+    const t = theme.latest_source_url.replace("https://github.com/", "https://raw.githubusercontent.com/").replace(/\/blob\/(.{32,})/i, "/$1");
     return (
         <Flex className={cl("card")} flexDirection="column">
             <div className={cl("thumbnail-preview")}>
                 <img src={theme.thumbnail_url!!} alt={`${theme.name} - Preview`} />
+                <button onClick={() => window.open(t)}>Download Theme.</button>
             </div>
             <div className={cl("card-body")}>
                 <Text variant="text-md/bold" className={cl("name")}>

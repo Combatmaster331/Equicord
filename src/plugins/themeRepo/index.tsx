@@ -21,7 +21,7 @@ import { Devs } from "@utils/constants";
 import { Logger } from "@utils/Logger";
 import definePlugin from "@utils/types";
 
-import { CorsProxy, themesEndpoint } from "./API";
+import { CorsProxy, host, themesEndpoint } from "./API";
 import { Theme } from "./types";
 
 const themeStoreLogger = new Logger("ThemeStore");
@@ -38,9 +38,10 @@ export { ThemeRepo } from "./components/Repo";
 export default definePlugin({
     name: "ThemeRepo",
     authors: [Devs.Arjix],
-    description: "ThemeRepo by Arjix",
+    description: "List themes from betterdiscord",
     initialized: false,
     required: true,
+
     start() {
         this.initialized = true;
 
@@ -51,8 +52,7 @@ export default definePlugin({
             if (!bdThemes || (bdThemes.timestamp + THEME_STORE_UPDATE_INTERVAL < Date.now())) {
                 const data = await fetch(CorsProxy + encodeURIComponent(themesEndpoint)).then(r => r.json()) as Theme[];
                 for (const theme of data) {
-                    theme.thumbnail_url = `https://${theme.thumbnail_url || "/resources/ui/content_thumbnail.svg"}`;
-                    theme.latestSourceUrl = theme.latestSourceUrl || theme.latest_source_url.replace("https://github.com/", "https://raw.githubusercontent.com/").replace(/\/blob\/(.{32,})/i, "/$1");
+                    theme.thumbnail_url = `https://${host}${theme.thumbnail_url || "/resources/ui/content_thumbnail.svg"}`;
                 }
                 await DataStore.set(dataStoreKey, { themes: data, timestamp: Date.now() });
 

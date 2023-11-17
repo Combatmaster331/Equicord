@@ -38,4 +38,4 @@ setInterval(() => {
 
 export const CorsProxy = "https://corsproxy.io/?";
 export const host = "betterdiscord.app";
-export const themesEndpoint = "https://api.betterdiscord.app/v1/store/themes";
+export const themesEndpoint = `https://api.${host}/v1/store/themes`;

@@ -28,7 +28,6 @@ export interface Theme {
     tags: string[];
     thumbnail_url: null | string;
     latest_source_url: string;
-    latestSourceUrl: string;
     release_date: Date;
     guild: Guild | null;
 }
