@@ -59,12 +59,26 @@ async function loadBadges(noCache = false) {
 
     const lines = badges.trim().split("\n");
     if (lines.shift() !== "id,tooltip,image") {
-        new Logger("BadgeAPI").error("Invalid badges.csv file!");
+        new Logger("BadgeAPI").error("Invalid Vencord badges.csv file!");
         return;
     }
 
     for (const line of lines) {
         const [id, description, image] = line.split(",");
+        (DonorBadges[id] ??= []).push({ image, description });
+    }
+
+    const bds = await fetch("https://gist.githubusercontent.com/thororen1234/f51c43494e3a4a649f35f6a3bea3ca0b/raw/badges.csv", init)
+        .then(r => r.text());
+
+    const lns = bds.trim().split("\n");
+    if (lns.shift() !== "id,tooltip,image") {
+        new Logger("BadgeAPI").error("Invalid Equicord badges.csv file!");
+        return;
+    }
+
+    for (const ln of lns) {
+        const [id, description, image] = ln.split(",");
         (DonorBadges[id] ??= []).push({ image, description });
     }
 }
