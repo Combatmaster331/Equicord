@@ -68,7 +68,7 @@ async function loadBadges(noCache = false) {
         (DonorBadges[id] ??= []).push({ image, description });
     }
 
-    const bds = await fetch("https://gist.githubusercontent.com/thororen1234/f51c43494e3a4a649f35f6a3bea3ca0b/raw/badges.csv", init)
+    const bds = await fetch("https://raw.githubusercontent.com/Equicord/Ignore/main/badges.csv", init)
         .then(r => r.text());
 
     const lns = bds.trim().split("\n");
