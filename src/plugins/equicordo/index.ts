@@ -8,8 +8,8 @@ export default definePlugin({
     patches: [{
         find: "ae7d16bb2eea76b9b9977db0fad66658",
         replacement: {
-            match: 'e.exports=ae7d16bb2eea76b9b9977db0fad66658.mp3',
-            replace: 'e.exports="https://github.com/Equicord/Ignore/raw/main/equicordo.mp3";'
+            match: "ae7d16bb2eea76b9b9977db0fad66658.mp3",
+            replace: "https://github.com/Equicord/Ignore/raw/main/equicordo.mp3"
         }
     }]
 });
