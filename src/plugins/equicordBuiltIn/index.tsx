@@ -18,7 +18,7 @@
 
 // Import required modules and components
 import { enableStyle } from "@api/Styles";
-import { Link } from "@components/Link";
+import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
 
 // Importing the style managed fixes on and off switch
