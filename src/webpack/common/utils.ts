@@ -19,7 +19,6 @@
 import { proxyLazy } from "@utils/lazy";
 import type { Channel, User } from "discord-types/general";
 
-// eslint-disable-next-line path-alias/no-relative
 import { _resolveReady, find, findByPropsLazy, findLazy, waitFor } from "../webpack";
 import type * as t from "./types/utils";
 
