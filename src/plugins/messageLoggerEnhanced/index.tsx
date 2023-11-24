@@ -393,7 +393,7 @@ export const settings = definePluginSettings({
 export default definePlugin({
     name: "MLEnhanced",
     authors: [Devs.Aria],
-    description: "G'day",
+    description: "Using MessageLogger MLEnhanced logs every server and dm.",
     dependencies: ["MessageLogger"],
 
     patches: [
