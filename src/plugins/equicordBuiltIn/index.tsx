@@ -28,6 +28,7 @@ import style from "./equicord.css?managed";
 export default definePlugin({
     name: "EquicordBuiltIn",
     description: "Built-in CSS for Equicord users",
+    authors: [Devs.FoxStorm1],
 
     async start() {
         enableStyle(style);
