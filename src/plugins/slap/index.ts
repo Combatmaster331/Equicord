@@ -22,8 +22,8 @@ export default definePlugin({
             required: true,
             type: ApplicationCommandOptionType.STRING,
         }],
-        execute: async ([{value: victim}], ctx) => {
-            return {content: `<@${UserStore.getCurrentUser().id}> slaps ${victim} around a bit with a large trout`};
+        execute: async ([{ value: victim }], ctx) => {
+            return { content: `<@${UserStore.getCurrentUser().id}> slaps ${victim} around a bit with a large trout` };
         }
     }]
-}, "Slap");
+});
