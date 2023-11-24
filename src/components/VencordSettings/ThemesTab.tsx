@@ -9,8 +9,10 @@ import { classNameFactory } from "@api/Styles";
 import { Flex } from "@components/Flex";
 import { DeleteIcon } from "@components/Icons";
 import { Link } from "@components/Link";
+import PluginModal from "@components/PluginSettings/PluginModal";
 import { showItemInFolder } from "@utils/native";
 import { useAwaiter } from "@utils/react";
+import { openModalLazy } from "@utils/modal";
 import { findByCodeLazy, findByPropsLazy } from "@webpack";
 import {
     Button,
@@ -212,6 +214,17 @@ function ThemesTab() {
                             >
                                 Edit QuickCSS
                             </Button>
+
+                            {Vencord.Settings.plugins.ClientTheme.enabled && (
+                                <Button
+                                    onClick={() => openModalLazy(async () => modalProps => {
+                                        return <PluginModal {...modalProps} plugin={Vencord.Plugins.plugins.ClientTheme} onRestartNeeded={() => { }} />;
+                                    })}
+                                    size={Button.Sizes.SMALL}
+                                >
+                                    Edit ClientTheme
+                                </Button>
+                            )}
                         </>
                     </Card>
 
