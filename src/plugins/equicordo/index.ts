@@ -3,7 +3,7 @@ import definePlugin from "@utils/types";
 
 export default definePlugin({
     name: "Equicordo",
-    description: "Replaces the \"discordo\" sound on startup with something a bit more interesting",
+    description: "Replaces the discordo sound on startup with something a bit more interesting",
     authors: [
         Devs.echo
     ],
