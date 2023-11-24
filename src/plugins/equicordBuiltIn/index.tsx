@@ -29,6 +29,7 @@ export default definePlugin({
     name: "EquicordBuiltIn",
     description: "Built-in CSS for Equicord users",
     authors: [Devs.FoxStorm1],
+    required: true,
 
     async start() {
         enableStyle(style);
