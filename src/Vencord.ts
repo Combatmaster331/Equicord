@@ -27,6 +27,8 @@ export { PlainSettings, Settings };
 import "./utils/quickCss";
 import "./webpack/patchWebpack";
 
+import { StartAt } from "@utils/types";
+
 import { get as dsGet } from "./api/DataStore";
 import { showNotification } from "./api/Notifications";
 import { PlainSettings, Settings } from "./api/Settings";
@@ -80,7 +82,7 @@ async function syncSettings() {
 async function init() {
     await onceReady;
 
-    startAllPlugins();
+    startAllPlugins(StartAt.WebpackReady);
 
     syncSettings();
 

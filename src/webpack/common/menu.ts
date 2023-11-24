@@ -16,16 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { filters, mapMangledModuleLazy, waitFor } from "../webpack";
+// eslint-disable-next-line path-alias/no-relative
+import { findByPropsLazy, waitFor } from "../webpack";
 import type * as t from "./types/menu";
 
 export let Menu = {} as t.Menu;
 
 waitFor(["MenuItem", "MenuSliderControl"], m => Menu = m);
 
-export const ContextMenu: t.ContextMenuApi = mapMangledModuleLazy('type:"CONTEXT_MENU_OPEN"', {
-    open: filters.byCode("stopPropagation"),
-    openLazy: m => m.toString().length < 50,
-    close: filters.byCode("CONTEXT_MENU_CLOSE")
-});
-
+export const ContextMenuApi: t.ContextMenuApi = findByPropsLazy("closeContextMenu", "openContextMenu");
