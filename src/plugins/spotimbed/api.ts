@@ -4,19 +4,13 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { proxyLazy } from "@utils/lazy";
-import { filters, findByPropsLazy, mapMangledModule } from "@webpack";
+import axios from "axios";
+import { findByPropsLazy } from "@webpack";
 
 import { Album, Artist, MarketQuery, Pagination, PatchedSpotifyStore, Playlist, RepeatState, Resource, SpotifyHttp, Track, User } from "./types";
 
 const API_BASE = "https://api.spotify.com/v1";
 
-const spotifyHttp: SpotifyHttp = proxyLazy(() => {
-    return mapMangledModule('dispatch({type:"SPOTIFY_ACCOUNT_ACCESS_TOKEN_REVOKE"', {
-        http: filters.byProps("get", "put", "post"),
-        getAccessToken: filters.byCode("SPOTIFY_ACCOUNT_ACCESS_TOKEN_REVOKE"),
-    }).http;
-});
 const spotifyStore: PatchedSpotifyStore = findByPropsLazy("getActiveSocketAndDevice");
 
 const resourcePromiseCache = new Map<string, Promise<any>>();
@@ -34,9 +28,13 @@ export const Spotify = {
         const socket = Object.values(spotifyStore.getConnectedAccounts())[0];
         if (!socket) return Promise.reject(new Error("No Spotify account connected"));
 
-        return spotifyHttp[method](socket.accountId, socket.accessToken, {
+        return axios({
+            method: method,
             url: API_BASE + path,
-        }).then(res => res.body);
+            headers: {
+                'Authorization': 'Bearer ' + socket.accessToken
+            }
+        }).then(res => res.data);
     },
     get(pathname: string, query?: Query) {
         const path = makePath(pathname, query);

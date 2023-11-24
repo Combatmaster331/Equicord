@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { ContextMenu } from "@webpack/common";
+import { ContextMenuApi } from "@webpack/common";
 
 import discordifyDecoration from "../../lib/utils/discordifyDecoration";
 import { DecorationGridDecoration } from ".";
@@ -24,7 +24,7 @@ export default function DecorDecorationGridDecoration(props) {
     return <DecorationGridDecoration
         {...props}
         onContextMenu={e => {
-            ContextMenu.open(e, () => (
+            ContextMenuApi.openContextMenu(e, () => (
                 <DecorationContextMenu
                     decoration={decoration}
                 />

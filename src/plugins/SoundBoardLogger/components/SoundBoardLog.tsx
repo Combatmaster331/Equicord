@@ -9,11 +9,11 @@ import { Flex } from "@components/Flex";
 import { Margins } from "@utils/margins";
 import { classes, copyWithToast } from "@utils/misc";
 import { closeModal, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalRoot, ModalSize, openModal } from "@utils/modal";
-import { Button, Clickable, ContextMenu, FluxDispatcher, Forms, Menu, Text, Tooltip, useEffect, UserUtils, useState } from "@webpack/common";
+import { Button, Clickable, ContextMenuApi, FluxDispatcher, Forms, Menu, Text, Tooltip, useEffect, UserUtils, useState } from "@webpack/common";
 import { User } from "discord-types/general";
 
 import { clearLoggedSounds, getLoggedSounds } from "../store";
-import { addListener, AvatarStyles, cl, downloadAudio, getEmojiUrl, getSoundboardVolume, playSound, removeListener, SoundLogEntry,UserSummaryItem } from "../utils";
+import { addListener, AvatarStyles, cl, downloadAudio, getEmojiUrl, getSoundboardVolume, playSound, removeListener, SoundLogEntry, UserSummaryItem } from "../utils";
 import { openCloneSoundModal } from "./CloneSoundModal";
 import { openMoreUsersModal } from "./MoreUsersModal";
 import { openUserModal } from "./UserModal";
@@ -125,7 +125,7 @@ export default function SoundBoardLog({ data, closeModal }) {
                         <div
                             className={cl("sound")}
                             onContextMenu={e =>
-                                ContextMenu.open(e, () => <SoundContextMenu item={item} />)
+                                ContextMenuApi.openContextMenu(e, () => <SoundContextMenu item={item} />)
                             }
                         >
                             <Flex flexDirection="row" className={cl("sound-info")}>
