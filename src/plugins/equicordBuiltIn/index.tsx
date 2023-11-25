@@ -35,26 +35,3 @@ export default definePlugin({
         enableStyle(style);
     }
 });
-
-/* Settings Icons */
-
-/**
- * @name SettingsIcons
- * @author Saltssaumure, DevilBro
- * @authorLink https://github.com/Saltssaumure
- * @description Adds icons to Discord settings, for use with Vencord plugin ThemeAttributes.
- * @license GPL-2.0
- * @version 1.1
- * @invite uy8nKQVatp
- * @source https://github.com/MiniDiscordThemes/SettingsIcons
- * @donate https://ko-fi.com/saltssaumure
-*/
-
-@import url("https://minidiscordthemes.github.io/SettingsIcons/main.min.css");
-
-/* See https://github.com/MiniDiscordThemes/SettingsIcons#customisation for customisation settings. */
-:root {
-    --settingsicons: 1;
-    --si-size: 18px;
-    --si-gap: 14px;
-}
