@@ -35,7 +35,7 @@ export default definePlugin({
     data,
     name: "UserPFP",
     description: "Allows you to use an animated avatar without Nitro",
-    authors: [Devs.nexpid], [Devs.FoxStorm1],
+    authors: [Devs.nexpid, Devs.FoxStorm1],
     required: true,
     settings,
     settingsAboutComponent: () => (
