@@ -4,7 +4,7 @@ import definePlugin from "@utils/types";;
 export default definePlugin({
     name: "Equicordo",
     description: "Replaces the discordo sound on startup with something a bit more interesting. Sound by FoxStorm1.",
-    authors: [Devs.echo, Devs.thororen], [Devs.FoxStorm1],
+    authors: [Devs.echo, Devs.thororen, Devs.FoxStorm1],
     patches: [
         {
             find: "44208515805198d4c548.mp3",
