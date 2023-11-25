@@ -3,6 +3,7 @@
  * Copyright (c) 2023 Vendicated, Korbo, and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
+
 import { ApplicationCommandInputType, ApplicationCommandOptionType } from "@api/Commands";
 import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";

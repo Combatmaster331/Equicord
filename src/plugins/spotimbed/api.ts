@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import axios from "axios";
 import { findByPropsLazy } from "@webpack";
+import axios from "axios";
 
 import { Album, Artist, MarketQuery, Pagination, PatchedSpotifyStore, Playlist, RepeatState, Resource, SpotifyHttp, Track, User } from "./types";
 
@@ -32,7 +32,7 @@ export const Spotify = {
             method: method,
             url: API_BASE + path,
             headers: {
-                'Authorization': 'Bearer ' + socket.accessToken
+                "Authorization": "Bearer " + socket.accessToken
             }
         }).then(res => res.data);
     },

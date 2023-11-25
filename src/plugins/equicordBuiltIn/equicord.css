@@ -1,11 +1,15 @@
 /* Gradient Buttons */
 @import url('https://discord-extensions.github.io/snippets/gradient-buttons/source.css');
+
 /* Windows Titlebar */
 @import url('https://discord-extensions.github.io/snippets/windows-titlebar/source.css');
+
 /* Remove Titlebar of Discord */
 @import url('https://raw.githubusercontent.com/coolesding/shiggycord/v2/Deploy/Titlebar.css');
+
 /* Settings Icons */
 @import url('https://minidiscordthemes.github.io/SettingsIcons/SettingsIcons.theme.css');
+
 /* Dabliu's Better Discord Looks/Tweaks */
 @import url("https://dablulite.github.io/css-snippets/ConsistentChatbar/import.css");
 @import url("https://dablulite.github.io/css-snippets/BetterModals/import.css");
@@ -16,22 +20,22 @@
 @import url("https://dablulite.github.io/css-snippets/NoLightInDark/import.css");
 
 /* Make pronouns stand out more */
-[class*=pronouns] {
+[class*="pronouns"] {
     color: var(--text-normal);
     font-size: 12px;
     font-weight: 800;
     background: #ffffff20;
     padding: 0.10rem 0.5rem;
-    margin: 0.25rem 0 0 0;
+    margin: 0.25rem 0 0;
     border-radius: 1rem;
 }
 
-/* No Family Centre (Parental Controls removal) */
+/* No Family Center (No Parental Controls) */
 *[aria-label="Family Centre"] {
     display: none;
 }
 
-/*spin spotify*/
+/* Spin Spotify */
 @keyframes spin {
     from {
         transform: rotate(0deg);
@@ -42,7 +46,7 @@
     }
 }
 
-.assetsLargeImageUserPopoutV2-9ksyvz assetsLargeImage-8U5dlz noUserDrag-2HbVzE assetsLargeImageSpotify-17ME3M {
+.assetslargeimageuserpopoutv2-9ksyvz .assetslargeimage-8u5dlz .nouserdrag-2hbvze .assetslargeimagespotify-17me3m {
     transform: rotate(0deg);
     transition: transform 0.3s;
 }

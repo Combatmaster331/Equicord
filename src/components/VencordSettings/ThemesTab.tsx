@@ -10,9 +10,9 @@ import { Flex } from "@components/Flex";
 import { DeleteIcon } from "@components/Icons";
 import { Link } from "@components/Link";
 import PluginModal from "@components/PluginSettings/PluginModal";
+import { openModalLazy } from "@utils/modal";
 import { showItemInFolder } from "@utils/native";
 import { useAwaiter } from "@utils/react";
-import { openModalLazy } from "@utils/modal";
 import { findByCodeLazy, findByPropsLazy } from "@webpack";
 import {
     Button,
