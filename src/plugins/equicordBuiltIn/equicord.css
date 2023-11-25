@@ -1,1 +1,79 @@
-@import url("https://github.com/Equicord/Themes/raw/main/themes/equicordbuiltin.theme.css");
+/* Gradient Buttons */
+@import url('https://discord-extensions.github.io/snippets/gradient-buttons/source.css');
+/* Windows Titlebar */
+@import url('https://discord-extensions.github.io/snippets/windows-titlebar/source.css');
+/* Remove Titlebar of Discord */
+@import url('https://raw.githubusercontent.com/coolesding/shiggycord/v2/Deploy/Titlebar.css');
+/* Settings Icons */
+@import url('https://minidiscordthemes.github.io/SettingsIcons/SettingsIcons.theme.css');
+/* Dabliu's Better Discord Looks/Tweaks */
+@import url("https://dablulite.github.io/css-snippets/ConsistentChatbar/import.css");
+@import url("https://dablulite.github.io/css-snippets/BetterModals/import.css");
+@import url("https://dablulite.github.io/css-snippets/BetterFloatingEditor/import.css");
+@import url("https://dablulite.github.io/css-snippets/BetterAuthApps/import.css");
+@import url("https://dablulite.github.io/css-snippets/BetterStatusPicker/import.css");
+@import url("https://dablulite.github.io/css-snippets/NitroThemesFix/import.css");
+@import url("https://dablulite.github.io/css-snippets/NoLightInDark/import.css");
+
+/* Make pronouns stand out more */
+[class*=pronouns] {
+    color: var(--text-normal);
+    font-size: 12px;
+    font-weight: 800;
+    background: #ffffff20;
+    padding: 0.10rem 0.5rem;
+    margin: 0.25rem 0 0 0;
+    border-radius: 1rem;
+}
+
+/* No Family Centre (Parental Controls removal) */
+*[aria-label="Family Centre"] {
+    display: none;
+}
+
+/*spin spotify*/
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.assetsLargeImageUserPopoutV2-9ksyvz assetsLargeImage-8U5dlz noUserDrag-2HbVzE assetsLargeImageSpotify-17ME3M {
+    transform: rotate(0deg);
+    transition: transform 0.3s;
+}
+
+.vc-spotify-button .vc-spotify-button-icon {
+    transform: rotate(0deg);
+    transition: transform 0.3s;
+}
+
+.vc-spotify-button:hover {
+    animation: spin 1.5s ease-in-out infinite
+}
+
+/* Server List Scrollbar by icanttellyou */
+[class*="none_"]::-webkit-scrollbar {
+    width: 5px;
+    background: transparent;
+    border: none;
+}
+
+[class*="none_"]::-webkit-scrollbar-thumb {
+    background: #101115;
+}
+
+
+/* No, I don't want to make a thread from a chain of more than 2 replies by F53 */
+[class*="threadSuggestionBar_"] {
+    display: none;
+}
+
+/* show full about me */
+[style="-webkit-line-clamp: 6;"] {
+    -webkit-line-clamp: 10000000 !important;
+}

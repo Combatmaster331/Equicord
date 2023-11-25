@@ -1,0 +1,33 @@
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+:root .container__4bde3>.content__0e954 {
+    position: relative;
+}
+
+:root .container__4bde3>.content__0e954 .ready__61f2f {
+    display: none;
+}
+
+:root .container__4bde3>.content__0e954 .ready__61f2f+.text__32559 {
+    top: 50px;
+}
+
+:root .container__4bde3>.content__0e954::before {
+    content: "";
+    position: absolute;
+    bottom: 10px;
+    left: calc(50% - 50px);
+    width: 100px;
+    height: 100px;
+    background: url("https://github.com/Equicord/Ignore/blob/main/icon.png?raw=true") center/80% no-repeat !important;
+    image-rendering: optimizeSpeed;
+    animation: spin 2s ease-in-out infinite
+}

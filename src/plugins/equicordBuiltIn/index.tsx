@@ -22,16 +22,20 @@ import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
 
 // Importing the style managed fixes on and off switch
-import style from "./equicord.css?managed";
+import equicord from "./equicord.css?managed";
+import loading from "./loading.css?managed";
+import user from "./userreimagined.css?managed";
 
 // Define the Vencord plugin
 export default definePlugin({
     name: "EquicordBuiltIn",
     description: "Built-in CSS for Equicord users",
-    authors: [Devs.FoxStorm1],
+    authors: [Devs.FoxStorm1, Devs.thororen],
     required: true,
 
     async start() {
-        enableStyle(style);
+        enableStyle(equicord);
+        enableStyle(loading);
+        enableStyle(user);
     }
 });
