@@ -17,6 +17,7 @@
 */
 
 import { classNameFactory } from "@api/Styles";
+import { Flex } from "@components/Flex";
 import { copyWithToast } from "@utils/misc";
 import { closeAllModals, ModalContent, ModalFooter, ModalHeader, ModalProps, ModalRoot, ModalSize, openModal } from "@utils/modal";
 import { LazyComponent, useAwaiter } from "@utils/react";
@@ -206,55 +207,55 @@ export function LogsModal({ modalProps, initalQuery }: Props) {
                 }
             </div>
             <ModalFooter>
-                <Button
-                    color={Button.Colors.RED}
-                    onClick={() => Alerts.show({
-                        title: "Clear Logs",
-                        body: "Are you sure you want to clear all the logs",
-                        confirmText: "Clear",
-                        confirmColor: Button.Colors.RED,
-                        cancelText: "Cancel",
-                        onConfirm: async () => {
-                            await clearLogs();
-                            forceUpdate();
-                        }
-
-                    })}
-                >
-                    Clear All Logs
-                </Button>
-                <Button
-                    style={{ marginRight: "16px" }}
-                    color={Button.Colors.YELLOW}
-                    disabled={visibleMessages.length === 0}
-                    onClick={() => Alerts.show({
-                        title: "Clear Logs",
-                        body: `Are you sure you want to clear ${visibleMessages.length} logs`,
-                        confirmText: "Clear",
-                        confirmColor: Button.Colors.RED,
-                        cancelText: "Cancel",
-                        onConfirm: async () => {
-                            await removeLogs(visibleMessages);
-                            forceUpdate();
-                        }
-                    })}
-                >
-                    Clear Visible Logs
-                </Button>
-                <Button
-                    look={Button.Looks.LINK}
-                    color={Button.Colors.PRIMARY}
-                    onClick={() => {
-                        setSortNewest(e => {
-                            const val = !e;
-                            settings.store.sortNewest = val;
-                            return val;
-                        });
-                        contentRef.current?.firstElementChild?.scrollTo(0, 0);
-                    }}
-                >
-                    Sort {sortNewest ? "Oldest First" : "Newest First"}
-                </Button>
+                <Flex>
+                    <Button
+                        color={Button.Colors.RED}
+                        onClick={() => Alerts.show({
+                            title: "Clear Logs",
+                            body: "Are you sure you want to clear all the logs",
+                            confirmText: "Clear",
+                            confirmColor: Button.Colors.RED,
+                            cancelText: "Cancel",
+                            onConfirm: async () => {
+                                await clearLogs();
+                                forceUpdate();
+                            }
+                        })}
+                    >
+                        Clear All Logs
+                    </Button>
+                    <Button
+                        color={Button.Colors.YELLOW}
+                        disabled={visibleMessages.length === 0}
+                        onClick={() => Alerts.show({
+                            title: "Clear Logs",
+                            body: `Are you sure you want to clear ${visibleMessages.length} logs`,
+                            confirmText: "Clear",
+                            confirmColor: Button.Colors.RED,
+                            cancelText: "Cancel",
+                            onConfirm: async () => {
+                                await removeLogs(visibleMessages);
+                                forceUpdate();
+                            }
+                        })}
+                    >
+                        Clear Visible Logs
+                    </Button>
+                    <Button
+                        look={Button.Looks.LINK}
+                        color={Button.Colors.PRIMARY}
+                        onClick={() => {
+                            setSortNewest(e => {
+                                const val = !e;
+                                settings.store.sortNewest = val;
+                                return val;
+                            });
+                            contentRef.current?.firstElementChild?.scrollTo(0, 0);
+                        }}
+                    >
+                        Sort {sortNewest ? "Oldest First" : "Newest First"}
+                    </Button>
+                </Flex>
             </ModalFooter>
         </ModalRoot>
     );

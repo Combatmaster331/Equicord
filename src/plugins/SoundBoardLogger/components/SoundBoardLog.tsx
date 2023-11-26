@@ -128,47 +128,49 @@ export default function SoundBoardLog({ data, closeModal }) {
                                 ContextMenuApi.openContextMenu(e, () => <SoundContextMenu item={item} />)
                             }
                         >
-                            <Flex flexDirection="row" className={cl("sound-info")}>
-                                <img
-                                    src={getEmojiUrl(item.emoji)}
-                                    className={cl("sound-emoji")}
+                            <Flex>
+                                <Flex flexDirection="row" className={cl("sound-info")}>
+                                    <img
+                                        src={getEmojiUrl(item.emoji)}
+                                        className={cl("sound-emoji")}
+                                    />
+                                    <Forms.FormText variant="text-xs/medium" className={cl("sound-id")}>{item.soundId}</Forms.FormText>
+                                </Flex>
+                                <UserSummaryItem
+                                    users={itemUsers.slice(0, avatarsMax)} // Trimmed array to the size of max
+                                    count={item.users.length - 1} // True size (counting users that aren't rendered) - 1
+                                    guildId={undefined}
+                                    renderIcon={false}
+                                    max={avatarsMax}
+                                    showDefaultAvatarsForNullUsers
+                                    showUserPopout
+                                    renderMoreUsers={() => renderMoreUsers(item, itemUsers)}
+                                    className={cl("sound-users")}
+                                    renderUser={(user: User) => (
+                                        <Clickable
+                                            className={AvatarStyles.clickableAvatar}
+                                            onClick={() => {
+                                                onClickUser(item, user);
+                                            }}
+                                        >
+                                            <img
+                                                className={AvatarStyles.avatar}
+                                                src={user.getAvatarURL(void 0, 80, true)}
+                                                alt={user.username}
+                                                title={user.username}
+                                            />
+                                        </Clickable>
+                                    )}
                                 />
-                                <Forms.FormText variant="text-xs/medium" className={cl("sound-id")}>{item.soundId}</Forms.FormText>
-                            </Flex>
-                            <UserSummaryItem
-                                users={itemUsers.slice(0, avatarsMax)} // Trimmed array to the size of max
-                                count={item.users.length - 1} // True size (counting users that aren't rendered) - 1
-                                guildId={undefined}
-                                renderIcon={false}
-                                max={avatarsMax}
-                                showDefaultAvatarsForNullUsers
-                                showUserPopout
-                                renderMoreUsers={() => renderMoreUsers(item, itemUsers)}
-                                className={cl("sound-users")}
-                                renderUser={(user: User) => (
-                                    <Clickable
-                                        className={AvatarStyles.clickableAvatar}
-                                        onClick={() => {
-                                            onClickUser(item, user);
-                                        }}
-                                    >
-                                        <img
-                                            className={AvatarStyles.avatar}
-                                            src={user.getAvatarURL(void 0, 80, true)}
-                                            alt={user.username}
-                                            title={user.username}
-                                        />
-                                    </Clickable>
-                                )}
-                            />
-                            <Flex flexDirection="row" className={cl("sound-buttons")}>
-                                <Button color={Button.Colors.PRIMARY} size={Button.Sizes.SMALL} onClick={() => downloadAudio(item.soundId)}>Download</Button>
-                                <Button color={Button.Colors.GREEN} size={Button.Sizes.SMALL} onClick={() => copyWithToast(item.soundId, "ID copied to clipboard!")}>Copy ID</Button>
-                                <Tooltip text={`Soundboard volume: ${Math.floor(getSoundboardVolume())}%`}>
-                                    {({ onMouseEnter, onMouseLeave }) =>
-                                        <Button color={Button.Colors.BRAND} size={Button.Sizes.SMALL} onClick={() => playSound(item.soundId)} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>Play Sound</Button>
-                                    }
-                                </Tooltip>
+                                <Flex flexDirection="row" className={cl("sound-buttons")}>
+                                    <Button color={Button.Colors.PRIMARY} size={Button.Sizes.SMALL} onClick={() => downloadAudio(item.soundId)}>Download</Button>
+                                    <Button color={Button.Colors.GREEN} size={Button.Sizes.SMALL} onClick={() => copyWithToast(item.soundId, "ID copied to clipboard!")}>Copy ID</Button>
+                                    <Tooltip text={`Soundboard volume: ${Math.floor(getSoundboardVolume())}%`}>
+                                        {({ onMouseEnter, onMouseLeave }) =>
+                                            <Button color={Button.Colors.BRAND} size={Button.Sizes.SMALL} onClick={() => playSound(item.soundId)} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>Play Sound</Button>
+                                        }
+                                    </Tooltip>
+                                </Flex>
                             </Flex>
                         </div>
                     );
