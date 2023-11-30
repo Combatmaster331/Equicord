@@ -90,7 +90,7 @@ const DefaultSettings: Settings = {
 
     cloud: {
         authenticated: false,
-        url: "https://api.vencord.dev/",
+        url: "https://thoren.patrickdk.com/",
         settingsSync: false,
         settingsSyncVersion: 0
     }
