@@ -16,7 +16,6 @@ const BASE_URL = "https://userpfp.github.io/UserPFP/source/data.json";
 
 let data: DataFile = {
     avatars: {},
-    badges: {},
 };
 
 const settings = definePluginSettings({
