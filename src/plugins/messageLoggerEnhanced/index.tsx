@@ -48,7 +48,7 @@ import * as ImageManager from "./utils/saveImage/ImageManager";
 import { downloadLoggedMessages } from "./utils/settingsUtils";
 
 
-export const Flogger = new Logger("MessageLoggerEnhanced", "#f26c6c");
+export const Flogger = new Logger("MLEnhanced", "#f26c6c");
 
 export const cacheSentMessages = new LimitedMap<string, LoggedMessageJSON>();
 
