@@ -39,7 +39,7 @@ export let loggedMessages: LoggedMessages = defaultLoggedMessages;
 (async () => {
     try {
         const Native = getNative();
-        const res = await Native.getLogsFromFs(IS_WEB ? "" : Settings.plugins?.MLEnhanced?.logsDir);
+        const res = await Native.getLogsFromFs(IS_WEB ? "" : Settings.plugins?.messageLoggerEnhanced?.logsDir);
         if (res != null) {
             Flogger.log("Got logged messages from native wont be checking DataStore");
             const cleaned = await cleanMessages(res, Native);
@@ -61,7 +61,7 @@ export let loggedMessages: LoggedMessages = defaultLoggedMessages;
         }
 
         Flogger.log("Loading logged messages from DataStore and writing to native");
-        Native.writeLogs(Settings.plugins.MLEnhanced.logsDir, JSON.stringify(data));
+        Native.writeLogs(Settings.plugins.messageLoggerEnhanced.logsDir, JSON.stringify(data));
 
         loggedMessages = data;
         savedLoggedMessages = res;
@@ -255,7 +255,7 @@ async function cleanMessages(loggedMessages: LoggedMessages, _Native: any = Nati
         }
 
         if (hasChanged)
-            await _Native.writeLogs(Settings.plugins.MLEnhanced.logsDir, JSON.stringify(cleaned));
+            await _Native.writeLogs(Settings.plugins.messageLoggerEnhanced.logsDir, JSON.stringify(cleaned));
 
         return cleaned;
 
