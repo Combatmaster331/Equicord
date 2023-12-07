@@ -17,7 +17,6 @@
 */
 
 import { classNameFactory } from "@api/Styles";
-import { Flex } from "@components/Flex";
 import { copyWithToast } from "@utils/misc";
 import { closeAllModals, ModalContent, ModalFooter, ModalHeader, ModalProps, ModalRoot, ModalSize, openModal } from "@utils/modal";
 import { LazyComponent, useAwaiter } from "@utils/react";
@@ -26,7 +25,7 @@ import { Alerts, Button, ChannelStore, ContextMenuApi, FluxDispatcher, Menu, Nav
 import { User } from "discord-types/general";
 
 import { settings } from "../index";
-import { clearLogs, defaultLoggedMessages, getLoggedMessages, removeLog, removeLogs } from "../LoggedMessageManager";
+import { clearLogs, defaultLoggedMessages, removeLog, removeLogs, savedLoggedMessages } from "../LoggedMessageManager";
 import { LoggedMessage, LoggedMessageJSON, LoggedMessages } from "../types";
 import { isGhostPinged, messageJsonToMessageClass, sortMessagesByDate } from "../utils";
 import { doesMatch, parseQuery } from "../utils/parseQuery";
@@ -62,8 +61,8 @@ export interface ChildrenAccProops {
 }
 
 const ChannelRecords = findByPropsLazy("PrivateChannelRecord");
-const MessagePreview: React.FC<MessagePreviewProps> = LazyComponent(() => find(m => m?.type?.toString().includes("previewLinkTarget:") && !m?.type?.toString().includes("HAS_THREAD")));
-const ChildrenAccessories: React.FC<ChildrenAccProops> = LazyComponent(() => findByCode("channelMessageProps:{message:"));
+const MessagePreview = LazyComponent<MessagePreviewProps>(() => find(m => m?.type?.toString().includes("previewLinkTarget:") && !m?.type?.toString().includes("HAS_THREAD")));
+const ChildrenAccessories = LazyComponent<ChildrenAccProops>(() => findByCode("channelMessageProps:{message:"));
 
 const cl = classNameFactory("msg-logger-modal-");
 
@@ -82,7 +81,7 @@ export function LogsModal({ modalProps, initalQuery }: Props) {
     const [x, setX] = useState(0);
     const forceUpdate = () => setX(e => e + 1);
 
-    const [logs, _, pending] = useAwaiter(getLoggedMessages, {
+    const [logs, _, pending] = useAwaiter(async () => savedLoggedMessages, {
         fallbackValue: defaultLoggedMessages as LoggedMessages,
         deps: [x]
     });
@@ -189,7 +188,7 @@ export function LogsModal({ modalProps, initalQuery }: Props) {
                         className={cl("content")}
                     >
                         {
-                            !pending && logs == null || messages.length === 0
+                            pending || logs == null || messages.length === 0
                                 ? <EmptyLogs />
                                 : (
                                     <LogsContentMemo
@@ -207,55 +206,55 @@ export function LogsModal({ modalProps, initalQuery }: Props) {
                 }
             </div>
             <ModalFooter>
-                <Flex>
-                    <Button
-                        color={Button.Colors.RED}
-                        onClick={() => Alerts.show({
-                            title: "Clear Logs",
-                            body: "Are you sure you want to clear all the logs",
-                            confirmText: "Clear",
-                            confirmColor: Button.Colors.RED,
-                            cancelText: "Cancel",
-                            onConfirm: async () => {
-                                await clearLogs();
-                                forceUpdate();
-                            }
-                        })}
-                    >
-                        Clear All Logs
-                    </Button>
-                    <Button
-                        color={Button.Colors.YELLOW}
-                        disabled={visibleMessages.length === 0}
-                        onClick={() => Alerts.show({
-                            title: "Clear Logs",
-                            body: `Are you sure you want to clear ${visibleMessages.length} logs`,
-                            confirmText: "Clear",
-                            confirmColor: Button.Colors.RED,
-                            cancelText: "Cancel",
-                            onConfirm: async () => {
-                                await removeLogs(visibleMessages);
-                                forceUpdate();
-                            }
-                        })}
-                    >
-                        Clear Visible Logs
-                    </Button>
-                    <Button
-                        look={Button.Looks.LINK}
-                        color={Button.Colors.PRIMARY}
-                        onClick={() => {
-                            setSortNewest(e => {
-                                const val = !e;
-                                settings.store.sortNewest = val;
-                                return val;
-                            });
-                            contentRef.current?.firstElementChild?.scrollTo(0, 0);
-                        }}
-                    >
-                        Sort {sortNewest ? "Oldest First" : "Newest First"}
-                    </Button>
-                </Flex>
+                <Button
+                    color={Button.Colors.RED}
+                    onClick={() => Alerts.show({
+                        title: "Clear Logs",
+                        body: "Are you sure you want to clear all the logs",
+                        confirmText: "Clear",
+                        confirmColor: Button.Colors.RED,
+                        cancelText: "Cancel",
+                        onConfirm: async () => {
+                            await clearLogs();
+                            forceUpdate();
+                        }
+
+                    })}
+                >
+                    Clear All Logs
+                </Button>
+                <Button
+                    style={{ marginRight: "16px" }}
+                    color={Button.Colors.YELLOW}
+                    disabled={visibleMessages.length === 0}
+                    onClick={() => Alerts.show({
+                        title: "Clear Logs",
+                        body: `Are you sure you want to clear ${visibleMessages.length} logs`,
+                        confirmText: "Clear",
+                        confirmColor: Button.Colors.RED,
+                        cancelText: "Cancel",
+                        onConfirm: async () => {
+                            await removeLogs(visibleMessages);
+                            forceUpdate();
+                        }
+                    })}
+                >
+                    Clear Visible Logs
+                </Button>
+                <Button
+                    look={Button.Looks.LINK}
+                    color={Button.Colors.PRIMARY}
+                    onClick={() => {
+                        setSortNewest(e => {
+                            const val = !e;
+                            settings.store.sortNewest = val;
+                            return val;
+                        });
+                        contentRef.current?.firstElementChild?.scrollTo(0, 0);
+                    }}
+                >
+                    Sort {sortNewest ? "Oldest First" : "Newest First"}
+                </Button>
             </ModalFooter>
         </ModalRoot>
     );
@@ -283,7 +282,7 @@ function LogsContent({ logs, visibleMessages, canLoadMore, sortNewest, tab, forc
                         key={id}
                         log={logs[id] as { message: LoggedMessageJSON; }}
                         forceUpdate={forceUpdate}
-                        isGroupStart={isGroupStart(logs[id].message, logs[visibleMessages[i - 1]]?.message, sortNewest)}
+                        isGroupStart={isGroupStart(logs[id]?.message, logs[visibleMessages[i - 1]]?.message, sortNewest)}
                     />
                 ))}
             {
