@@ -48,7 +48,7 @@ import * as ImageManager from "./utils/saveImage/ImageManager";
 import { downloadLoggedMessages } from "./utils/settingsUtils";
 
 
-export const Flogger = new Logger("messageLoggerEnhanced", "#f26c6c");
+export const Flogger = new Logger("MLEnhanced", "#f26c6c");
 
 export const cacheSentMessages = new LimitedMap<string, LoggedMessageJSON>();
 
@@ -387,9 +387,9 @@ export const settings = definePluginSettings({
 });
 
 export default definePlugin({
-    name: "messageLoggerEnhanced",
+    name: "MLEnhanced",
     authors: [Devs.Aria],
-    description: "Using MessageLogger messageLoggerEnhanced logs every server and dm.",
+    description: "Using MessageLogger MLEnhanced logs every server and dm.",
     dependencies: ["MessageLogger"],
 
     patches: [
