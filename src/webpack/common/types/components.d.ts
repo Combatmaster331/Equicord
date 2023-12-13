@@ -190,8 +190,7 @@ export type TextInput = ComponentType<PropsWithChildren<{
 export type TextArea = ComponentType<PropsWithRef<Omit<HTMLProps<HTMLTextAreaElement>, "onChange"> & {
     onChange(v: string): void;
 }>>;
-
-interface SelectOption {
+export interface SelectOption {
     disabled?: boolean;
     value: any;
     label: string;

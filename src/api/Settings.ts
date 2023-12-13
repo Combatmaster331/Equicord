@@ -62,6 +62,12 @@ export interface Settings {
         settingsSync: boolean;
         settingsSyncVersion: number;
     };
+
+    userCssVars: {
+        [fileName: string]: {
+            [varName: string]: string;
+        };
+    };
 }
 
 const DefaultSettings: Settings = {
@@ -93,7 +99,9 @@ const DefaultSettings: Settings = {
         url: "https://equicord.patrickdk.com/",
         settingsSync: false,
         settingsSyncVersion: 0
-    }
+    },
+
+    userCssVars: {}
 };
 
 try {
@@ -111,7 +119,7 @@ const saveSettingsOnFrequentAction = debounce(async () => {
     }
 }, 60_000);
 
-type SubscriptionCallback = ((newValue: any, path: string) => void) & { _paths?: Array<string>; };
+type SubscriptionCallback = ((newValue: any, path: string) => void) & { _paths?: Array<string>; _exact?: boolean; };
 const subscriptions = new Set<SubscriptionCallback>();
 
 const proxyCache = {} as Record<string, any>;
@@ -168,7 +176,12 @@ function makeProxy(settings: any, root = settings, path = ""): Settings {
             const setPath = `${path}${path && "."}${p}`;
             delete proxyCache[setPath];
             for (const subscription of subscriptions) {
-                if (!subscription._paths || subscription._paths.includes(setPath)) {
+                if (
+                    !subscription._paths ||
+                    (subscription._exact
+                        ? subscription._paths.includes(setPath)
+                        : subscription._paths.some(p => setPath.startsWith(p)))
+                ) {
                     subscription(v, setPath);
                 }
             }
@@ -206,11 +219,14 @@ export const Settings = makeProxy(settings);
  * @returns Settings
  */
 // TODO: Representing paths as essentially "string[].join('.')" wont allow dots in paths, change to "paths?: string[][]" later
-export function useSettings(paths?: UseSettings<Settings>[]) {
+export function useSettings(paths?: UseSettings<Settings>[], exact = true) {
     const [, forceUpdate] = React.useReducer(() => ({}), {});
 
     const onUpdate: SubscriptionCallback = paths
-        ? (value, path) => paths.includes(path as UseSettings<Settings>) && forceUpdate()
+        ? (value, path) =>
+            (exact
+                ? paths.includes(path as UseSettings<Settings>)
+                : paths.some(p => path.startsWith(p))) && forceUpdate()
         : forceUpdate;
 
     React.useEffect(() => {
@@ -236,11 +252,12 @@ type ResolvePropDeep<T, P> = P extends "" ? T :
  * @example addSettingsListener("", (newValue, path) => console.log(`${path} is now ${newValue}`))
  *          addSettingsListener("plugins.Unindent.enabled", v => console.log("Unindent is now", v ? "enabled" : "disabled"))
  */
-export function addSettingsListener<Path extends keyof Settings>(path: Path, onUpdate: (newValue: Settings[Path], path: Path) => void): void;
-export function addSettingsListener<Path extends string>(path: Path, onUpdate: (newValue: Path extends "" ? any : ResolvePropDeep<Settings, Path>, path: Path extends "" ? string : Path) => void): void;
-export function addSettingsListener(path: string, onUpdate: (newValue: any, path: string) => void) {
+export function addSettingsListener<Path extends keyof Settings>(path: Path, onUpdate: (newValue: Settings[Path], path: Path) => void, exact?: boolean): void;
+export function addSettingsListener<Path extends string>(path: Path, onUpdate: (newValue: Path extends "" ? any : ResolvePropDeep<Settings, Path>, path: Path extends "" ? string : Path) => void, exact?: boolean): void;
+export function addSettingsListener(path: string, onUpdate: (newValue: any, path: string) => void, exact?: boolean) {
     if (path)
         ((onUpdate as SubscriptionCallback)._paths ??= []).push(path);
+    (onUpdate as SubscriptionCallback)._exact = exact;
     subscriptions.add(onUpdate);
 }
 
