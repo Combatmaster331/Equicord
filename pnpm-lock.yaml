@@ -1,7 +1,7 @@
 lockfileVersion: '6.0'
 
 patchedDependencies:
-'@types/less@3.0.4':
+  '@types/less@3.0.4':
     hash: krcufrsfhsuxuoj7hocqugs6zi
     path: patches/@types__less@3.0.4.patch
   eslint@8.46.0:
