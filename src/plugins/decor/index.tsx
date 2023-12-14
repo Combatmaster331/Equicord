@@ -14,7 +14,8 @@ import { Margins } from "@utils/margins";
 import { classes } from "@utils/misc";
 import { closeAllModals } from "@utils/modal";
 import definePlugin, { OptionType } from "@utils/types";
-import { Forms, NavigationRouter, UserStore } from "@webpack/common";
+import { findByPropsLazy } from "@webpack";
+import { FluxDispatcher, Forms, UserStore } from "@webpack/common";
 
 import { CDN_URL, RAW_SKU_ID, SKU_ID } from "./lib/constants";
 import { useAuthorizationStore } from "./lib/stores/AuthorizationStore";
@@ -23,6 +24,7 @@ import { useUserDecorAvatarDecoration, useUsersDecorationsStore } from "./lib/st
 import { setDecorationGridDecoration, setDecorationGridItem } from "./ui/components";
 import DecorSection from "./ui/components/DecorSection";
 
+const { isAnimatedAvatarDecoration } = findByPropsLazy("isAnimatedAvatarDecoration");
 export interface AvatarDecoration {
     asset: string;
     skuId: string;
@@ -41,7 +43,7 @@ const settings = definePluginSettings({
                         onClick={e => {
                             e.preventDefault();
                             closeAllModals();
-                            NavigationRouter.transitionTo("/settings/profile-customization");
+                            FluxDispatcher.dispatch({ type: "USER_SETTINGS_MODAL_SET_SECTION", section: "Profile Customization" });
                         }}
                     >Profiles</Link> page.
                 </Forms.FormText>
@@ -58,8 +60,8 @@ export default definePlugin({
         {
             find: "getAvatarDecorationURL:",
             replacement: {
-                match: /(?<=function \i\(\i\){)let{avatarDecoration/,
-                replace: "const vcDecorDecoration=$self.getDecorAvatarDecorationURL(arguments[0]);if(vcDecorDecoration)return vcDecorDecoration;$&"
+                match: /(?<=function \i\(\i\){)(?=let{avatarDecoration)/,
+                replace: "const vcDecorDecoration=$self.getDecorAvatarDecorationURL(arguments[0]);if(vcDecorDecoration)return vcDecorDecoration;"
             }
         },
         // Patch profile customization settings to include Decor section
@@ -75,22 +77,23 @@ export default definePlugin({
             find: ".decorationGridItem",
             replacement: [
                 {
-                    match: /(?<=\i=)\i=>{let{children/,
+                    match: /(?<==)\i=>{let{children.{20,100}decorationGridItem/,
                     replace: "$self.DecorationGridItem=$&"
                 },
                 {
-                    match: /(?<=\i=)\i=>{let{user:\i,avatarDecoration/,
+                    match: /(?<==)\i=>{let{user:\i,avatarDecoration.{300,600}decorationGridItemChurned/,
                     replace: "$self.DecorationGridDecoration=$&"
                 },
                 // Remove NEW label from decor avatar decorations
                 {
-                    match: /\i===\i\.Section\.PURCHASE\|\|\i===\i\.Section\.PREMIUM_PURCHASE&&\i(?<=avatarDecoration:(\i).+?)/,
-                    replace: "$1.skuId === $self.SKU_ID || ($&)"
+                    match: /(?<=\.Section\.PREMIUM_PURCHASE&&\i;if\()(?<=avatarDecoration:(\i).+?)/,
+                    replace: "$1.skuId===$self.SKU_ID||"
                 }
             ]
         },
         {
             find: "isAvatarDecorationAnimating:",
+            group: true,
             replacement: [
                 // Add Decor avatar decoration hook to avatar decoration hook
                 {
@@ -100,7 +103,7 @@ export default definePlugin({
                 // Use added hook
                 {
                     match: /(?<={avatarDecoration:).{1,20}?(?=,)(?<=avatarDecorationOverride:(\i).+?)/,
-                    replace: "$1 ?? vcDecorAvatarDecoration ?? ($&)"
+                    replace: "$1??vcDecorAvatarDecoration??($&)"
                 },
                 // Make memo depend on added hook
                 {
@@ -113,15 +116,10 @@ export default definePlugin({
         {
             find: "renderAvatarWithPopout(){",
             replacement: [
-                // Add Decor avatar decoration hook
+                // Use Decor avatar decoration hook
                 {
-                    match: /(?=let \i=\(0,\i.getAvatarDecorationURL\))(?<=currentUser:(\i).+?)/,
-                    replace: "let vcDecorAvatarDecoration=$self.useUserDecorAvatarDecoration($1);"
-                },
-                // Use added hook
-                {
-                    match: /(?<={avatarDecoration:).{1,20}?(?=,)/,
-                    replace: "vcDecorAvatarDecoration ?? $&"
+                    match: /(?<=getAvatarDecorationURL\)\({avatarDecoration:)(\i).avatarDecoration(?=,)/,
+                    replace: "$self.useUserDecorAvatarDecoration($1)??$&"
                 }
             ]
         }
@@ -155,12 +153,12 @@ export default definePlugin({
         useUsersDecorationsStore.getState().fetch(UserStore.getCurrentUser().id, true);
     },
 
-    getDecorAvatarDecorationURL({ avatarDecoration, canAnimate }: { avatarDecoration: AvatarDecoration | null; canAnimate: boolean; }) {
+    getDecorAvatarDecorationURL({ avatarDecoration, canAnimate }: { avatarDecoration: AvatarDecoration | null; canAnimate?: boolean; }) {
         // Only Decor avatar decorations have this SKU ID
         if (avatarDecoration?.skuId === SKU_ID) {
-            const parts = avatarDecoration.asset.split("_");
-            if (!canAnimate && parts[0] === "a") parts.shift();
-            return CDN_URL + `/${parts.join("_")}.png`;
+            const url = new URL(`${CDN_URL}/${avatarDecoration.asset}.png`);
+            url.searchParams.set("animate", (!!canAnimate && isAnimatedAvatarDecoration(avatarDecoration.asset)).toString());
+            return url.toString();
         } else if (avatarDecoration?.skuId === RAW_SKU_ID) {
             return avatarDecoration.asset;
         }

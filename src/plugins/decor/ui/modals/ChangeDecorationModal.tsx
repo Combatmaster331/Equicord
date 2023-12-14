@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { Flex } from "@components/Flex";
+import { openInviteModal } from "@utils/discord";
 import { Margins } from "@utils/margins";
 import { classes } from "@utils/misc";
-import { ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalRoot, ModalSize, openModal } from "@utils/modal";
-import { LazyComponent } from "@utils/react";
-import { findByCode, findByPropsLazy } from "@webpack";
+import { closeAllModals, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalRoot, ModalSize, openModal } from "@utils/modal";
+import { findByPropsLazy, findComponentByCodeLazy } from "@webpack";
 import { Alerts, Button, FluxDispatcher, Forms, GuildStore, NavigationRouter, Parser, Text, Tooltip, useEffect, UserStore, UserUtils, useState } from "@webpack/common";
 import { User } from "discord-types/general";
 
@@ -16,10 +17,8 @@ import { Decoration, getPresets, Preset } from "../../lib/api";
 import { GUILD_ID, INVITE_KEY } from "../../lib/constants";
 import { useAuthorizationStore } from "../../lib/stores/AuthorizationStore";
 import { useCurrentUserDecorationsStore } from "../../lib/stores/CurrentUserDecorationsStore";
-import cl from "../../lib/utils/cl";
-import discordifyDecoration from "../../lib/utils/discordifyDecoration";
-import openInviteModal from "../../lib/utils/openInviteModal";
-import requireAvatarDecorationModal from "../../lib/utils/requireAvatarDecorationModal";
+import { decorationToAvatarDecoration } from "../../lib/utils/decoration";
+import { cl, requireAvatarDecorationModal } from "../";
 import { AvatarDecorationModalPreview } from "../components";
 import DecorationGridCreate from "../components/DecorationGridCreate";
 import DecorationGridNone from "../components/DecorationGridNone";
@@ -27,8 +26,14 @@ import DecorDecorationGridDecoration from "../components/DecorDecorationGridDeco
 import SectionedGridList from "../components/SectionedGridList";
 import { openCreateDecorationModal } from "./CreateDecorationModal";
 
-const UserSummaryItem = LazyComponent(() => findByCode("defaultRenderUser", "showDefaultAvatarsForNullUsers"));
+const UserSummaryItem = findComponentByCodeLazy("defaultRenderUser", "showDefaultAvatarsForNullUsers");
 const DecorationModalStyles = findByPropsLazy("modalFooterShopButton");
+
+function usePresets() {
+    const [presets, setPresets] = useState<Preset[]>([]);
+    useEffect(() => { getPresets().then(setPresets); }, []);
+    return presets;
+}
 
 interface Section {
     title: string;
@@ -56,7 +61,7 @@ function SectionHeader({ section }: { section: Section; }) {
     }, [section.authorIds]);
 
     return <div>
-        <div style={{ display: "flex" }}>
+        <Flex>
             <Forms.FormTitle style={{ flexGrow: 1 }}>{section.title}</Forms.FormTitle>
             {hasAuthorIds && <UserSummaryItem
                 users={authors}
@@ -69,7 +74,7 @@ function SectionHeader({ section }: { section: Section; }) {
                 className={Margins.bottom8}
             />
             }
-        </div>
+        </Flex>
         {hasSubtitle &&
             <Forms.FormText type="description" className={Margins.bottom8}>
                 {section.subtitle}
@@ -82,6 +87,8 @@ export default function ChangeDecorationModal(props: any) {
     // undefined = not trying, null = none, Decoration = selected
     const [tryingDecoration, setTryingDecoration] = useState<Decoration | null | undefined>(undefined);
     const isTryingDecoration = typeof tryingDecoration !== "undefined";
+
+    const avatarDecorationOverride = tryingDecoration != null ? decorationToAvatarDecoration(tryingDecoration) : tryingDecoration;
 
     const {
         decorations,
@@ -96,10 +103,9 @@ export default function ChangeDecorationModal(props: any) {
 
     const activeSelectedDecoration = isTryingDecoration ? tryingDecoration : selectedDecoration;
     const activeDecorationHasAuthor = typeof activeSelectedDecoration?.authorId !== "undefined";
-    const hasPendingReview = decorations.some(d => d.reviewed === false);
+    const hasDecorationPendingReview = decorations.some(d => d.reviewed === false);
 
-    const [presets, setPresets] = useState<Preset[]>([]);
-    useEffect(() => { getPresets().then(setPresets); }, []);
+    const presets = usePresets();
     const presetDecorations = presets.flatMap(preset => preset.decorations);
 
     const activeDecorationPreset = presets.find(preset => preset.id === activeSelectedDecoration?.presetId);
@@ -153,11 +159,11 @@ export default function ChangeDecorationModal(props: any) {
                                     onSelect={() => setTryingDecoration(null)}
                                 />;
                             case "create":
-                                return <Tooltip text="You already have a decoration pending review" shouldShow={hasPendingReview}>
+                                return <Tooltip text="You already have a decoration pending review" shouldShow={hasDecorationPendingReview}>
                                     {tooltipProps => <DecorationGridCreate
                                         className={cl("change-decoration-modal-decoration")}
                                         {...tooltipProps}
-                                        onSelect={!hasPendingReview ? openCreateDecorationModal : () => { }}
+                                        onSelect={!hasDecorationPendingReview ? openCreateDecorationModal : () => { }}
                                     />}
                                 </Tooltip>;
                         }
@@ -182,7 +188,7 @@ export default function ChangeDecorationModal(props: any) {
             />
             <div className={cl("change-decoration-modal-preview")}>
                 <AvatarDecorationModalPreview
-                    avatarDecorationOverride={isTryingDecoration ? tryingDecoration ? discordifyDecoration(tryingDecoration) : null : undefined}
+                    avatarDecorationOverride={avatarDecorationOverride}
                     user={UserStore.getCurrentUser()}
                 />
                 {isActiveDecorationPreset && <Forms.FormTitle className="">Part of the {activeDecorationPreset.name} Preset</Forms.FormTitle>}
@@ -236,9 +242,13 @@ export default function ChangeDecorationModal(props: any) {
                 <Tooltip text="Join Decor's Discord Server for notifications on your decoration's review, and when new presets are released">
                     {tooltipProps => <Button
                         {...tooltipProps}
-                        onClick={() => {
+                        onClick={async () => {
                             if (!GuildStore.getGuild(GUILD_ID)) {
-                                openInviteModal(INVITE_KEY);
+                                const inviteAccepted = await openInviteModal(INVITE_KEY);
+                                if (inviteAccepted) {
+                                    closeAllModals();
+                                    FluxDispatcher.dispatch({ type: "LAYER_POP_ALL" });
+                                }
                             } else {
                                 props.onClose();
                                 FluxDispatcher.dispatch({ type: "LAYER_POP_ALL" });

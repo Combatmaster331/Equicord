@@ -5,23 +5,39 @@
  */
 
 import { Link } from "@components/Link";
+import { openInviteModal } from "@utils/discord";
 import { Margins } from "@utils/margins";
-import { ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalRoot, ModalSize, openModal } from "@utils/modal";
-import { findByCodeLazy, findByPropsLazy } from "@webpack";
-import { Button, Forms, GuildStore, Text, TextInput, useEffect, UserStore, useState } from "@webpack/common";
+import { closeAllModals, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalRoot, ModalSize, openModal } from "@utils/modal";
+import { findByPropsLazy, findComponentByCodeLazy } from "@webpack";
+import { Button, FluxDispatcher, Forms, GuildStore, NavigationRouter, Text, TextInput, useEffect, useMemo, UserStore, useState } from "@webpack/common";
 
 import { GUILD_ID, INVITE_KEY, RAW_SKU_ID } from "../../lib/constants";
 import { useCurrentUserDecorationsStore } from "../../lib/stores/CurrentUserDecorationsStore";
-import cl from "../../lib/utils/cl";
-import openInviteModal from "../../lib/utils/openInviteModal";
-import requireAvatarDecorationModal from "../../lib/utils/requireAvatarDecorationModal";
-import requireCreateStickerModal from "../../lib/utils/requireCreateStickerModal";
+import { cl, requireAvatarDecorationModal, requireCreateStickerModal } from "../";
 import { AvatarDecorationModalPreview } from "../components";
 
 
 const DecorationModalStyles = findByPropsLazy("modalFooterShopButton");
 
-const FileUpload = findByCodeLazy("fileUploadInput,");
+const FileUpload = findComponentByCodeLazy("fileUploadInput,");
+
+function useObjectURL(object: Blob | MediaSource | null) {
+    const [url, setUrl] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!object) return;
+
+        const objectUrl = URL.createObjectURL(object);
+        setUrl(objectUrl);
+
+        return () => {
+            URL.revokeObjectURL(objectUrl);
+            setUrl(null);
+        };
+    }, [object]);
+
+    return url;
+}
 
 export default function CreateDecorationModal(props) {
     const [name, setName] = useState("");
@@ -35,7 +51,9 @@ export default function CreateDecorationModal(props) {
 
     const { create: createDecoration } = useCurrentUserDecorationsStore();
 
-    const decoration = file ? { asset: URL.createObjectURL(file), skuId: RAW_SKU_ID } : null;
+    const fileUrl = useObjectURL(file);
+
+    const decoration = useMemo(() => fileUrl ? { asset: fileUrl, skuId: RAW_SKU_ID } : null, [fileUrl]);
 
     return <ModalRoot
         {...props}
@@ -96,16 +114,25 @@ export default function CreateDecorationModal(props) {
                 >
                     the guidelines
                 </Link> before creating your decoration.
-                {typeof GuildStore.getGuild(GUILD_ID) === "undefined" && <>
-                    <br />You can recieve updates on your decoration's review by joining <Link
-                        href={`https://discord.gg/${INVITE_KEY}`}
-                        onClick={async e => {
-                            e.preventDefault();
-                            await openInviteModal(INVITE_KEY);
-                        }}
-                    >Decor's Discord server
-                    </Link>.
-                </>}
+                <br />You can receive updates on your decoration's review by joining <Link
+                    href={`https://discord.gg/${INVITE_KEY}`}
+                    onClick={async e => {
+                        e.preventDefault();
+                        if (!GuildStore.getGuild(GUILD_ID)) {
+                            const inviteAccepted = await openInviteModal(INVITE_KEY);
+                            if (inviteAccepted) {
+                                closeAllModals();
+                                FluxDispatcher.dispatch({ type: "LAYER_POP_ALL" });
+                            }
+                        } else {
+                            closeAllModals();
+                            FluxDispatcher.dispatch({ type: "LAYER_POP_ALL" });
+                            NavigationRouter.transitionToGuild(GUILD_ID);
+                        }
+                    }}
+                >
+                    Decor's Discord server
+                </Link>.
             </Forms.FormText>
         </ModalContent>
         <ModalFooter className={cl("modal-footer")}>

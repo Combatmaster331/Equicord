@@ -56,7 +56,7 @@ function Badges({ author }): JSX.Element | null {
                 .catch(e => { console.error(e); });
         }
         if (settings.store.showEquicordDonorBadges) {
-            fetch("https://gist.githubusercontent.com/thororen1234/f51c43494e3a4a649f35f6a3bea3ca0b/raw/badges.csv")
+            fetch("https://raw.githubusercontent.com/Equicord/Ignore/main/badges.csv")
                 .then((res: Response): Promise<string> => { return res.text(); })
                 .then((data: string) => {
                     const equiBadges: string[][] = data.split("\n").map((s: string) => s.split(","));

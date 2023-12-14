@@ -22,7 +22,6 @@ import ErrorBoundary from "@components/ErrorBoundary";
 import { Flex } from "@components/Flex";
 import { Heart } from "@components/Heart";
 import { Devs } from "@utils/constants";
-import { Logger } from "@utils/Logger";
 import { Margins } from "@utils/margins";
 import { isPluginDev } from "@utils/misc";
 import { closeModal, Modals, openModal } from "@utils/modal";
@@ -45,7 +44,7 @@ const ContributorBadge: ProfileBadge = {
     link: "https://github.com/sponsors/vendicated"
 };
 
-let DonorBadges = {} as Record<string, Pick<ProfileBadge, "image" | "description">[]>;
+let DonorBadges = {} as Record<string, Array<Record<"tooltip" | "badge", string>>>;
 
 async function loadBadges(noCache = false) {
     DonorBadges = {};
@@ -54,33 +53,11 @@ async function loadBadges(noCache = false) {
     if (noCache)
         init.cache = "no-cache";
 
-    const badges = await fetch("https://gist.githubusercontent.com/Vendicated/51a3dd775f6920429ec6e9b735ca7f01/raw/badges.csv", init)
-        .then(r => r.text());
+    DonorBadges = await fetch("https://badges.vencord.dev/badges.json", init)
+        .then(r => r.json());
 
-    const lines = badges.trim().split("\n");
-    if (lines.shift() !== "id,tooltip,image") {
-        new Logger("BadgeAPI").error("Invalid Vencord badges.csv file!");
-        return;
-    }
-
-    for (const line of lines) {
-        const [id, description, image] = line.split(",");
-        (DonorBadges[id] ??= []).push({ image, description });
-    }
-
-    const bds = await fetch("https://raw.githubusercontent.com/Equicord/Ignore/main/badges.csv", init)
-        .then(r => r.text());
-
-    const lns = bds.trim().split("\n");
-    if (lns.shift() !== "id,tooltip,image") {
-        new Logger("BadgeAPI").error("Invalid Equicord badges.csv file!");
-        return;
-    }
-
-    for (const ln of lns) {
-        const [id, description, image] = ln.split(",");
-        (DonorBadges[id] ??= []).push({ image, description });
-    }
+    DonorBadges = await fetch("https://raw.githubusercontent.com/Equicord/Ignore/main/badges.json", init)
+        .then(r => r.json());
 }
 
 export default definePlugin({

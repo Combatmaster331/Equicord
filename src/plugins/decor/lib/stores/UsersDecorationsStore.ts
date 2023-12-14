@@ -4,17 +4,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-// @ts-nocheck
-
 import { debounce } from "@utils/debounce";
 import { proxyLazy } from "@utils/lazy";
-import { useEffect, useState } from "@webpack/common";
+import { useEffect, useState, zustandCreate } from "@webpack/common";
 import { User } from "discord-types/general";
 
 import { AvatarDecoration } from "../../";
 import { getUsersDecorations } from "../api";
 import { DECORATION_FETCH_COOLDOWN, SKU_ID } from "../constants";
-import { create } from "../zustand";
 
 interface UserDecorationData {
     asset: string | null;
@@ -33,26 +30,25 @@ interface UsersDecorationsState {
     set: (userId: string, decoration: string | null) => void;
 }
 
-export const useUsersDecorationsStore = proxyLazy(() => create<UsersDecorationsState>((set, get) => ({
+export const useUsersDecorationsStore = proxyLazy(() => zustandCreate<UsersDecorationsState>((set, get) => ({
     usersDecorations: new Map<string, UserDecorationData>(),
     fetchQueue: new Set(),
     bulkFetch: debounce(async () => {
         const { fetchQueue, usersDecorations } = get();
 
+        if (fetchQueue.size === 0) return;
+
         set({ fetchQueue: new Set() });
 
         const fetchIds = Array.from(fetchQueue);
-        if (fetchIds.length === 0) return;
         const fetchedUsersDecorations = await getUsersDecorations(fetchIds);
 
         const newUsersDecorations = new Map(usersDecorations);
 
-        for (const [userId, decoration] of Object.entries(fetchedUsersDecorations)) {
-            newUsersDecorations.set(userId, { asset: decoration, fetchedAt: new Date() });
-        }
-
-        for (const fetchedId of fetchIds) {
-            if (!newUsersDecorations.has(fetchedId)) newUsersDecorations.set(fetchedId, { asset: null, fetchedAt: new Date() });
+        const now = new Date();
+        for (const fetchId of fetchIds) {
+            const newDecoration = fetchedUsersDecorations[fetchId] ?? null;
+            newUsersDecorations.set(fetchId, { asset: newDecoration, fetchedAt: now });
         }
 
         set({ usersDecorations: newUsersDecorations });
@@ -60,8 +56,8 @@ export const useUsersDecorationsStore = proxyLazy(() => create<UsersDecorationsS
     async fetch(userId: string, force: boolean = false) {
         const { usersDecorations, fetchQueue, bulkFetch } = get();
 
-        if (usersDecorations.has(userId)) {
-            const { fetchedAt } = usersDecorations.get(userId)!;
+        const { fetchedAt } = usersDecorations.get(userId) ?? {};
+        if (fetchedAt) {
             if (!force && Date.now() - fetchedAt.getTime() < DECORATION_FETCH_COOLDOWN) return;
         }
 
@@ -74,10 +70,11 @@ export const useUsersDecorationsStore = proxyLazy(() => create<UsersDecorationsS
 
         const newFetchQueue = new Set(fetchQueue);
 
+        const now = Date.now();
         for (const userId of userIds) {
-            if (usersDecorations.has(userId)) {
-                const { fetchedAt } = usersDecorations.get(userId)!;
-                if (Date.now() - fetchedAt.getTime() < DECORATION_FETCH_COOLDOWN) continue;
+            const { fetchedAt } = usersDecorations.get(userId) ?? {};
+            if (fetchedAt) {
+                if (now - fetchedAt.getTime() < DECORATION_FETCH_COOLDOWN) continue;
             }
             newFetchQueue.add(userId);
         }
@@ -100,18 +97,21 @@ export const useUsersDecorationsStore = proxyLazy(() => create<UsersDecorationsS
 export function useUserDecorAvatarDecoration(user?: User): AvatarDecoration | null | undefined {
     const [decorAvatarDecoration, setDecorAvatarDecoration] = useState<string | null>(user ? useUsersDecorationsStore.getState().getAsset(user.id) ?? null : null);
 
-    useEffect(() => useUsersDecorationsStore.subscribe(
-        state => {
-            if (!user) return;
-            const newDecorAvatarDecoration = state.getAsset(user.id);
-            if (!newDecorAvatarDecoration) return;
-            if (decorAvatarDecoration !== newDecorAvatarDecoration) setDecorAvatarDecoration(newDecorAvatarDecoration);
-        }), []);
-
     useEffect(() => {
-        if (!user) return;
-        const { fetch: fetchUserDecorAvatarDecoration } = useUsersDecorationsStore.getState();
-        fetchUserDecorAvatarDecoration(user.id);
+        const destructor = useUsersDecorationsStore.subscribe(
+            state => {
+                if (!user) return;
+                const newDecorAvatarDecoration = state.getAsset(user.id);
+                if (!newDecorAvatarDecoration) return;
+                if (decorAvatarDecoration !== newDecorAvatarDecoration) setDecorAvatarDecoration(newDecorAvatarDecoration);
+            }
+        );
+
+        if (user) {
+            const { fetch: fetchUserDecorAvatarDecoration } = useUsersDecorationsStore.getState();
+            fetchUserDecorAvatarDecoration(user.id);
+        }
+        return destructor;
     }, []);
 
     return decorAvatarDecoration ? { asset: decorAvatarDecoration, skuId: SKU_ID } : null;
