@@ -27,7 +27,7 @@ import { AddonCard } from "@components/VencordSettings/AddonCard";
 import { OnlineThemes } from "./OnlineThemes";
 import { SettingsTab, wrapTab } from "@components/VencordSettings/shared";
 import { Margins } from "@utils/margins";
-import { classes } from "@utils/misc";
+import { openInviteModal } from "@utils/discord";
 import { openModal } from "@utils/modal";
 import { showItemInFolder } from "@utils/native";
 import { useAwaiter } from "@utils/react";
@@ -35,7 +35,7 @@ import type { ThemeHeader } from "@utils/themes";
 import { getThemeInfo, stripBOM, type UserThemeHeader } from "@utils/themes/bd";
 import { usercssParse } from "@utils/themes/usercss";
 import { findByPropsLazy, findLazy } from "@webpack";
-import { Button, Card, FluxDispatcher, Forms, React, showToast, TabBar, TextArea, Tooltip, useEffect, useMemo, useRef, useState } from "@webpack/common";
+import { Button, Card, Forms, React, showToast, TabBar, Tooltip, useEffect, useMemo, useRef, useState } from "@webpack/common";
 import themeRepo, { ThemeRepo } from "plugins/themeRepo";
 import type { ComponentType, Ref, SyntheticEvent } from "react";
 import type { UserstyleHeader } from "usercss-meta";
@@ -157,18 +157,7 @@ export function ThemeCard({ theme, enabled, onChange, onDelete, showDelete, extr
                             href={`https://discord.gg/${theme.invite}`}
                             onClick={async e => {
                                 e.preventDefault();
-                                const { invite } = await InviteActions.resolveInvite(
-                                    theme.invite,
-                                    "Desktop Modal"
-                                );
-                                if (!invite) return showToast("Invalid or expired invite");
-
-                                FluxDispatcher.dispatch({
-                                    type: "INVITE_MODAL_OPEN",
-                                    invite,
-                                    code: theme.invite,
-                                    context: "APP"
-                                });
+                                theme.invite != null && openInviteModal(theme.invite).catch(() => showToast("Invalid or expired invite"));
                             }}
                         >
                             Discord Server
@@ -256,15 +245,7 @@ function OtherThemeCard({ theme, enabled, onChange, onDelete }: OtherThemeCardPr
                             href={`https://discord.gg/${theme.invite}`}
                             onClick={async e => {
                                 e.preventDefault();
-                                const { invite } = await InviteActions.resolveInvite(theme.invite, "Desktop Modal");
-                                if (!invite) return showToast("Invalid or expired invite");
-
-                                FluxDispatcher.dispatch({
-                                    type: "INVITE_MODAL_OPEN",
-                                    invite,
-                                    code: theme.invite,
-                                    context: "APP"
-                                });
+                                theme.invite != null && openInviteModal(theme.invite).catch(() => showToast("Invalid or expired invite"));
                             }}
                         >
                             Discord Server
