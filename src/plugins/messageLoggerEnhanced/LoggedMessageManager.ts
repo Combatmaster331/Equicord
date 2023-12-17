@@ -153,7 +153,9 @@ export async function removeLog(id: string) {
 }
 
 export async function clearLogs() {
-    Native.writeLogs(settings.store.logsDir, JSON.stringify(defaultLoggedMessages));
+    await Native.writeLogs(settings.store.logsDir, JSON.stringify(defaultLoggedMessages));
+    loggedMessages = defaultLoggedMessages;
+    savedLoggedMessages = defaultLoggedMessages;
 }
 
 

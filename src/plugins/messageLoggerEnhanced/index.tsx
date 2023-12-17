@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-export const VERSION = "2.0.3";
+export const VERSION = "2.0.4";
 
 export const Native = getNative();
 
@@ -29,7 +29,7 @@ import { Devs } from "@utils/constants";
 import { Logger } from "@utils/Logger";
 import definePlugin, { OptionType } from "@utils/types";
 import { findByPropsLazy } from "@webpack";
-import { Button, FluxDispatcher, Menu, MessageStore, React, Toasts, UserStore } from "@webpack/common";
+import { Alerts, Button, FluxDispatcher, Menu, MessageStore, React, Toasts, UserStore } from "@webpack/common";
 
 import { OpenLogsButton } from "./components/LogsButton";
 import { openLogModal } from "./components/LogsModal";
@@ -37,7 +37,7 @@ import { ImageCacheDir, LogsDir } from "./components/settings/FolderSelectInput"
 import { addMessage, loggedMessages, MessageLoggerStore, removeLog } from "./LoggedMessageManager";
 import * as LoggedMessageManager from "./LoggedMessageManager";
 import { LoadMessagePayload, LoggedAttachment, LoggedMessage, LoggedMessageJSON, MessageCreatePayload, MessageDeleteBulkPayload, MessageDeletePayload, MessageUpdatePayload } from "./types";
-import { addToXAndRemoveFromOpposite, cleanUpCachedMessage, cleanupUserObject, getNative, isGhostPinged, ListType, mapEditHistory, reAddDeletedMessages, removeFromX } from "./utils";
+import { addToXAndRemoveFromOpposite, cleanUpCachedMessage, cleanupUserObject, doesBlobUrlExist, getNative, isGhostPinged, ListType, mapEditHistory, reAddDeletedMessages, removeFromX } from "./utils";
 import { checkForUpdates } from "./utils/checkForUpdates";
 import { DEFAULT_IMAGE_CACHE_DIR } from "./utils/constants";
 import { shouldIgnore } from "./utils/index";
@@ -384,6 +384,27 @@ export const settings = definePluginSettings({
             </Button>
     },
 
+    clearLogs: {
+        type: OptionType.COMPONENT,
+        description: "Clear Logs",
+        component: () =>
+            <Button
+                color={Button.Colors.RED}
+                onClick={() => Alerts.show({
+                    title: "Clear Logs",
+                    body: "Are you sure you want to clear all logs?",
+                    confirmColor: Button.Colors.RED,
+                    confirmText: "Clear",
+                    cancelText: "Cancel",
+                    onConfirm: () => {
+                        LoggedMessageManager.clearLogs();
+                    },
+                })}
+            >
+                Clear Logs
+            </Button>
+    },
+
 });
 
 export default definePlugin({
@@ -439,6 +460,15 @@ export default definePlugin({
             replacement: {
                 match: /(render\(\){)(.{1,100}zoomThumbnailPlaceholder)/,
                 replace: "$1$self.checkImage(this);$2"
+            }
+        },
+
+        // dont fetch messages for channels in modal
+        {
+            find: "Using PollReferenceMessageContext without",
+            replacement: {
+                match: /\i\.(?:default\.)?focusMessage\(/,
+                replace: "!arguments[0]?.message?.deleted && $&"
             }
         }
     ],
@@ -517,9 +547,14 @@ export default definePlugin({
 
     },
 
-    checkImage(instance: any) {
-        if (instance.state?.readyState !== "READY" && instance.props?.src?.startsWith("blob:")) {
-            instance.loadImage(instance.props.src, instance.handleImageLoad);
+    async checkImage(instance: any) {
+        if (!instance.props.isBad && instance.state?.readyState !== "READY" && instance.props?.src?.startsWith("blob:")) {
+            if (await doesBlobUrlExist(instance.props.src)) {
+                Flogger.log("image exists", instance.props.src);
+                return instance.setState(e => ({ ...e, readyState: "READY" }));
+            }
+
+            instance.props.isBad = true;
         }
     },
 
