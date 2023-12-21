@@ -47,6 +47,7 @@ const ContributorBadge: ProfileBadge = {
 let DonorBadges = {} as Record<string, Array<Record<"tooltip" | "badge", string>>>;
 
 async function loadBadges(noCache = false) {
+
     DonorBadges = {};
 
     const init = {} as RequestInit;
@@ -55,10 +56,10 @@ async function loadBadges(noCache = false) {
 
     const one = await fetch("https://badges.vencord.dev/badges.json", init)
         .then(r => r.json());
-    
+
     const two = await fetch("https://raw.githubusercontent.com/Equicord/Ignore/main/badges.json", init)
         .then(r => r.json());
-    
+
     DonorBadges = { ...one, ...two };
 }
 
