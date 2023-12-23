@@ -98,14 +98,14 @@ function equicordDonorChatBadges(userID: string) {
     ] : [];
 }
 
-function vencordContributorChatBadge(userID: string) {
+function vencordEquicordContributorChatBadge(userID: string) {
     return isPluginDev(userID) ? [
-        <span style={{ order: settings.store.vencordContributorBadgePosition }}>
+        <span style={{ order: settings.store.vencordEquicordContributorBadgePosition }}>
             <RoleIconComponent
                 className={roleIconClassName}
-                name={"Vencord Contributor"}
+                name={"Vencord/Equicord Contributor"}
                 size={20}
-                src={"https://cdn.discordapp.com/attachments/1033680203433660458/1092089947126780035/favicon.png"}
+                src={"https://i.ibb.co/RHqhhVG/Untitled-design-83-removebg-preview.png"}
             />
         </span>
     ] : [];
@@ -149,7 +149,7 @@ function ChatBadges({ author }) {
     const chatBadges = [
         ...settings.store.showVencordDonorBadges ? vencordDonorChatBadges(author.id) : [],
         ...settings.store.showEquicordDonorBadges ? equicordDonorChatBadges(author.id) : [],
-        ...settings.store.showVencordContributorBadges ? vencordContributorChatBadge(author.id) : [],
+        ...settings.store.showVencordEquicordContributorBadges ? vencordEquicordContributorChatBadge(author.id) : [],
         ...settings.store.showDiscordProfileBadges ? discordProfileChatBadges(author.flags || author.publicFlags) : [],
         ...settings.store.showDiscordNitroBadges ? discordNitroChatBadge(author.premiumType) : []
     ];
@@ -182,14 +182,14 @@ const settings = definePluginSettings({
         description: "The position of the Equicord Donor badges.",
         default: 0
     },
-    showVencordContributorBadges: {
+    showVencordEquicordContributorBadges: {
         type: OptionType.BOOLEAN,
-        description: "Enable to show Vencord contributor badges in chat.",
+        description: "Enable to show Vencord/Equicord contributor badges in chat.",
         default: true
     },
-    vencordContributorBadgePosition: {
+    vencordEquicordContributorBadgePosition: {
         type: OptionType.NUMBER,
-        description: "The position of the Vencord Contributor badge.",
+        description: "The position of the Vencord/Equicord Contributor badge.",
         default: 1
     },
     showDiscordProfileBadges: {
