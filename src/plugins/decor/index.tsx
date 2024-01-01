@@ -17,7 +17,7 @@ import definePlugin, { OptionType } from "@utils/types";
 import { findByPropsLazy } from "@webpack";
 import { FluxDispatcher, Forms, UserStore } from "@webpack/common";
 
-import { CDN_URL, RAW_SKU_ID, SKU_ID } from "./lib/constants";
+import { CDN_URL, RAW_SKU_ID, setBaseUrl, SKU_ID } from "./lib/constants";
 import { useAuthorizationStore } from "./lib/stores/AuthorizationStore";
 import { useCurrentUserDecorationsStore } from "./lib/stores/CurrentUserDecorationsStore";
 import { useUserDecorAvatarDecoration, useUsersDecorationsStore } from "./lib/stores/UsersDecorationsStore";
@@ -49,6 +49,12 @@ const settings = definePluginSettings({
                 </Forms.FormText>
             </div>;
         }
+    },
+    baseUrl: {
+        type: OptionType.STRING,
+        hidden: true,
+        description: "Decor api url",
+        default: "https://decor.fieryflames.dev"
     }
 });
 export default definePlugin({
@@ -150,6 +156,7 @@ export default definePlugin({
     useUserDecorAvatarDecoration,
 
     async start() {
+        await setBaseUrl(settings.store.baseUrl);
         useUsersDecorationsStore.getState().fetch(UserStore.getCurrentUser().id, true);
     },
 
