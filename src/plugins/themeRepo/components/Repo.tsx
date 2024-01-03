@@ -87,11 +87,6 @@ export const ThemeRepo = () => {
         <ErrorBoundary onError={handleComponentFailed}>
             <Forms.FormSection>
                 <div className={cl("filters")}>
-                    <TextInput
-                        className={"query"}
-                        placeholder="Search themes..."
-                    />
-
                     <SearchableSelect
                         multi={true}
                         closeOnSelect={false}
