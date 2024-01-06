@@ -10,18 +10,16 @@ import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { User } from "discord-types/general";
 
-import { DataFile } from "./types";
-
 const BASE_URL = "https://userpfp.github.io/UserPFP/source/data.json";
 
-let data: DataFile = {
-    avatars: {},
+let data = {
+    avatars: {} as Record<string, string>,
 };
 
 const settings = definePluginSettings({
     preferNitro: {
         description:
-            "Which avatar to use if both Nitro and UserPFP avatars are present",
+            "Which avatar to use if both default animated (Nitro) pfp and UserPFP avatars are present",
         type: OptionType.SELECT,
         options: [
             { label: "UserPFP", value: false },
@@ -32,9 +30,10 @@ const settings = definePluginSettings({
 
 export default definePlugin({
     data,
+
     name: "UserPFP",
     description: "Allows you to use an animated avatar without Nitro",
-    authors: [Devs.nexpid, Devs.FoxStorm1],
+    authors: [Devs.nexpid, Devs.thororen, Devs.FoxStorm1],
     required: true,
     settings,
     settingsAboutComponent: () => (
@@ -43,21 +42,18 @@ export default definePlugin({
         </Link>
     ),
     patches: [
-        // default export patch
         {
             find: "getUserAvatarURL:",
-            replacement: {
-                match: /(getUserAvatarURL:)(\i),/,
-                replace: "$1$self.getAvatarHook($2),"
-            }
-        },
-        // named export patch
-        {
-            find: "getUserAvatarURL:",
-            replacement: {
-                match: /(getUserAvatarURL:\i\(\){return )(\i)}/,
-                replace: "$1$self.getAvatarHook($2)}"
-            }
+            replacement: [
+                {
+                    match: /(getUserAvatarURL:)(\i),/,
+                    replace: "$1$self.getAvatarHook($2),"
+                },
+                {
+                    match: /(getUserAvatarURL:\i\(\){return )(\i)}/,
+                    replace: "$1$self.getAvatarHook($2)}"
+                }
+            ]
         }
     ],
 
