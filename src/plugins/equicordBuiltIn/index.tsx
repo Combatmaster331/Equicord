@@ -23,7 +23,6 @@ import definePlugin from "@utils/types";
 
 // Importing the style managed fixes on and off switch
 import equicord from "./equicord.css?managed";
-import loading from "./loading.css?managed";
 import user from "./userreimagined.css?managed";
 
 // Define the Vencord plugin
@@ -35,7 +34,6 @@ export default definePlugin({
 
     async start() {
         enableStyle(equicord);
-        enableStyle(loading);
         enableStyle(user);
     }
 });
