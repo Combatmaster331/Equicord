@@ -3,6 +3,7 @@ import { classNameFactory } from "@api/Styles";
 import definePlugin, { OptionType } from "@utils/types";
 import { findByPropsLazy, wreq } from "@webpack";
 import { Forms, useRef } from "@webpack/common";
+import { Devs } from "@utils/constants";
 
 const cl = classNameFactory("");
 const Classes = findByPropsLazy("animating", "baseLayer", "bg", "layer", "layers");
@@ -13,20 +14,20 @@ const settings = definePluginSettings({
         type: OptionType.BOOLEAN,
         default: true,
         onChange(val) {
-            if(val) eagerLoad();
+            if (val) eagerLoad();
         }
     },
 });
 
 const lazyLayers = [];
 function eagerLoad() {
-    lazyLayers.forEach(wreq.el);
+    lazyLayers.forEach(wreq.e);
 }
 
 export default definePlugin({
     name: "FastMenu",
     description: "Makes the settings menu open faster.",
-    authors: [{ id: 236588665420251137n, name: "Kyuuhachi" }],
+    authors: [Devs.Kyuu],
     settings,
 
     patches: [
@@ -67,17 +68,17 @@ export default definePlugin({
             style={{ visibility: hidden ? "hidden" : "visible" }}
             {...props}
         />;
-        if(baseLayer) return node;
-        else return <Forms.FocusLock containerRef={containerRef}>{node}</Forms.FocusLock>;
+        if (baseLayer) return node;
+        else return <Forms.FormTitle ref={containerRef}>{node}</Forms.FormTitle>;
     },
 
-    lazyLayer(moduleId, name) {
-        if(name !== "CollectiblesShop")
+    lazyLayer(moduleId: never, name) {
+        if (name !== "CollectiblesShop")
             lazyLayers.push(moduleId);
     },
 
     start() {
-        if(settings.store.eagerLoad)
+        if (settings.store.eagerLoad)
             eagerLoad();
     },
 });
