@@ -78,7 +78,7 @@ function toCodeBlock(s: string) {
 async function printReport() {
     console.log();
 
-    console.log("# Vencord Report" + (CANARY ? " (Canary)" : ""));
+    console.log("# Equicord Report" + (CANARY ? " (Canary)" : ""));
 
     console.log();
 
@@ -135,8 +135,8 @@ async function printReport() {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                description: "Here's the latest Vencord Report!",
-                username: "Vencord Reporter" + (CANARY ? " (Canary)" : ""),
+                description: "Here's the latest Equicord Report!",
+                username: "Equicord Reporter" + (CANARY ? " (Canary)" : ""),
                 avatar_url: "https://cdn.discordapp.com/avatars/1017176847865352332/c312b6b44179ae6817de7e4b09e9c6af.webp?size=512",
                 embeds: [
                     {
@@ -281,7 +281,7 @@ function runTime(token: string) {
 
         // Monkey patch Logger to not log with custom css
         // @ts-ignore
-        Vencord.Util.Logger.prototype._log = function (level, levelColor, args) {
+        Vencord.Util.Logger.prototype._log = function (level, args) {
             if (level === "warn" || level === "error")
                 console[level]("[Vencord]", this.name + ":", ...args);
         };

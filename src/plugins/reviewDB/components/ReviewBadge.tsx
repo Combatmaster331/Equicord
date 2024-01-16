@@ -16,17 +16,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { MaskedLink, Tooltip } from "@webpack/common";
+import { MaskedLink, React, Tooltip } from "@webpack/common";
+import { HTMLAttributes } from "react";
 
 import { Badge } from "../entities";
 import { cl } from "../utils";
 
-export default function ReviewBadge(badge: Badge) {
+export default function ReviewBadge(badge: Badge & { onClick?(): void; }) {
+    const Wrapper = badge.redirectURL
+        ? MaskedLink
+        : (props: HTMLAttributes<HTMLDivElement>) => (
+            <span {...props} role="button">{props.children}</span>
+        );
+
     return (
         <Tooltip
             text={badge.name}>
             {({ onMouseEnter, onMouseLeave }) => (
-                <MaskedLink href={badge.redirectURL}>
+                <Wrapper className={cl("blocked-badge")} href={badge.redirectURL!} onClick={badge.onClick}>
                     <img
                         className={cl("badge")}
                         width="22px"
@@ -36,7 +43,7 @@ export default function ReviewBadge(badge: Badge) {
                         src={badge.icon}
                         alt={badge.description}
                     />
-                </MaskedLink>
+                </Wrapper>
             )}
         </Tooltip>
     );

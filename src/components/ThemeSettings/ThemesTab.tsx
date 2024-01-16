@@ -23,6 +23,7 @@ import { classNameFactory } from "@api/Styles";
 import { Flex } from "@components/Flex";
 import { CogWheel, DeleteIcon, PluginIcon } from "@components/Icons";
 import { Link } from "@components/Link";
+import PluginModal from "@components/PluginSettings/PluginModal";
 import { AddonCard } from "@components/VencordSettings/AddonCard";
 import { OnlineThemes } from "./OnlineThemes";
 import { SettingsTab, wrapTab } from "@components/VencordSettings/shared";
@@ -418,6 +419,21 @@ function ThemesTab() {
                             >
                                 Edit QuickCSS
                             </Button>
+
+                            {Vencord.Settings.plugins.ClientTheme.enabled && (
+                                <Button
+                                    onClick={() => openModal(modalProps => (
+                                        <PluginModal
+                                            {...modalProps}
+                                            plugin={Vencord.Plugins.plugins.ClientTheme}
+                                            onRestartNeeded={() => { }}
+                                        />
+                                    ))}
+                                    size={Button.Sizes.SMALL}
+                                >
+                                    Edit ClientTheme
+                                </Button>
+                            )}
                         </>
                     </Card>
 

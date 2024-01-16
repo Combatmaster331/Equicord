@@ -36,9 +36,9 @@ Install `pnpm`:
 npm i -g pnpm
 ```
 
-> :exclamation: **IMPORTANT** Make sure you aren't using an admin/root terminal from here onwards. It **will** mess up your Discord/Vencord instance and you **will** most likely have to reinstall.
+> :exclamation: **IMPORTANT** Make sure you aren't using an admin/root terminal from here onwards. It **will** mess up your Discord/Equicord instance and you **will** most likely have to reinstall.
 
-Clone Vencord:
+Clone Equicord:
 
 ```shell
 git clone https://github.com/Equicord/Equicord
@@ -51,7 +51,7 @@ Install dependencies:
 pnpm install --frozen-lockfile
 ```
 
-Build Vencord:
+Build Equicord:
 
 ```shell
 pnpm build
@@ -61,7 +61,7 @@ Inject Equicord into your client:
 ```shell
 pnpm inject
 ```
-After you have done this command, it will look like you are just installing Vencord but it will say it is a development build. If it doesn't say it is a development build, please reach out for support in the [Discord Server](https://discord.gg/5Xh2W87egW)
+After you have done this command, it will look like you are just installing Equicord but it will say it is a development build. If it doesn't say it is a development build, please reach out for support in the [Discord Server](https://discord.gg/5Xh2W87egW)
 
 ## Join our Support/Community Server
 
@@ -90,7 +90,7 @@ Client modifications are against Discord’s Terms of Service.
 
 However, Discord is pretty indifferent about them and there are no known cases of users getting banned for using client mods! So you should generally be fine if you don’t use plugins that implement abusive behaviour. But no worries, all inbuilt plugins are safe to use!
 
-Regardless, if your account is essential to you and getting disabled would be a disaster for you, you should probably not use any client mods (not exclusive to Vencord), just to be safe
+Regardless, if your account is essential to you and getting disabled would be a disaster for you, you should probably not use any client mods (not exclusive to Equicord), just to be safe
 
 Additionally, make sure not to post screenshots with Equicord in a server where you might get banned for it
 

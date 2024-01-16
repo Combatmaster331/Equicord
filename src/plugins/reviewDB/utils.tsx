@@ -32,3 +32,12 @@ export function canDeleteReview(profileId: string, review: Review) {
         || Auth.user?.type === UserType.Admin
     );
 }
+
+export function canBlockReviewAuthor(profileId: string, review: Review) {
+    const myId = UserStore.getCurrentUser().id;
+    return profileId === myId && review.sender.discordID !== myId;
+}
+
+export function canReportReview(review: Review) {
+    return review.sender.discordID !== UserStore.getCurrentUser().id;
+}

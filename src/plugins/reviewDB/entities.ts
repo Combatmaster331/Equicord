@@ -38,14 +38,14 @@ export const enum NotificationType {
 
 export interface ReviewDBAuth {
     token?: string;
-    user?: ReviewDBUser;
+    user?: ReviewDBCurrentUser;
 }
 
 export interface Badge {
     name: string;
     description: string;
     icon: string;
-    redirectURL: string;
+    redirectURL?: string;
     type: number;
 }
 
@@ -68,14 +68,18 @@ export interface ReviewDBUser {
     ID: number;
     discordID: string;
     username: string;
+    type: UserType;
     profilePhoto: string;
-    clientMod: string;
-    warningCount: number;
     badges: any[];
+}
+
+export interface ReviewDBCurrentUser extends ReviewDBUser {
+    warningCount: number;
+    clientMod: string;
     banInfo: BanInfo | null;
     notification: Notification | null;
     lastReviewID: number;
-    type: UserType;
+    blockedUsers?: string[];
 }
 
 export interface ReviewAuthor {

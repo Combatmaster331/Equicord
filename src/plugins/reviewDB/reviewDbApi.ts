@@ -18,11 +18,11 @@
 
 import { showToast, Toasts } from "@webpack/common";
 
-import { authorize, getToken } from "./auth";
-import { Review, ReviewDBUser } from "./entities";
+import { Auth, authorize, getToken, updateAuth } from "./auth";
+import { Review, ReviewDBCurrentUser, ReviewDBUser, ReviewType } from "./entities";
 import { settings } from "./settings";
 
-const API_URL = "https://manti.vendicated.dev";
+const API_URL = "https://manti.vendicated.dev/api/reviewdb";
 
 export const REVIEWS_PER_PAGE = 50;
 
@@ -45,13 +45,13 @@ export async function getReviews(id: string, offset = 0): Promise<Response> {
         flags: String(flags),
         offset: String(offset)
     });
-    const req = await fetch(`${API_URL}/api/reviewdb/users/${id}/reviews?${params}`);
+    const req = await fetch(`${API_URL}/users/${id}/reviews?${params}`);
 
     const res = (req.status === 200)
         ? await req.json() as Response
         : {
             success: false,
-            message: "An Error occured while fetching reviews. Please try again later.",
+            message: req.status === 429 ? "You are sending requests too fast. Wait a few seconds and try again." : "An Error occured while fetching reviews. Please try again later.",
             reviews: [],
             updated: false,
             hasNextPage: false,
@@ -65,14 +65,15 @@ export async function getReviews(id: string, offset = 0): Promise<Response> {
             reviews: [
                 {
                     id: 0,
-                    comment: "An Error occured while fetching reviews. Please try again later.",
+                    comment: res.message,
                     star: 0,
                     timestamp: 0,
+                    type: ReviewType.System,
                     sender: {
                         id: 0,
-                        username: "Error",
-                        profilePhoto: "https://cdn.discordapp.com/attachments/1045394533384462377/1084900598035513447/646808599204593683.png?size=128",
-                        discordID: "0",
+                        username: "ReviewDB",
+                        profilePhoto: "https://cdn.discordapp.com/avatars/1134864775000629298/3f87ad315b32ee464d84f1270c8d1b37.png?size=256&format=webp&quality=lossless",
+                        discordID: "1134864775000629298",
                         badges: []
                     }
                 }
@@ -92,7 +93,7 @@ export async function addReview(review: any): Promise<Response | null> {
         return null;
     }
 
-    return fetch(API_URL + `/api/reviewdb/users/${review.userid}/reviews`, {
+    return fetch(API_URL + `/users/${review.userid}/reviews`, {
         method: "PUT",
         body: JSON.stringify(review),
         headers: {
@@ -107,7 +108,7 @@ export async function addReview(review: any): Promise<Response | null> {
 }
 
 export async function deleteReview(id: number): Promise<Response> {
-    return fetch(API_URL + `/api/reviewdb/users/${id}/reviews`, {
+    return fetch(API_URL + `/users/${id}/reviews`, {
         method: "DELETE",
         headers: new Headers({
             "Content-Type": "application/json",
@@ -121,7 +122,7 @@ export async function deleteReview(id: number): Promise<Response> {
 }
 
 export async function reportReview(id: number) {
-    const res = await fetch(API_URL + "/api/reviewdb/reports", {
+    const res = await fetch(API_URL + "/reports", {
         method: "PUT",
         headers: new Headers({
             "Content-Type": "application/json",
@@ -136,15 +137,59 @@ export async function reportReview(id: number) {
     showToast(res.message);
 }
 
-export function getCurrentUserInfo(token: string): Promise<ReviewDBUser> {
-    return fetch(API_URL + "/api/reviewdb/users", {
+async function patchBlock(action: "block" | "unblock", userId: string) {
+    const res = await fetch(API_URL + "/blocks", {
+        method: "PATCH",
+        headers: new Headers({
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: await getToken() || ""
+        }),
+        body: JSON.stringify({
+            action: action,
+            discordId: userId
+        })
+    });
+
+    if (!res.ok) {
+        showToast(`Failed to ${action} user`, Toasts.Type.FAILURE);
+    } else {
+        showToast(`Successfully ${action}ed user`, Toasts.Type.SUCCESS);
+
+        if (Auth?.user?.blockedUsers) {
+            const newBlockedUsers = action === "block"
+                ? [...Auth.user.blockedUsers, userId]
+                : Auth.user.blockedUsers.filter(id => id !== userId);
+            updateAuth({ user: { ...Auth.user, blockedUsers: newBlockedUsers } });
+        }
+    }
+}
+
+export const blockUser = (userId: string) => patchBlock("block", userId);
+export const unblockUser = (userId: string) => patchBlock("unblock", userId);
+
+export async function fetchBlocks(): Promise<ReviewDBUser[]> {
+    const res = await fetch(API_URL + "/blocks", {
+        method: "GET",
+        headers: new Headers({
+            Accept: "application/json",
+            Authorization: await getToken() || ""
+        })
+    });
+
+    if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+    return res.json();
+}
+
+export function getCurrentUserInfo(token: string): Promise<ReviewDBCurrentUser> {
+    return fetch(API_URL + "/users", {
         body: JSON.stringify({ token }),
         method: "POST",
     }).then(r => r.json());
 }
 
 export async function readNotification(id: number) {
-    return fetch(API_URL + `/api/reviewdb/notifications?id=${id}`, {
+    return fetch(API_URL + `/notifications?id=${id}`, {
         method: "PATCH",
         headers: {
             "Authorization": await getToken() || "",
