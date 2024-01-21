@@ -80,7 +80,7 @@ if (!IS_VANILLA) {
                 }
 
                 // This causes electron to freeze / white screen for some people
-                if ((settings as any).transparentUNSAFE_USE_AT_OWN_RISK) {
+                if (settings.transparent) {
                     options.transparent = true;
                     options.backgroundColor = "#00000000";
                 }
