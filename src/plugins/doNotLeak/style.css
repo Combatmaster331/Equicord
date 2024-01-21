@@ -35,14 +35,14 @@ body.hideinstreamermode:has(.colorstreamermode-e927c0) .embed-d3cbe3 {
     filter: blur(6)
 }
 
-body.hoverToView .messagecontent-21e69:hover {
+body.hovertoview .messagecontent-21e69:hover {
     filter: blur(0) brightness(1) !important;
 }
 
-body.hoverToView .embed-d3cbe3:hover {
+body.hovertoview .embed-d3cbe3:hover {
     filter: blur(0) brightness(1) !important;
 }
 
-body.hoverToView .attachmentcontentitem-ef9fc2:hover {
+body.hovertoview .attachmentcontentitem-ef9fc2:hover {
     filter: blur(0) brightness(1) !important;
 }
