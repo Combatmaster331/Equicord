@@ -190,17 +190,13 @@ export async function fetchBlocks(): Promise<ReviewDBUser[]> {
 }
 
 export function getCurrentUserInfo(token: string): Promise<ReviewDBCurrentUser> {
-    return fetch(API_URL + "/users", {
-        body: JSON.stringify({ token }),
+    return rdbRequest("/users", {
         method: "POST",
     }).then(r => r.json());
 }
 
 export async function readNotification(id: number) {
-    return fetch(API_URL + `/notifications?id=${id}`, {
-        method: "PATCH",
-        headers: {
-            "Authorization": await getToken() || "",
-        },
+    return rdbRequest(`/notifications?id=${id}`, {
+        method: "PATCH"
     });
 }
