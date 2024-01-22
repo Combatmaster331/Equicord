@@ -9,8 +9,8 @@ import { classNameFactory } from "@api/Styles";
 import { CopyIcon, DeleteIcon } from "@components/Icons";
 import { copyWithToast } from "@utils/misc";
 import { ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalProps, ModalRoot, ModalSize, openModalLazy } from "@utils/modal";
-import { Button, Card, Forms, Text, TextInput, useEffect, useState } from "@webpack/common";
 import { getThemeInfo, UserThemeHeader } from "@utils/themes/bd";
+import { Button, Card, Forms, Text, TextInput, useEffect, useState } from "@webpack/common";
 
 import { AddonCard } from "../VencordSettings/AddonCard";
 import { ThemeCard } from "./ThemesTab";
