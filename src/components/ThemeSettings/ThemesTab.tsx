@@ -23,7 +23,6 @@ import { getThemeInfo, stripBOM, type UserThemeHeader } from "@utils/themes/bd";
 import { usercssParse } from "@utils/themes/usercss";
 import { findByCodeLazy } from "@webpack";
 import { Button, Card, Forms, React, showToast, TabBar, Tooltip, useEffect, useMemo, useRef, useState } from "@webpack/common";
-import themeRepo, { ThemeRepo } from "plugins/themeRepo";
 import type { ComponentType, Ref, SyntheticEvent } from "react";
 import type { UserstyleHeader } from "usercss-meta";
 
@@ -421,22 +420,10 @@ function ThemesTab() {
                 <TabBar.Item className="vc-settings-tab-bar-item" id={ThemeTab.ONLINE}>
                     Online Themes
                 </TabBar.Item>
-                {
-                    (
-                        themeRepo.initialized
-                    ) &&
-                    <TabBar.Item
-                        className="vc-settings-tab-bar-item"
-                        id={ThemeTab.REPO}
-                    >
-                        Theme Repo
-                    </TabBar.Item>
-                }
             </TabBar>
 
             {currentTab === ThemeTab.LOCAL && renderLocalThemes()}
             {currentTab === ThemeTab.ONLINE && <OnlineThemes />}
-            {currentTab === ThemeTab.REPO && <ThemeRepo />}
         </SettingsTab>
     );
 }
