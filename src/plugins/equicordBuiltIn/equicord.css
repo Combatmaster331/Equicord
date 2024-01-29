@@ -4,9 +4,6 @@
 /* Windows Titlebar */
 @import url('https://discord-extensions.github.io/snippets/windows-titlebar/source.css');
 
-/* Remove Titlebar of Discord */
-@import url('https://raw.githubusercontent.com/coolesding/shiggycord/v2/Deploy/Titlebar.css');
-
 /* Settings Icons */
 @import url('https://minidiscordthemes.github.io/SettingsIcons/SettingsIcons.theme.css');
 
@@ -15,7 +12,6 @@
 @import url("https://dablulite.github.io/css-snippets/BetterAuthApps/import.css");
 @import url("https://dablulite.github.io/css-snippets/BetterStatusPicker/import.css");
 @import url("https://dablulite.github.io/css-snippets/NitroThemesFix/import.css");
-@import url("https://dablulite.github.io/css-snippets/NoLightInDark/import.css");
 
 /* Make pronouns stand out more */
 [class*="pronouns"] {
