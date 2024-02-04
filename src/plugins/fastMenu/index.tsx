@@ -4,21 +4,38 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { Devs } from "@utils/constants";
+import { definePluginSettings } from "@api/Settings";
 import { classNameFactory } from "@api/Styles";
-import definePlugin from "@utils/types";
-import { findByPropsLazy } from "@webpack";
-import { Forms } from "@webpack/common";
+import { Devs } from "@utils/constants";
+import definePlugin, { OptionType } from "@utils/types";
+import { findByPropsLazy, wreq } from "@webpack";
+import { Forms, useRef } from "@webpack/common";
 
 const cl = classNameFactory("");
 const Classes = findByPropsLazy("animating", "baseLayer", "bg", "layer", "layers");
 
+const settings = definePluginSettings({
+    eagerLoad: {
+        description: "Eagerly load menu contents (faster, but slightly more network load)",
+        type: OptionType.BOOLEAN,
+        default: true,
+        onChange(val) {
+            if (val) eagerLoad();
+        }
+    },
+});
+
 const lazyLayers: any[] = [];
+function eagerLoad() {
+    lazyLayers.forEach((wreq as any).el);
+}
+
 
 export default definePlugin({
     name: "FastMenu",
     description: "Makes the settings menu open faster.",
     authors: [Devs.Kyuu],
+    settings,
 
     patches: [
         {
@@ -46,7 +63,9 @@ export default definePlugin({
 
     Layer({ mode, baseLayer = false, ...props }) {
         const hidden = mode === "HIDDEN";
+        const containerRef = useRef<HTMLDivElement | null>(null);
         const node = <div
+            ref={containerRef}
             aria-hidden={hidden}
             className={cl({
                 [Classes.layer]: true,
@@ -57,11 +76,16 @@ export default definePlugin({
             {...props}
         />;
         if (baseLayer) return node;
-        else return <Forms.FormTitle>{node}</Forms.FormTitle>;
+        else return <Forms.FocusLock containerRef={containerRef}>{node}</Forms.FocusLock>;
     },
 
     lazyLayer(moduleId, name) {
         if (name !== "CollectiblesShop")
             lazyLayers.push(moduleId);
-    }
+    },
+
+    start() {
+        if (settings.store.eagerLoad)
+            eagerLoad();
+    },
 });

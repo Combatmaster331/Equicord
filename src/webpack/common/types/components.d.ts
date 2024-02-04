@@ -35,6 +35,8 @@ export type TextProps = PropsWithChildren<HtmlHTMLAttributes<HTMLDivElement> & {
 
 export type Text = ComponentType<TextProps>;
 
+export type FocusLock = ComponentType<FocusLock>;
+
 export type FormTitle = ComponentType<HTMLProps<HTMLTitleElement> & PropsWithChildren<{
     /** default is h5 */
     tag?: Heading;

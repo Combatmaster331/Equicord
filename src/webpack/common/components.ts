@@ -26,6 +26,7 @@ export let Forms = {} as {
     FormSection: t.FormSection,
     FormDivider: t.FormDivider,
     FormText: t.FormText,
+    FocusLock: t.FocusLock,
 };
 
 export let Card: t.Card;
