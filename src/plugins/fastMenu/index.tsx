@@ -9,7 +9,8 @@ import { classNameFactory } from "@api/Styles";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { findByPropsLazy, wreq } from "@webpack";
-import { Forms, useRef } from "@webpack/common";
+import { ComponentDispatch, Forms, useEffect, useRef } from "@webpack/common";
+import { HTMLAttributes } from "react";
 
 const cl = classNameFactory("");
 const Classes = findByPropsLazy("animating", "baseLayer", "bg", "layer", "layers");
@@ -25,7 +26,7 @@ const settings = definePluginSettings({
     },
 });
 
-const lazyLayers: any[] = [];
+const lazyLayers: string[] = [];
 function eagerLoad() {
     lazyLayers.forEach((wreq as any).el);
 }
@@ -60,9 +61,16 @@ export default definePlugin({
         }
     ],
 
-    Layer({ mode, baseLayer = false, ...props }) {
+    Layer({ mode, baseLayer = false, ...props }: {
+        mode: "SHOWN" | "HIDDEN";
+        baseLayer?: boolean;
+    } & HTMLAttributes<HTMLDivElement>) {
         const hidden = mode === "HIDDEN";
-        const containerRef = useRef<HTMLDivElement | null>(null);
+        const containerRef = useRef<HTMLDivElement>(null);
+        useEffect(() => () => {
+            ComponentDispatch.dispatch("LAYER_POP_START");
+            ComponentDispatch.dispatch("LAYER_POP_COMPLETE");
+        }, []);
         const node = <div
             ref={containerRef}
             aria-hidden={hidden}
@@ -78,7 +86,7 @@ export default definePlugin({
         else return <Forms.FocusLock containerRef={containerRef}>{node}</Forms.FocusLock>;
     },
 
-    lazyLayer(moduleId, name) {
+    lazyLayer(moduleId: string, name: string) {
         if (name !== "CollectiblesShop")
             lazyLayers.push(moduleId);
     },
