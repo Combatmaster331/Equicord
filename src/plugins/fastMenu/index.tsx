@@ -30,7 +30,6 @@ function eagerLoad() {
     lazyLayers.forEach((wreq as any).el);
 }
 
-
 export default definePlugin({
     name: "FastMenu",
     description: "Makes the settings menu open faster.",
