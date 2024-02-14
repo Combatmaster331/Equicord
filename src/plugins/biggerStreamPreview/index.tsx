@@ -117,7 +117,7 @@ export default definePlugin({
                 {
                     predicate: () => settings.store.iconStreamPreview && settings.store.iconStreamPreviewUrl !== "",
                     match: /(get\s*isPreview\s*\(\s*\)\s*{return\s*(\w+))\s*}/,
-                    replace: `getisPreview(${settings.store.iconStreamPreviewUrl})}`,
+                    replace: `getisPreview($self.preview(arguments[0].preview))}`,
                 },
             ],
         },
@@ -138,5 +138,10 @@ export default definePlugin({
             removeContextMenuPatch("user-context", userContextPatch);
             removeContextMenuPatch("stream-context", streamContextPatch);
         }
+    },
+
+    preview: (preview: string | null) => {
+        preview = settings.store.iconStreamPreviewUrl || null;
+        if (!preview) return;
     }
 });
