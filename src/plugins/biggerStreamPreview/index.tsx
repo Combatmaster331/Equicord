@@ -16,11 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+
 import { addContextMenuPatch, NavContextMenuPatchCallback, removeContextMenuPatch } from "@api/ContextMenu";
+import { migratePluginSettings, definePluginSettings } from "@api/Settings";
 import { ScreenshareIcon } from "@components/Icons";
 import { Devs } from "@utils/constants";
 import { openImageModal } from "@utils/discord";
-import definePlugin from "@utils/types";
+import definePlugin, { OptionType } from "@utils/types";
 import { Menu } from "@webpack/common";
 import { Channel, User } from "discord-types/general";
 
@@ -85,16 +87,57 @@ export const userContextPatch: NavContextMenuPatchCallback = (children, { user }
     if (user) return addViewStreamContext(children, { userId: user.id });
 };
 
-export default definePlugin({
-    name: "BiggerStreamPreview",
-    description: "This plugin allows you to enlarge stream previews",
-    authors: [Devs.phil],
-    start: () => {
-        addContextMenuPatch("user-context", userContextPatch);
-        addContextMenuPatch("stream-context", streamContextPatch);
+const settings = definePluginSettings({
+    biggerStreamPreview: {
+        type: OptionType.BOOLEAN,
+        default: true,
+        description: "Makes your stream preview bigger.",
     },
+    iconStreamPreview: {
+        type: OptionType.BOOLEAN,
+        default: false,
+        description: "Lets you change your stream preview.",
+    },
+    iconStreamPreviewUrl: {
+        type: OptionType.STRING,
+        default: "",
+        description: "Lets you change your stream preview.",
+        disabled: () => !settings.store.iconStreamPreview,
+    }
+});
+
+migratePluginSettings("BiggerStreamPreview", "StreamPreviewSettings");
+export default definePlugin({
+    name: "StreamPreviewSettings",
+    description: "This plugin allows you to change things about your stream preview.",
+    authors: [Devs.phil, Devs.thororen],
+    settings,
+    patches: [
+        {
+            find: "get isPreview",
+            replacement: [
+                {
+                    predicate: () => settings.store.iconStreamPreview && settings.store.iconStreamPreviewUrl !== "",
+                    match: /(get\s*isPreview\s*\(\s*\)\s*{return\s*(\w+))\s*}/,
+                    replace: `getisPreview(${settings.store.iconStreamPreviewUrl})}`,
+                },
+            ],
+        },
+    ],
+
+    start: () => {
+        const { biggerStreamPreview } = settings.store;
+        if (biggerStreamPreview) {
+            addContextMenuPatch("user-context", userContextPatch);
+            addContextMenuPatch("stream-context", streamContextPatch);
+        }
+    },
+
     stop: () => {
-        removeContextMenuPatch("user-context", userContextPatch);
-        removeContextMenuPatch("stream-context", streamContextPatch);
+        const { biggerStreamPreview } = settings.store;
+        if (biggerStreamPreview) {
+            removeContextMenuPatch("user-context", userContextPatch);
+            removeContextMenuPatch("stream-context", streamContextPatch);
+        }
     }
 });
