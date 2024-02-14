@@ -111,7 +111,6 @@ export default definePlugin({
     name: "StreamPreviewSettings",
     description: "This plugin allows you to change things about your stream preview.",
     authors: [Devs.phil, Devs.thororen],
-    settings,
     patches: [
         {
             find: "get isPreview",
@@ -124,6 +123,7 @@ export default definePlugin({
             ],
         },
     ],
+    settings,
 
     start: () => {
         const { biggerStreamPreview } = settings.store;
