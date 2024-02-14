@@ -18,7 +18,7 @@
 
 
 import { addContextMenuPatch, NavContextMenuPatchCallback, removeContextMenuPatch } from "@api/ContextMenu";
-import { migratePluginSettings, definePluginSettings } from "@api/Settings";
+import { definePluginSettings } from "@api/Settings";
 import { ScreenshareIcon } from "@components/Icons";
 import { Devs } from "@utils/constants";
 import { openImageModal } from "@utils/discord";
@@ -106,9 +106,8 @@ const settings = definePluginSettings({
     }
 });
 
-migratePluginSettings("BiggerStreamPreview", "StreamPreviewSettings");
 export default definePlugin({
-    name: "StreamPreviewSettings",
+    name: "BiggerStreamPreview",
     description: "This plugin allows you to change things about your stream preview.",
     authors: [Devs.phil, Devs.thororen],
     patches: [
