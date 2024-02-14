@@ -117,7 +117,7 @@ export default definePlugin({
             replacement: [
                 {
                     predicate: () => settings.store.iconStreamPreview && settings.store.iconStreamPreviewUrl !== "",
-                    match: /\(get\s*isPreview\s*\(\s*\)\s*{return\s*(\w+))\s*\}/,
+                    match: /(get\iisPreview\i\(\i\)\i{return\i(\w+))\i}/,
                     replace: `getisPreview($self.preview(arguments[0]))}`,
                 },
             ],
