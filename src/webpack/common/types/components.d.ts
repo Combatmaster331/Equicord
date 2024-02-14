@@ -156,7 +156,7 @@ export type Switch = ComponentType<PropsWithChildren<{
 }>>;
 
 export type Timestamp = ComponentType<PropsWithChildren<{
-    timestamp: Moment;
+    timestamp: Date | Moment;
     isEdited?: boolean;
 
     className?: string;

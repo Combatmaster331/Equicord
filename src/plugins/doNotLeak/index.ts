@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { definePluginSettings } from "@api/Settings";
+import { definePluginSettings, migratePluginSettings } from "@api/Settings";
 import { disableStyle, enableStyle } from "@api/Styles";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
@@ -50,8 +50,9 @@ const settings = definePluginSettings({
     },
 });
 
+migratePluginSettings("Do Not Leak!", "DoNotLeak");
 export default definePlugin({
-    name: "Do Not Leak!",
+    name: "DoNotLeak",
     description: "Hide all message contents and attachments when you're streaming or sharing your screen.",
     authors: [Devs.Perny],
     settings,
