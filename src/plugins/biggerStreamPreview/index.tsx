@@ -18,7 +18,7 @@
 
 
 import { addContextMenuPatch, NavContextMenuPatchCallback, removeContextMenuPatch } from "@api/ContextMenu";
-import { definePluginSettings } from "@api/Settings";
+import { migratePluginSettings, definePluginSettings } from "@api/Settings";
 import { ScreenshareIcon } from "@components/Icons";
 import { Devs } from "@utils/constants";
 import { openImageModal } from "@utils/discord";
@@ -106,8 +106,9 @@ const settings = definePluginSettings({
     }
 });
 
+migratePluginSettings("BiggerStreamPreview", "StreamPreviewSettings");
 export default definePlugin({
-    name: "BiggerStreamPreview",
+    name: "StreamPreviewSettings",
     description: "This plugin allows you to change things about your stream preview.",
     authors: [Devs.phil, Devs.thororen],
     patches: [
@@ -116,8 +117,8 @@ export default definePlugin({
             replacement: [
                 {
                     predicate: () => settings.store.iconStreamPreview && settings.store.iconStreamPreviewUrl !== "",
-                    match: /(get\s*isPreview\s*\(\s*\)\s*{return\s*(\w+))\s*}/,
-                    replace: `getisPreview($self.preview(arguments[0].preview))}`,
+                    match: /(get\i*isPreview\i*\(\i*\)\i*{return\i*(\w+))\i*}/,
+                    replace: `getisPreview($self.preview(arguments[0]))}`,
                 },
             ],
         },
