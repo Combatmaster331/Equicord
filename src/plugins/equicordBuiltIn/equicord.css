@@ -1,3 +1,8 @@
+/* stylelint-disable property-no-vendor-prefix */
+/* stylelint-disable selector-attribute-quotes */
+/* stylelint-disable declaration-block-single-line-max-declarations */
+/* stylelint-disable selector-class-pattern */
+
 /* Gradient Buttons */
 @import url('https://discord-extensions.github.io/snippets/gradient-buttons/source.css');
 
@@ -75,3 +80,5 @@
 [style="-webkit-line-clamp: 6;"] {
     -webkit-line-clamp: 10000000 !important;
 }
+
+.sidebar__9e3e2 .side_b4b3f6 .item__48dda[data-tab-id=DISCOVERY_LANDING_PAGE]::before{-webkit-mask:var(--si-discovery) center/contain no-repeat;mask:var(--si-discovery) center/contain no-repeat}
