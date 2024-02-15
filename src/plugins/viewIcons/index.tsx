@@ -25,6 +25,7 @@ import definePlugin, { OptionType } from "@utils/types";
 import { GuildMemberStore, IconUtils, Menu } from "@webpack/common";
 import type { Channel, Guild, User } from "discord-types/general";
 
+
 interface UserContextProps {
     channel: Channel;
     guildId?: string;
@@ -125,7 +126,7 @@ const GuildContext: NavContextMenuPatchCallback = (children, { guild }: GuildCon
                             id,
                             icon,
                             canAnimate: true
-                        }))
+                        })!)
                     }
                     icon={ImageIcon}
                 />
