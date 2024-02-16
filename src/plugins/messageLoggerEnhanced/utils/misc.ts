@@ -19,7 +19,7 @@
 import { get, set } from "@api/DataStore";
 import { PluginNative } from "@utils/types";
 import { findByPropsLazy, findLazy } from "@webpack";
-import { ChannelStore, moment, UserStore } from "@webpack/common";
+import { ChannelStore, UserStore } from "@webpack/common";
 
 import { LOGGED_MESSAGES_KEY, MessageLoggerStore } from "../LoggedMessageManager";
 import { LoggedMessage, LoggedMessageJSON } from "../types";
@@ -77,24 +77,30 @@ export function findLastIndex<T>(array: T[], predicate: (e: T, t: number, n: T[]
     return -1;
 }
 
+const getTimestamp = (timestamp: any): Date => {
+    return new Date(timestamp);
+};
+
 export const mapEditHistory = (m: any) => {
-    m.timestamp = moment(m.timestamp);
+    m.timestamp = getTimestamp(m.timestamp);
     return m;
 };
+
 
 export const messageJsonToMessageClass = memoize((log: { message: LoggedMessageJSON; }) => {
     // console.time("message populate");
     if (!log?.message) return null;
 
     const message: LoggedMessage = new MessageClass(log.message);
-    message.timestamp = moment(message.timestamp);
+    // @ts-ignore
+    message.timestamp = getTimestamp(message.timestamp);
 
     const editHistory = message.editHistory?.map(mapEditHistory);
     if (editHistory && editHistory.length > 0) {
         message.editHistory = editHistory;
     }
     if (message.editedTimestamp)
-        message.editedTimestamp = moment(message.editedTimestamp);
+        message.editedTimestamp = getTimestamp(message.editedTimestamp) as any;
     message.author = new AuthorClass(message.author);
     (message.author as any).nick = (message.author as any).globalName ?? message.author.username;
 
@@ -119,12 +125,24 @@ export async function doesBlobUrlExist(url: string) {
 
 export function getNative(): PluginNative<typeof import("../native")> {
     if (IS_WEB) {
-        return {
+        const Native = {
             getLogsFromFs: async () => get(LOGGED_MESSAGES_KEY, MessageLoggerStore),
-            writeLogs: async (_, logs: string) => set(LOGGED_MESSAGES_KEY, JSON.parse(logs), MessageLoggerStore),
+            writeLogs: async (logs: string) => set(LOGGED_MESSAGES_KEY, JSON.parse(logs), MessageLoggerStore),
             getDefaultNativeImageDir: async () => DEFAULT_IMAGE_CACHE_DIR,
             getDefaultNativeDataDir: async () => "",
-        } as any;
+            deleteFileNative: async () => { },
+            chooseDir: async (x: string) => "",
+            getSettings: async () => ({ imageCacheDir: DEFAULT_IMAGE_CACHE_DIR, logsDir: "" }),
+            init: async () => { },
+            initDirs: async () => { },
+            getImageNative: async (x: string) => new Uint8Array(0),
+            getNativeSavedImages: async () => new Map(),
+            messageLoggerEnhancedUniqueIdThingyIdkMan: async () => { },
+            showItemInFolder: async () => { },
+            writeImageNative: async () => { },
+        } satisfies PluginNative<typeof import("../native")>;
+
+        return Native;
 
     }
 
