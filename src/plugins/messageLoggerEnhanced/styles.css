@@ -35,7 +35,7 @@
     height: 100%;
 }
 
-.msg-logger-modal-header > div:has(input) {
+.msg-logger-modal-header>div:has(input) {
     width: 100%;
 }
 
