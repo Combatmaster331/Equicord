@@ -8,11 +8,12 @@ import { readdir, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { Queue } from "@utils/Queue";
-import { dialog, IpcMainInvokeEvent, shell } from "electron";
+import { dialog, IpcMainInvokeEvent, ipcMain, shell } from "electron";
 
 import { DATA_DIR } from "../../../main/utils/constants";
 import { getSettings, saveSettings } from "./settings";
 import { ensureDirectoryExists, getAttachmentIdFromFilename } from "./utils";
+import { Logger } from "@utils/Logger";
 
 export { getSettings };
 
@@ -127,9 +128,12 @@ export async function chooseDir(event: IpcMainInvokeEvent, logKey: "logsDir" | "
         case "logsDir": logsDir = dir; break;
         case "imageCacheDir": imageCacheDir = dir; break;
     }
-
+    const onCancel = () => {
+        const logger = new Logger("MLEnhanced");
+        logger.error(`No dir set.`);
+    };
     if (logKey === "imageCacheDir")
-        await init(event);
+        await ipcMain.handle(`${event}`, onCancel);
 
     return dir;
 }
