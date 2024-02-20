@@ -50,7 +50,7 @@ const settings = definePluginSettings({
     },
 });
 
-migratePluginSettings("Do Not Leak!", "DoNotLeak");
+migratePluginSettings("DoNotLeak", "Do Not Leak!");
 export default definePlugin({
     name: "DoNotLeak",
     description: "Hide all message contents and attachments when you're streaming or sharing your screen.",

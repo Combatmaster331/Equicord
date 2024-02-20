@@ -23,7 +23,7 @@ export const Native = getNative();
 import "./styles.css";
 
 import { addContextMenuPatch, NavContextMenuPatchCallback, removeContextMenuPatch } from "@api/ContextMenu";
-import { definePluginSettings, Settings } from "@api/Settings";
+import { definePluginSettings, migratePluginSettings, Settings } from "@api/Settings";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { Devs } from "@utils/constants";
 import { Logger } from "@utils/Logger";
@@ -407,6 +407,7 @@ export const settings = definePluginSettings({
 
 });
 
+migratePluginSettings("MLEnhanced", "MessageLoggerEnhanced");
 export default definePlugin({
     name: "MLEnhanced",
     authors: [Devs.Aria],
