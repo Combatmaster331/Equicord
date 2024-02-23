@@ -86,6 +86,8 @@ interface MessageExtra {
     messageReference: Message["messageReference"];
     allowedMentions: {
         parse: string[];
+        users?: Array<string>;
+        roles?: Array<string>;
         replied_user: boolean;
     };
     stickerIds: string[];
