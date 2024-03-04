@@ -39,7 +39,7 @@ export default definePlugin({
                 type: ApplicationCommandOptionType.STRING,
                 name: "Search engine",
                 description: "What do you want to search?",
-                required: false,
+                required: true,
                 choices: [
                     { label: "Google", name: "Google", value: "google" },
                     { label: "Bing", name: "Bing", value: "bing" },
@@ -76,7 +76,6 @@ export default definePlugin({
                     link = `https://yandex.com/search?text=${rfc3986EncodeURIComponent(query)}`;
                     break;
             }
-            if (!engine) return link = `https://google.com/search?query=${rfc3986EncodeURIComponent(query)}`;
             return {
                 content: link
             };
