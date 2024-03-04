@@ -48,13 +48,14 @@ export default definePlugin({
         ],
 
         execute(args) {
-            const query = args[0].value.replace(" ", "+");
+            const rfc3986EncodeURIComponent = str => encodeURIComponent(str).replace(/[!'()*]/g, escape);
+            const query = findOption<string>(args, "Search query");
             const engine = findOption<string>(args, "Search engine");
             let link;
             if (engine === "google") {
-                link = "https://google.com/search?query=" + query;
+                link = `https://google.com/search?query=${rfc3986EncodeURIComponent(query)}`;
             } else if (engine === "duckduckgo") {
-                link = "https://duckduckgo.com/" + query;
+                link = `https://duckduckgo.com/${rfc3986EncodeURIComponent(query)}`;
             }
             return {
                 content: link
