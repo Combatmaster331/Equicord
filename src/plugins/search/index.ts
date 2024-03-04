@@ -42,7 +42,10 @@ export default definePlugin({
                 required: true,
                 choices: [
                     { label: "Google", name: "Google", value: "google" },
-                    { label: "DDG", name: "DDG", value: "duckduckgo" },
+                    { label: "Bing", name: "Bing", value: "bing" },
+                    { label: "DuckDuckGo", name: "DuckDuckGo", value: "duckduckgo" },
+                    { label: "Yahoo", name: "Yahoo", value: "yahoo" },
+                    { label: "Yandex", name: "Yandex", value: "yandex" },
                 ]
             }
         ],
@@ -52,10 +55,22 @@ export default definePlugin({
             const query = findOption<string>(args, "Search query");
             const engine = findOption<string>(args, "Search engine");
             let link;
-            if (engine === "google") {
-                link = `https://google.com/search?query=${rfc3986EncodeURIComponent(query)}`;
-            } else if (engine === "duckduckgo") {
-                link = `https://duckduckgo.com/${rfc3986EncodeURIComponent(query)}`;
+            switch (engine) {
+                case "google":
+                    link = `https://google.com/search?query=${rfc3986EncodeURIComponent(query)}`;
+                    break;
+                case "bing":
+                    link = `https://bing.com/search?q=${rfc3986EncodeURIComponent(query)}`;
+                    break;
+                case "duckduckgo":
+                    link = `https://duckduckgo.com/${rfc3986EncodeURIComponent(query)}`;
+                    break;
+                case "yahoo":
+                    link = `https://yahoo.com/search?p=${rfc3986EncodeURIComponent(query)}`;
+                    break;
+                case "yandex":
+                    link = `https://yandex.com/search?text=${rfc3986EncodeURIComponent(query)}`;
+                    break;
             }
             return {
                 content: link
