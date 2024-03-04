@@ -161,12 +161,27 @@ const settings = definePluginSettings({
         type: OptionType.BOOLEAN,
         default: true
     },
-    disableEmbedPermissionCheck: {
-        description: "Disables the notice for sending FakeNitro items without embed permissions",
-        type: OptionType.BOOLEAN,
-        default: false
+    hyperLinkText: {
+        description: "What text the hyperlink should use. {{NAME}} will be replaced with the emoji/sticker name.",
+        type: OptionType.STRING,
+        default: "{{NAME}}"
     }
-});
+}).withPrivateSettings<{
+    disableEmbedPermissionCheck: boolean;
+}>();
+
+function hasPermission(channelId: string, permission: bigint) {
+    const channel = ChannelStore.getChannel(channelId);
+
+    if (!channel || channel.isPrivate()) return true;
+
+    return PermissionStore.can(permission, channel);
+}
+
+const hasExternalEmojiPerms = (channelId: string) => hasPermission(channelId, PermissionsBits.USE_EXTERNAL_EMOJIS);
+const hasExternalStickerPerms = (channelId: string) => hasPermission(channelId, PermissionsBits.USE_EXTERNAL_STICKERS);
+const hasEmbedPerms = (channelId: string) => hasPermission(channelId, PermissionsBits.EMBED_LINKS);
+const hasAttachmentPerms = (channelId: string) => hasPermission(channelId, PermissionsBits.ATTACH_FILES);
 
 export default definePlugin({
     name: "FakeNitro",
@@ -354,8 +369,8 @@ export default definePlugin({
             predicate: () => settings.store.transformEmojis,
             replacement: {
                 // Add the fake nitro emoji notice
-                match: /(?<=isDiscoverable:\i,emojiComesFromCurrentGuild:\i,.+?}=(\i).+?;)(.*?return )(.{0,1000}\.Messages\.EMOJI_POPOUT_UNJOINED_DISCOVERABLE_GUILD_DESCRIPTION.+?)(?=},)/,
-                replace: (_, props, rest, reactNode) => `let{fakeNitroNode}=${props};${rest}$self.addFakeNotice(${FakeNoticeType.Emoji},${reactNode},!!fakeNitroNode?.fake)`
+                match: /(?<=emojiDescription:)(\i)(?<=\1=\i\((\i)\).+?)/,
+                replace: (_, reactNode, props) => `$self.addFakeNotice(${FakeNoticeType.Emoji},${reactNode},!!${props}?.fakeNitroNode?.fake)`
             }
         },
         // Allow using custom app icons
@@ -459,7 +474,7 @@ export default definePlugin({
         if (typeof firstContent === "string") {
             content[0] = firstContent.trimStart();
             content[0] || content.shift();
-        } else if (firstContent?.type === "span") {
+        } else if (typeof firstContent?.props?.children === "string") {
             firstContent.props.children = firstContent.props.children.trimStart();
             firstContent.props.children || content.shift();
         }
@@ -469,7 +484,7 @@ export default definePlugin({
         if (typeof lastContent === "string") {
             content[lastIndex] = lastContent.trimEnd();
             content[lastIndex] || content.pop();
-        } else if (lastContent?.type === "span") {
+        } else if (typeof lastContent?.props?.children === "string") {
             lastContent.props.children = lastContent.props.children.trimEnd();
             lastContent.props.children || content.pop();
         }
@@ -699,22 +714,6 @@ export default definePlugin({
         }
     },
 
-    hasPermissionToUseExternalEmojis(channelId: string): boolean {
-        const channel = ChannelStore.getChannel(channelId);
-
-        if (!channel || channel.isDM() || channel.isGroupDM() || channel.isMultiUserDM()) return true;
-
-        return PermissionStore.can(PermissionsBits.USE_EXTERNAL_EMOJIS, channel);
-    },
-
-    hasPermissionToUseExternalStickers(channelId: string) {
-        const channel = ChannelStore.getChannel(channelId);
-
-        if (!channel || channel.isDM() || channel.isGroupDM() || channel.isMultiUserDM()) return true;
-
-        return PermissionStore.can(PermissionsBits.USE_EXTERNAL_STICKERS, channel);
-    },
-
     getStickerLink(stickerId: string) {
         return `https://media.discordapp.net/stickers/${stickerId}.png?size=${settings.store.stickerSize}`;
     },
@@ -792,8 +791,8 @@ export default definePlugin({
                     title: "Hold on!",
                     body: <div>
                         <Forms.FormText>
-                            You are trying to send/edit a message that contains a FakeNitro emoji or sticker
-                            , however you do not have permissions to embed links on the current channel.
+                            You are trying to send/edit a message that contains a FakeNitro emoji or sticker,
+                            however you do not have permissions to embed links in the current channel.
                             Are you sure you want to send this message? Your FakeNitro items will appear as a link only.
                         </Forms.FormText>
                         <Forms.FormText type={Forms.FormText.Types.DESCRIPTION}>
@@ -802,8 +801,13 @@ export default definePlugin({
                     </div>,
                     confirmText: "Send Anyway",
                     cancelText: "Cancel",
+                    secondaryConfirmText: "Do not show again",
                     onConfirm: () => resolve(true),
-                    onCloseCallback: () => setImmediate(() => resolve(false))
+                    onCloseCallback: () => setImmediate(() => resolve(false)),
+                    onConfirmSecondary() {
+                        settings.store.disableEmbedPermissionCheck = true;
+                        resolve(true);
+                    }
                 });
             });
         }
@@ -825,7 +829,7 @@ export default definePlugin({
                 if ("pack_id" in sticker)
                     break stickerBypass;
 
-                const canUseStickers = this.canUseStickers && this.hasPermissionToUseExternalStickers(channelId);
+                const canUseStickers = this.canUseStickers && hasExternalStickerPerms(channelId);
                 if (sticker.available !== false && (canUseStickers || sticker.guild_id === guildId))
                     break stickerBypass;
 
@@ -839,13 +843,13 @@ export default definePlugin({
                 }
 
                 if (sticker.format_type === StickerType.APNG) {
-                    if (!PermissionStore.can(PermissionsBits.ATTACH_FILES, channelId)) {
+                    if (!hasAttachmentPerms(channelId)) {
                         Alerts.show({
                             title: "Hold on!",
                             body: <div>
                                 <Forms.FormText>
                                     You cannot send this message because it contains an animated FakeNitro sticker,
-                                    and you do not have permissions to attach files on the current channel. Please remove the sticker to proceed.
+                                    and you do not have permissions to attach files in the current channel. Please remove the sticker to proceed.
                                 </Forms.FormText>
                             </div>
                         });
@@ -860,13 +864,15 @@ export default definePlugin({
                     const url = new URL(link);
                     url.searchParams.set("name", sticker.name);
 
-                    messageObj.content += `${getWordBoundary(messageObj.content, messageObj.content.length - 1)}${s.useHyperLinks ? `[${sticker.name}](${url})` : url}`;
+                    const linkText = s.hyperLinkText.replaceAll("{{NAME}}", sticker.name);
+
+                    messageObj.content += `${getWordBoundary(messageObj.content, messageObj.content.length - 1)}${s.useHyperLinks ? `[${linkText}](${url})` : url}`;
                     extra.stickers!.length = 0;
                 }
             }
 
             if (s.enableEmojiBypass) {
-                const canUseEmotes = this.canUseEmotes && this.hasPermissionToUseExternalEmojis(channelId);
+                const canUseEmotes = this.canUseEmotes && hasExternalEmojiPerms(channelId);
 
                 for (const emoji of messageObj.validNonShortcutEmojis) {
                     if (!emoji.require_colons) continue;
@@ -881,13 +887,15 @@ export default definePlugin({
                     url.searchParams.set("size", s.emojiSize.toString());
                     url.searchParams.set("name", emoji.name);
 
+                    const linkText = s.hyperLinkText.replaceAll("{{NAME}}", emoji.name);
+
                     messageObj.content = messageObj.content.replace(emojiString, (match, offset, origStr) => {
-                        return `${getWordBoundary(origStr, offset - 1)}${s.useHyperLinks ? `[${emoji.name}](${url})` : url}${getWordBoundary(origStr, offset + match.length)}`;
+                        return `${getWordBoundary(origStr, offset - 1)}${s.useHyperLinks ? `[${linkText}](${url})` : url}${getWordBoundary(origStr, offset + match.length)}`;
                     });
                 }
             }
 
-            if (hasBypass && !s.disableEmbedPermissionCheck && !PermissionStore.can(PermissionsBits.EMBED_LINKS, channelId)) {
+            if (hasBypass && !s.disableEmbedPermissionCheck && !hasEmbedPerms(channelId)) {
                 if (!await cannotEmbedNotice()) {
                     return { cancel: true };
                 }
@@ -903,7 +911,7 @@ export default definePlugin({
 
             let hasBypass = false;
 
-            const canUseEmotes = this.canUseEmotes && this.hasPermissionToUseExternalEmojis(channelId);
+            const canUseEmotes = this.canUseEmotes && hasExternalEmojiPerms(channelId);
 
             messageObj.content = messageObj.content.replace(/(?<!\\)<a?:(?:\w+):(\d+)>/ig, (emojiStr, emojiId, offset, origStr) => {
                 const emoji = EmojiStore.getCustomEmojiById(emojiId);
@@ -918,10 +926,12 @@ export default definePlugin({
                 url.searchParams.set("size", s.emojiSize.toString());
                 url.searchParams.set("name", emoji.name);
 
-                return `${getWordBoundary(origStr, offset - 1)}${s.useHyperLinks ? `[${emoji.name}](${url})` : url}${getWordBoundary(origStr, offset + emojiStr.length)}`;
+                const linkText = s.hyperLinkText.replaceAll("{{NAME}}", emoji.name);
+
+                return `${getWordBoundary(origStr, offset - 1)}${s.useHyperLinks ? `[${linkText}](${url})` : url}${getWordBoundary(origStr, offset + emojiStr.length)}`;
             });
 
-            if (hasBypass && !s.disableEmbedPermissionCheck && !PermissionStore.can(PermissionsBits.EMBED_LINKS, channelId)) {
+            if (hasBypass && !s.disableEmbedPermissionCheck && !hasEmbedPerms(channelId)) {
                 if (!await cannotEmbedNotice()) {
                     return { cancel: true };
                 }
