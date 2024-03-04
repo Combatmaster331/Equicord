@@ -33,8 +33,8 @@ const REMEMBER_DISMISS_KEY = "Vencord-SupportHelper-Dismiss";
 
 const AllowedChannelIds = [
     SUPPORT_CHANNEL_ID,
-    "1024286218801926184", // Vencord > #bot-spam
-    "1033680203433660458", // Vencord > #v
+    "1173659827881390160", // Equicord > #dev
+    "1173342942858055721", // Equicord > #support
 ];
 
 export default definePlugin({
