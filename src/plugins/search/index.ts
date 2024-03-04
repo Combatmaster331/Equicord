@@ -66,7 +66,7 @@ export default definePlugin({
                     link = `https://duckduckgo.com/${rfc3986EncodeURIComponent(query)}`;
                     break;
                 case "yahoo":
-                    link = `https://yahoo.com/search?p=${rfc3986EncodeURIComponent(query)}`;
+                    link = `https://search.yahoo.com/search?p=${rfc3986EncodeURIComponent(query)}`;
                     break;
                 case "yandex":
                     link = `https://yandex.com/search?text=${rfc3986EncodeURIComponent(query)}`;
