@@ -39,11 +39,12 @@ export default definePlugin({
                 type: ApplicationCommandOptionType.STRING,
                 name: "Search engine",
                 description: "What do you want to search?",
-                required: true,
+                required: false,
                 choices: [
                     { label: "Google", name: "Google", value: "google" },
                     { label: "Bing", name: "Bing", value: "bing" },
                     { label: "DuckDuckGo", name: "DuckDuckGo", value: "duckduckgo" },
+                    { label: "Brave", name: "Brave", value: "brave" },
                     { label: "Yahoo", name: "Yahoo", value: "yahoo" },
                     { label: "Yandex", name: "Yandex", value: "yandex" },
                 ]
@@ -65,6 +66,9 @@ export default definePlugin({
                 case "duckduckgo":
                     link = `https://duckduckgo.com/${rfc3986EncodeURIComponent(query)}`;
                     break;
+                case "brave":
+                    link = `https://search.brave.com/search?q=${rfc3986EncodeURIComponent(query)}`;
+                    break;
                 case "yahoo":
                     link = `https://search.yahoo.com/search?p=${rfc3986EncodeURIComponent(query)}`;
                     break;
@@ -72,6 +76,7 @@ export default definePlugin({
                     link = `https://yandex.com/search?text=${rfc3986EncodeURIComponent(query)}`;
                     break;
             }
+            if (!engine) return link = `https://google.com/search?query=${rfc3986EncodeURIComponent(query)}`;
             return {
                 content: link
             };

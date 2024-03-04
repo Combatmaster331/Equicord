@@ -100,5 +100,5 @@ export interface Command {
     options?: Option[];
     predicate?(ctx: CommandContext): boolean;
 
-    execute(args: Argument[], ctx: CommandContext): Promisable<void | CommandReturnValue>;
+    execute(args: Argument[], ctx: CommandContext): Promisable<void | CommandReturnValue | string>;
 }
