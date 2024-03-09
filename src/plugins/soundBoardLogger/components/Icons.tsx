@@ -5,7 +5,7 @@
  */
 
 import { classes } from "@utils/misc";
-import { Button, ButtonLooks, ButtonWrapperClasses,Tooltip } from "@webpack/common";
+import { Button, ButtonLooks, ButtonWrapperClasses, Tooltip } from "@webpack/common";
 
 import { cl } from "../utils";
 

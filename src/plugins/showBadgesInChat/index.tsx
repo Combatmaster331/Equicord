@@ -34,7 +34,7 @@ function useVencordDonorBadges(userID: string) {
     const [vencordDonorBadges, setVencordDonorBadges] = useState<[string, string][]>([]);
 
     useEffect(() => {
-        fetch("https://gist.githubusercontent.com/Vendicated/51a3dd775f6920429ec6e9b735ca7f01/raw/badges.csv")
+        fetch("https://raw.githubusercontent.com/Equicord/Ignore/main/venbadges.csv")
             .then(res => res.text())
             .then(data => {
                 const badges = [...data.matchAll(new RegExp(`(${userID}),([^,\n]+),([^,\n]+)`, "g"))];
