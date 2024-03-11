@@ -4,54 +4,56 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import ErrorBoundary from "@components/ErrorBoundary";
 import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
 import { findByPropsLazy } from "@webpack";
 import { React, RelationshipStore } from "@webpack/common";
-import { Guild, GuildMember } from "discord-types/general";
 
-const { Heading, Text } = findByPropsLazy("Heading");
-const { memberSinceContainer } = findByPropsLazy("memberSinceContainer");
+const { Heading, Text } = findByPropsLazy("Heading", "Text");
+const container = findByPropsLazy("memberSinceContainer");
 const { getCreatedAtDate } = findByPropsLazy("getCreatedAtDate");
-
-interface UserPopoutData {
-    userId: string,
-    headingClassName: string,
-    textClassName: string,
-    guild?: Guild,
-    guildMember?: GuildMember,
-}
+const clydeMoreInfo = findByPropsLazy("clydeMoreInfo");
+const locale = findByPropsLazy("getLocale");
+const lastSection = findByPropsLazy("lastSection");
 
 export default definePlugin({
     name: "FriendsSince",
-    description: "Show when you became friends with someone in the user popout",
+    description: "Shows when you became friends with someone in the user popout",
     authors: [Devs.Elvyra],
     patches: [
         {
-            find: ".USER_PROFILE_MEMBER_SINCE",
-            replacement: [{
-                match: /let.{50,100}=(\i),(\i).{500,1000}\)}\)]}\)]}\)/,
-                replace: "$&,$self.friendsSince($1,$2)"
-            }]
+            find: ".AnalyticsSections.USER_PROFILE}",
+            replacement: {
+                match: /\i.default,\{userId:(\i.id).{0,30}}\)/,
+                replace: "$&,$self.friendsSince({ userId: $1 })"
+            }
+        },
+        {
+            find: ".UserPopoutUpsellSource.PROFILE_PANEL,",
+            replacement: {
+                match: /\i.default,\{userId:(\i)}\)/,
+                replace: "$&,$self.friendsSince({ userId: $1 })"
+            }
         }
     ],
 
-    friendsSince(data: UserPopoutData, locale: string) {
-        const { userId, headingClassName, textClassName } = data;
+    friendsSince: ErrorBoundary.wrap(({ userId }: { userId: string; }) => {
         const friendsSince = RelationshipStore.getSince(userId);
-        if (!friendsSince) return;
+        if (!friendsSince) return null;
 
-        return <React.Fragment>
-            <div style={{ height: ".65em" }} />
-            <Heading variant="eyebrow" className={headingClassName}>
-                Friends Since
-            </Heading>
-            <div className={memberSinceContainer}>
-                <Text variant="text-sm/normal" className={textClassName}>
-                    {getCreatedAtDate(friendsSince, locale)}
-                </Text>
+        return (
+            <div className={lastSection.section}>
+                <Heading variant="eyebrow" className={clydeMoreInfo.title}>
+                    Friends Since
+                </Heading>
+
+                <div className={container.memberSinceContainer}>
+                    <Text variant="text-sm/normal" className={clydeMoreInfo.body}>
+                        {getCreatedAtDate(friendsSince, locale.getLocale())}
+                    </Text>
+                </div>
             </div>
-        </React.Fragment>;
-
-    }
+        );
+    }, { noop: true })
 });

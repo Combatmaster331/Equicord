@@ -45,7 +45,7 @@ export default definePlugin({
     dependencies: ["CommandsAPI"],
 
     commands: [{
-        name: "vencord-debug",
+        name: "equicord-debug",
         description: "Send Vencord Debug info",
         predicate: ctx => AllowedChannelIds.includes(ctx.channel.id),
         async execute() {

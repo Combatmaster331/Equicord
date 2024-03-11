@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { addContextMenuPatch, findGroupChildrenByChildId, NavContextMenuPatchCallback, removeContextMenuPatch } from "@api/ContextMenu";
+import { findGroupChildrenByChildId, NavContextMenuPatchCallback } from "@api/ContextMenu";
 import { Devs } from "@utils/constants";
 import { getCurrentChannel } from "@utils/discord";
 import { ModalCloseButton, ModalContent, ModalHeader, ModalProps, ModalRoot, ModalSize, openModal } from "@utils/modal";
@@ -14,18 +14,6 @@ import { Message } from "discord-types/general";
 
 let recentmessage: Message;
 let grayscale;
-
-export default definePlugin({
-    name: "Quoter",
-    description: "Adds the ability to create a quote image from a message",
-    authors: [Devs.Samwich],
-    start() {
-        addContextMenuPatch("message", messagePatch);
-    },
-    stop() {
-        removeContextMenuPatch("message", messagePatch);
-    }
-});
 
 const messagePatch: NavContextMenuPatchCallback = (children, { message }) => () => {
     recentmessage = message;
@@ -47,6 +35,15 @@ const messagePatch: NavContextMenuPatchCallback = (children, { message }) => () 
         />
     );
 };
+
+export default definePlugin({
+    name: "Quoter",
+    description: "Adds the ability to create a quote image from a message",
+    authors: [Devs.Samwich],
+    contextMenus: {
+        "message": messagePatch
+    }
+});
 
 
 export function QuoteIcon({

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { addContextMenuPatch, NavContextMenuPatchCallback, removeContextMenuPatch } from "@api/ContextMenu";
+import { NavContextMenuPatchCallback } from "@api/ContextMenu";
 import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
 import { findStoreLazy } from "@webpack";
@@ -126,12 +126,7 @@ export default definePlugin({
     name: "VoiceChatUtilities",
     description: "This plugin allows you to perform multiple actions on an entire channel (move, mute, disconnect, etc.) (originally by dutake)",
     authors: [Devs.Dams, Devs.D3SOX],
-
-    start() {
-        addContextMenuPatch("channel-context", VoiceChannelContext);
-    },
-
-    stop() {
-        removeContextMenuPatch("channel-context", VoiceChannelContext);
-    },
+    contextMenus: {
+        "channel-context": VoiceChannelContext
+    }
 });

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { addContextMenuPatch, findGroupChildrenByChildId, NavContextMenuPatchCallback, removeContextMenuPatch } from "@api/ContextMenu";
+import { findGroupChildrenByChildId, NavContextMenuPatchCallback } from "@api/ContextMenu";
 import { definePluginSettings } from "@api/Settings";
 import { disableStyle, enableStyle } from "@api/Styles";
 import { Devs } from "@utils/constants";
@@ -113,11 +113,11 @@ export default definePlugin({
     description: "Adds Remix to Desktop",
     authors: [Devs.MrDiamond],
     settings,
-
+    contextMenus: {
+        "channel-attach": UploadContextMenuPatch,
+        "message": MessageContextMenuPatch
+    },
     async start() {
-        addContextMenuPatch("channel-attach", UploadContextMenuPatch);
-        addContextMenuPatch("message", MessageContextMenuPatch);
-
         await requireCreateStickerModal();
         await requireSettingsMenu();
 
@@ -125,9 +125,6 @@ export default definePlugin({
     },
 
     stop() {
-        removeContextMenuPatch("channel-attach", UploadContextMenuPatch);
-        removeContextMenuPatch("message", MessageContextMenuPatch);
-
         disableStyle(css);
     },
 });

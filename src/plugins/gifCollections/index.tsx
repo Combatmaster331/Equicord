@@ -18,7 +18,7 @@
 
 // Plugin idea by brainfreeze (668137937333911553) 😎
 
-import { addContextMenuPatch, findGroupChildrenByChildId, NavContextMenuPatchCallback, removeContextMenuPatch } from "@api/ContextMenu";
+import { findGroupChildrenByChildId, NavContextMenuPatchCallback } from "@api/ContextMenu";
 import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
 import { ModalContent, ModalFooter, ModalHeader, ModalProps, ModalRoot, openModal } from "@utils/modal";
@@ -93,6 +93,9 @@ export default definePlugin({
     // need better description eh
     description: "Allows you to have collections of gifs",
     authors: [Devs.Aria],
+    contextMenus: {
+        "message": addCollectionContextMenuPatch
+    },
     patches: [
         {
             find: "renderCategoryExtras",
@@ -149,13 +152,8 @@ export default definePlugin({
 
     start() {
         CollectionManager.refreshCacheCollection();
-
-        addContextMenuPatch("message", addCollectionContextMenuPatch);
     },
 
-    stop() {
-        removeContextMenuPatch("message", addCollectionContextMenuPatch);
-    },
     CollectionManager,
 
     oldTrendingCat: null as Category[] | null,

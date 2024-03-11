@@ -14,7 +14,7 @@ import { findByPropsLazy, waitFor } from "@webpack";
 import { ContextMenuApi, FluxDispatcher, Menu, React, UserStore } from "@webpack/common";
 import { Channel } from "discord-types/general";
 
-import { addContextMenus, removeContextMenus } from "./components/contextMenu";
+import { contextMenus } from "./components/contextMenu";
 import { openCategoryModal, requireSettingsMenu } from "./components/CreateCategoryModal";
 import { DEFAULT_CHUNK_SIZE } from "./constants";
 import { canMoveCategory, canMoveCategoryInDirection, categories, categoryLen, collapseCategory, getAllUncolapsedChannels, getSections, initCategories, isPinned, migrateData, moveCategory, removeCategory } from "./data";
@@ -58,6 +58,7 @@ export default definePlugin({
     description: "Allows you to pin private channels to the top of your DM list. To pin/unpin or reorder pins, right click DMs",
     authors: [Devs.Ven, Devs.Strencher, Devs.Aria],
     settings,
+    contextMenus,
 
     patches: [
         {
@@ -157,12 +158,7 @@ export default definePlugin({
     getAllUncolapsedChannels,
 
     start() {
-        addContextMenus();
         requireSettingsMenu();
-    },
-
-    stop() {
-        removeContextMenus();
     },
 
     makeProps(instance, { sections }: { sections: number[]; }) {
