@@ -23,13 +23,13 @@ export const Native = getNative();
 import "./styles.css";
 
 import { NavContextMenuPatchCallback } from "@api/ContextMenu";
-import { definePluginSettings, migratePluginSettings, Settings } from "@api/Settings";
+import { definePluginSettings, Settings } from "@api/Settings";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { Devs } from "@utils/constants";
 import { Logger } from "@utils/Logger";
 import definePlugin, { OptionType } from "@utils/types";
 import { findByPropsLazy } from "@webpack";
-import { Alerts, Button, FluxDispatcher, Menu, MessageStore, React, Toasts, UserStore } from "@webpack/common";
+import { Alerts, Button, FluxDispatcher, Menu, MessageActions, MessageStore, React, Toasts, UserStore } from "@webpack/common";
 
 import { OpenLogsButton } from "./components/LogsButton";
 import { openLogModal } from "./components/LogsModal";
@@ -38,7 +38,6 @@ import { addMessage, loggedMessages, MessageLoggerStore, removeLog } from "./Log
 import * as LoggedMessageManager from "./LoggedMessageManager";
 import { LoadMessagePayload, LoggedAttachment, LoggedMessage, LoggedMessageJSON, MessageCreatePayload, MessageDeleteBulkPayload, MessageDeletePayload, MessageUpdatePayload } from "./types";
 import { addToXAndRemoveFromOpposite, cleanUpCachedMessage, cleanupUserObject, doesBlobUrlExist, getNative, isGhostPinged, ListType, mapEditHistory, reAddDeletedMessages, removeFromX } from "./utils";
-import { checkForUpdates } from "./utils/checkForUpdates";
 import { DEFAULT_IMAGE_CACHE_DIR } from "./utils/constants";
 import { shouldIgnore } from "./utils/index";
 import { LimitedMap } from "./utils/LimitedMap";
@@ -51,8 +50,6 @@ import { downloadLoggedMessages } from "./utils/settingsUtils";
 export const Flogger = new Logger("MLEnhanced", "#f26c6c");
 
 export const cacheSentMessages = new LimitedMap<string, LoggedMessageJSON>();
-
-const cacheThing = findByPropsLazy("commit", "getOrCreate");
 
 const idFunctions = {
     Server: props => props?.guild?.id,
@@ -163,10 +160,41 @@ const contextMenuPath: NavContextMenuPatchCallback = (children, props) => {
                     )
                 }
 
+                {
+                    settings.store.hideMessageFromMessageLoggers
+                    && props.navId === "message"
+                    && props.message?.author?.id === UserStore.getCurrentUser().id
+                    && props.message?.deleted === false
+                    && (
+                        <>
+                            <Menu.MenuSeparator />
+                            <Menu.MenuItem
+                                id="hide-from-message-loggers"
+                                label="Delete Message (Hide From Message Loggers)"
+                                color="danger"
+
+                                action={async () => {
+                                    await MessageActions.deleteMessage(props.message.channel_id, props.message.id);
+                                    MessageActions._sendMessage(props.message.channel_id, {
+                                        "content": "redacted eh",
+                                        "tts": false,
+                                        "invalidEmojis": [],
+                                        "validNonShortcutEmojis": []
+                                    }, { nonce: props.message.id });
+                                }}
+
+                            />
+                        </>
+                    )
+                }
+
             </Menu.MenuItem>
         );
     }
 };
+
+const cacheThing = findByPropsLazy("commit", "getOrCreate");
+
 
 const handledMessageIds = new Set();
 async function messageDeleteHandler(payload: MessageDeletePayload & { isBulk: boolean; }) {
@@ -336,14 +364,6 @@ function messageLoadSuccess(payload: LoadMessagePayload) {
 }
 
 export const settings = definePluginSettings({
-    checkForUpdate: {
-        type: OptionType.COMPONENT,
-        description: "Check for update",
-        component: () =>
-            <Button onClick={() => checkForUpdates()}>
-                Check For Updates
-            </Button>
-    },
     saveMessages: {
         default: true,
         type: OptionType.BOOLEAN,
@@ -421,6 +441,12 @@ export const settings = definePluginSettings({
         default: true,
         type: OptionType.BOOLEAN,
         description: "Always log current selected channel. Blacklisted channels/users will still be ignored.",
+    },
+
+    hideMessageFromMessageLoggers: {
+        default: false,
+        type: OptionType.BOOLEAN,
+        description: "When enabled, a context menu button will be added to messages to allow you to delete messages without them being logged by other loggers. Might not be safe, use at your own risk."
     },
 
     messageLimit: {
@@ -520,7 +546,6 @@ export const settings = definePluginSettings({
 
 });
 
-migratePluginSettings("MLEnhanced", "MessageLoggerEnhanced");
 export default definePlugin({
     name: "MLEnhanced",
     authors: [Devs.Aria],
@@ -699,9 +724,6 @@ export default definePlugin({
     async start() {
         // if (!settings.store.saveMessages)
         //     clearLogs();
-
-        if (settings.store.autoCheckForUpdates)
-            checkForUpdates(10_000, false);
 
         Native.init();
 

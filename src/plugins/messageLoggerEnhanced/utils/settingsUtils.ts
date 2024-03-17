@@ -49,4 +49,3 @@ export async function exportLogs() {
     const logger_data = await DataStore.get(LOGGED_MESSAGES_KEY, MessageLoggerStore);
     return JSON.stringify(logger_data, null, 4);
 }
-
