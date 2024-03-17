@@ -11,7 +11,7 @@
             "esnext.asynciterable",
             "esnext.symbol"
         ],
-        "module": "commonjs",
+        "module": "esnext",
         "moduleResolution": "node",
         "strict": true,
         "noImplicitAny": false,

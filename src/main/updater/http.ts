@@ -17,7 +17,7 @@
 */
 
 import { VENCORD_USER_AGENT } from "@utils/constants";
-import { IpcEvents } from "@utils/IpcEvents";
+import { IpcEvents } from "shared/IpcEvents";
 import axios from "axios";
 import { ipcMain } from "electron";
 import { writeFile } from "fs/promises";
@@ -56,7 +56,7 @@ async function calculateGitChanges() {
         // github api only sends the long sha
         hash: c.sha.slice(0, 7),
         author: c.author.login,
-        message: c.commit.message
+        message: c.commit.message.substring(c.commit.message.indexOf("\n") + 1)
     }));
 }
 

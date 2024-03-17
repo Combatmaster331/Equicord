@@ -26,6 +26,7 @@ import { debounce } from "../src/utils";
 import { EXTENSION_BASE_URL } from "../src/utils/web-metadata";
 import { getTheme, Theme } from "../src/utils/discord";
 import { getThemeInfo } from "../src/utils/themes/bd";
+import { Settings } from "../src/Vencord";
 
 // Discord deletes this so need to store in variable
 const { localStorage } = window;
@@ -46,7 +47,7 @@ window.VencordNative = {
         deleteTheme: (fileName: string) => DataStore.del(fileName, themeStore),
         getThemesDir: async () => "",
         getThemesList: () => DataStore.entries(themeStore).then(entries =>
-            entries.map(([name, css]) => getThemeInfo(css, name.toString()))
+            entries.map(([name, css]) => ({ fileName: name as string, content: css }))
         ),
         getThemeData: (fileName: string) => DataStore.get(fileName, themeStore),
         getSystemValues: async () => ({}),
@@ -96,8 +97,15 @@ window.VencordNative = {
     },
 
     settings: {
-        get: () => localStorage.getItem("VencordSettings") || "{}",
-        set: async (s: string) => localStorage.setItem("VencordSettings", s),
+        get: () => {
+            try {
+                return JSON.parse(localStorage.getItem("VencordSettings") || "{}");
+            } catch (e) {
+                console.error("Failed to parse settings from localStorage: ", e);
+                return {};
+            }
+        },
+        set: async (s: Settings) => localStorage.setItem("VencordSettings", JSON.stringify(s)),
         getSettingsDir: async () => "LocalStorage"
     },
 

@@ -31,8 +31,8 @@ import { SettingsTab, wrapTab } from "./shared";
 
 const cl = classNameFactory("vc-settings-");
 
-const DEFAULT_DONATE_IMAGE = "https://i.ibb.co/HFqtsML/Equicord-Logo.png";
-const SHIGGY_DONATE_IMAGE = "https://i.ibb.co/HFqtsML/Equicord-Logo.png";
+const DEFAULT_DONATE_IMAGE = "https://cdn.discordapp.com/emojis/1026533090627174460.png";
+const SHIGGY_DONATE_IMAGE = "https://media.discordapp.net/stickers/1039992459209490513.png";
 
 type KeysOfType<Object, Type> = {
     [K in keyof Object]: Object[K] extends Type ? K : never;
@@ -49,14 +49,6 @@ function VencordSettings() {
     const isWindows = navigator.platform.toLowerCase().startsWith("win");
     const isMac = navigator.platform.toLowerCase().startsWith("mac");
     const needsVibrancySettings = IS_DISCORD_DESKTOP && isMac;
-
-    // One-time migration of the old setting to the new one if necessary.
-    React.useEffect(() => {
-        if (settings.macosTranslucency === true && !settings.macosVibrancyStyle) {
-            settings.macosVibrancyStyle = "sidebar";
-            settings.macosTranslucency = undefined;
-        }
-    }, []);
 
     const Switches: Array<false | {
         key: KeysOfType<typeof settings, boolean>;
@@ -97,11 +89,11 @@ function VencordSettings() {
                 key: "disableMinSize",
                 title: "Disable minimum window size",
                 note: "Requires a full restart"
-            }
+            },
         ];
 
     return (
-        <SettingsTab title="Equicord Settings">
+        <SettingsTab title="Vencord Settings">
             <DonateCard image={donateImage} />
             <Forms.FormSection title="Quick Actions">
                 <Card className={cl("quick-actions-card")}>
@@ -128,7 +120,7 @@ function VencordSettings() {
                             </Button>
                         )}
                         <Button
-                            onClick={() => VencordNative.native.openExternal("https://github.com/Equicord/Equicord")}
+                            onClick={() => VencordNative.native.openExternal("https://github.com/Vendicated/Vencord")}
                             size={Button.Sizes.SMALL}
                             disabled={settingsDirPending}>
                             Open in GitHub
@@ -155,6 +147,7 @@ function VencordSettings() {
                 ))}
             </Forms.FormSection>
 
+
             {needsVibrancySettings && <>
                 <Forms.FormTitle tag="h5">Window vibrancy style (requires restart)</Forms.FormTitle>
                 <Select
@@ -163,7 +156,7 @@ function VencordSettings() {
                     options={[
                         // Sorted from most opaque to most transparent
                         {
-                            label: "No vibrancy", default: !settings.macosTranslucency, value: undefined
+                            label: "No vibrancy", value: undefined
                         },
                         {
                             label: "Under Page (window tinting)",
@@ -190,9 +183,8 @@ function VencordSettings() {
                             value: "header"
                         },
                         {
-                            label: "Sidebar (old value for transparent windows)",
-                            value: "sidebar",
-                            default: settings.macosTranslucency
+                            label: "Sidebar",
+                            value: "sidebar"
                         },
                         {
                             label: "Tooltip",
@@ -220,7 +212,6 @@ function VencordSettings() {
                     serialize={identity} />
             </>}
 
-
             {typeof Notification !== "undefined" && <NotificationSection settings={settings.notifications} />}
         </SettingsTab>
     );
@@ -239,7 +230,7 @@ function NotificationSection({ settings }: { settings: typeof Settings["notifica
             <Forms.FormText className={Margins.bottom8}>
                 Some plugins may show you notifications. These come in two styles:
                 <ul>
-                    <li><strong>Equicord Notifications</strong>: These are in-app notifications</li>
+                    <li><strong>Vencord Notifications</strong>: These are in-app notifications</li>
                     <li><strong>Desktop Notifications</strong>: Native Desktop notifications (like when you get a ping)</li>
                 </ul>
             </Forms.FormText>
@@ -248,7 +239,7 @@ function NotificationSection({ settings }: { settings: typeof Settings["notifica
                 options={[
                     { label: "Only use Desktop notifications when Discord is not focused", value: "not-focused", default: true },
                     { label: "Always use Desktop notifications", value: "always" },
-                    { label: "Always use Equicord notifications", value: "never" },
+                    { label: "Always use Vencord notifications", value: "never" },
                 ] satisfies Array<{ value: typeof settings["useNative"]; } & Record<string, any>>}
                 closeOnSelect={true}
                 select={v => settings.useNative = v}
@@ -318,7 +309,7 @@ function DonateCard({ image }: DonateCardProps) {
         <Card className={cl("card", "donate")}>
             <div>
                 <Forms.FormTitle tag="h5">Support the Project</Forms.FormTitle>
-                <Forms.FormText>Equicord is an enhanced version of Vencord, help support Vencord so we can improve Equicord</Forms.FormText>
+                <Forms.FormText>Please consider supporting the development of Vencord by donating!</Forms.FormText>
                 <DonateButton style={{ transform: "translateX(-1em)" }} />
             </div>
             <img
@@ -336,4 +327,4 @@ function DonateCard({ image }: DonateCardProps) {
     );
 }
 
-export default wrapTab(VencordSettings, "Equicord Settings");
+export default wrapTab(VencordSettings, "Vencord Settings");

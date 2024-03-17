@@ -26,7 +26,6 @@ export let Forms = {} as {
     FormSection: t.FormSection,
     FormDivider: t.FormDivider,
     FormText: t.FormText,
-    FocusLock: t.FocusLock,
 };
 
 export let Card: t.Card;
@@ -47,6 +46,7 @@ export let Paginator: t.Paginator;
 export let ScrollerThin: t.ScrollerThin;
 export let Clickable: t.Clickable;
 export let Avatar: t.Avatar;
+export let FocusLock: t.FocusLock;
 // token lagger real
 /** css colour resolver stuff, no clue what exactly this does, just copied usage from Discord */
 export let useToken: t.useToken;
@@ -58,6 +58,6 @@ export const Flex = waitForComponent<t.Flex>("Flex", ["Justify", "Align", "Wrap"
 export const { OAuth2AuthorizeModal } = findByPropsLazy("OAuth2AuthorizeModal");
 
 waitFor(["FormItem", "Button"], m => {
-    ({ useToken, Card, Button, FormSwitch: Switch, Tooltip, TextInput, TextArea, Text, Select, SearchableSelect, Slider, ButtonLooks, TabBar, Popout, Dialog, Paginator, ScrollerThin, Clickable, Avatar } = m);
+    ({ useToken, Card, Button, FormSwitch: Switch, Tooltip, TextInput, TextArea, Text, Select, SearchableSelect, Slider, ButtonLooks, TabBar, Popout, Dialog, Paginator, ScrollerThin, Clickable, Avatar, FocusLock } = m);
     Forms = m;
 });

@@ -9,7 +9,7 @@ import { classNameFactory } from "@api/Styles";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { findByPropsLazy, wreq } from "@webpack";
-import { ComponentDispatch, Forms, useEffect, useRef } from "@webpack/common";
+import { ComponentDispatch, FocusLock, useEffect, useRef } from "@webpack/common";
 import { HTMLAttributes } from "react";
 
 const cl = classNameFactory("");
@@ -83,7 +83,7 @@ export default definePlugin({
             {...props}
         />;
         if (baseLayer) return node;
-        else return <Forms.FocusLock containerRef={containerRef}>{node}</Forms.FocusLock>;
+        else return <FocusLock containerRef={containerRef}>{node}</FocusLock>;
     },
 
     lazyLayer(moduleId: string, name: string) {

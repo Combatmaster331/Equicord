@@ -16,9 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { debounce } from "shared/debounce";
 import { CheckedTextInput } from "@components/CheckedTextInput";
 import { CodeBlock } from "@components/CodeBlock";
-import { debounce } from "@utils/debounce";
 import { Margins } from "@utils/margins";
 import { canonicalizeMatch, canonicalizeReplace } from "@utils/patches";
 import { makeCodeblock } from "@utils/text";
