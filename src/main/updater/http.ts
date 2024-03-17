@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { VENCORD_USER_AGENT } from "@utils/constants";
+import { VENCORD_USER_AGENT } from "shared/vencordUserAgent";
 import { IpcEvents } from "shared/IpcEvents";
 import axios from "axios";
 import { ipcMain } from "electron";
