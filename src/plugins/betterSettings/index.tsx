@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { definePluginSettings } from "@api/Settings";
+import { definePluginSettings, migratePluginSettings } from "@api/Settings";
 import { classNameFactory } from "@api/Styles";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { Devs } from "@utils/constants";
@@ -71,6 +71,7 @@ function Layer({ mode, baseLayer = false, ...props }: LayerProps) {
         : <FocusLock containerRef={containerRef}>{node}</FocusLock>;
 }
 
+migratePluginSettings("BetterSettings", "FastMenu");
 export default definePlugin({
     name: "BetterSettings",
     description: "Enhances your settings-menu-opening experience",
