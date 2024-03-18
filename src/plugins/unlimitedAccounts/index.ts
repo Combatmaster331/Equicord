@@ -22,7 +22,7 @@ import definePlugin from "@utils/types";
 export default definePlugin({
     name: "UnlimitedAccounts",
     description: "Increases the amount of accounts you can add.",
-    authors: [Devs.Balaclava],
+    authors: [Devs.Balaclava, Devs.thororen],
     patches: [
         {
             find: "multiaccount_cta_tooltip_seen",
