@@ -28,6 +28,9 @@
             "@utils/*": [
                 "./utils/*"
             ],
+            "@shared/*": [
+                "./shared/*"
+            ],
             "@webpack/types": [
                 "./webpack/common/types"
             ],

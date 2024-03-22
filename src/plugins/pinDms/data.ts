@@ -6,50 +6,41 @@
 
 import * as DataStore from "@api/DataStore";
 import { Settings } from "@api/Settings";
-import { findStoreLazy } from "@webpack";
 import { UserStore } from "@webpack/common";
 
 import { DEFAULT_COLOR } from "./constants";
-import { settings } from "./index";
+import { forceUpdate } from "./index";
 
 export interface Category {
     id: string;
     name: string;
     color: number;
     channels: string[];
-    colapsed?: boolean;
+    collapsed?: boolean;
 }
 
-export const KEYS = {
-    CATEGORY_BASE_KEY: "PinDMsCategories-",
-    CATEGORY_MIGRATED_PINDMS_KEY: "PinDMsMigratedPinDMs",
-    CATEGORY_MIGRATED_KEY: "PinDMsMigratedOldCategories",
-    OLD_CATEGORY_KEY: "BetterPinDMsCategories-"
-};
+const CATEGORY_BASE_KEY = "PinDMsCategories-";
+const CATEGORY_MIGRATED_PINDMS_KEY = "PinDMsMigratedPinDMs";
+const CATEGORY_MIGRATED_KEY = "PinDMsMigratedOldCategories";
+const OLD_CATEGORY_KEY = "BetterPinDMsCategories-";
 
-const PrivateChannelSortStore = findStoreLazy("PrivateChannelSortStore") as { getPrivateChannelIds: () => string[]; };
 
 export let categories: Category[] = [];
 
 export async function saveCats(cats: Category[]) {
     const { id } = UserStore.getCurrentUser();
-    await DataStore.set(KEYS.CATEGORY_BASE_KEY + id, cats);
+    await DataStore.set(CATEGORY_BASE_KEY + id, cats);
+}
+
+export async function init() {
+    const id = UserStore.getCurrentUser()?.id;
+    await initCategories(id);
+    await migrateData(id);
+    forceUpdate();
 }
 
 export async function initCategories(userId: string) {
-    const cats = await DataStore.get<Category[]>(KEYS.CATEGORY_BASE_KEY + userId) ?? [];
-
-    // so we dont have to keep checking if the user has the setting enabled
-    categories = cats.map(m => ({
-        ...m,
-        get channels() {
-            return settings.store.sortDmsByNewestMessage ? PrivateChannelSortStore.getPrivateChannelIds().filter(c => m.channels.includes(c)) : m.channels;
-        },
-
-        set channels(value) {
-            m.channels = value;
-        }
-    }));
+    categories = await DataStore.get<Category[]>(CATEGORY_BASE_KEY + userId) ?? [];
 }
 
 export function getCategory(id: string) {
@@ -101,7 +92,7 @@ export async function collapseCategory(id: string, value = true) {
     const category = categories.find(c => c.id === id);
     if (!category) return;
 
-    category.colapsed = value;
+    category.collapsed = value;
     await saveCats(categories);
 }
 
@@ -114,8 +105,8 @@ export function categoryLen() {
     return categories.length;
 }
 
-export function getAllUncolapsedChannels() {
-    return categories.filter(c => !c.colapsed).map(c => c.channels).flat();
+export function getAllUncollapsedChannels() {
+    return categories.filter(c => !c.collapsed).map(c => c.channels).flat();
 }
 
 export function getSections() {
@@ -183,7 +174,7 @@ const getPinDMsPins = () => (Settings.plugins.PinDMs.pinnedDMs || void 0)?.split
 
 async function migratePinDMs() {
     if (categories.some(m => m.id === "oldPins")) {
-        return await DataStore.set(KEYS.CATEGORY_MIGRATED_PINDMS_KEY, true);
+        return await DataStore.set(CATEGORY_MIGRATED_PINDMS_KEY, true);
     }
 
     const pindmspins = getPinDMsPins();
@@ -199,20 +190,20 @@ async function migratePinDMs() {
         });
     }
 
-    await DataStore.set(KEYS.CATEGORY_MIGRATED_PINDMS_KEY, true);
+    await DataStore.set(CATEGORY_MIGRATED_PINDMS_KEY, true);
 }
 
 async function migrateOldCategories(userId: string) {
-    const oldCats = await DataStore.get<Category[]>(KEYS.OLD_CATEGORY_KEY + userId);
+    const oldCats = await DataStore.get<Category[]>(OLD_CATEGORY_KEY + userId);
     // dont want to migrate if the user has already has categories.
     if (categories.length === 0 && oldCats?.length) {
         categories.push(...(oldCats.filter(m => m.id !== "oldPins")));
     }
-    await DataStore.set(KEYS.CATEGORY_MIGRATED_KEY, true);
+    await DataStore.set(CATEGORY_MIGRATED_KEY, true);
 }
 
 export async function migrateData(userId: string) {
-    const m1 = await DataStore.get(KEYS.CATEGORY_MIGRATED_KEY), m2 = await DataStore.get(KEYS.CATEGORY_MIGRATED_PINDMS_KEY);
+    const m1 = await DataStore.get(CATEGORY_MIGRATED_KEY), m2 = await DataStore.get(CATEGORY_MIGRATED_PINDMS_KEY);
     if (m1 && m2) return;
 
     // want to migrate the old categories first and then slove any conflicts with the PinDMs pins

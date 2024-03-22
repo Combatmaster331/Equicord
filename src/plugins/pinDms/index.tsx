@@ -6,18 +6,19 @@
 
 import "./styles.css";
 
-import { definePluginSettings, Settings } from "@api/Settings";
+import { definePluginSettings } from "@api/Settings";
+import ErrorBoundary from "@components/ErrorBoundary";
 import { Devs } from "@utils/constants";
 import { classes } from "@utils/misc";
-import definePlugin, { OptionType } from "@utils/types";
-import { findByPropsLazy, waitFor } from "@webpack";
-import { ContextMenuApi, FluxDispatcher, Menu, React, UserStore } from "@webpack/common";
+import definePlugin, { OptionType, StartAt } from "@utils/types";
+import { findByPropsLazy, findStoreLazy } from "@webpack";
+import { ContextMenuApi, FluxDispatcher, Menu, React } from "@webpack/common";
 import { Channel } from "discord-types/general";
 
 import { contextMenus } from "./components/contextMenu";
 import { openCategoryModal, requireSettingsMenu } from "./components/CreateCategoryModal";
 import { DEFAULT_CHUNK_SIZE } from "./constants";
-import { canMoveCategory, canMoveCategoryInDirection, categories, categoryLen, collapseCategory, getAllUncolapsedChannels, getSections, initCategories, isPinned, migrateData, moveCategory, removeCategory } from "./data";
+import { canMoveCategory, canMoveCategoryInDirection, categories, Category, categoryLen, collapseCategory, getAllUncollapsedChannels, getSections, init, isPinned, moveCategory, removeCategory } from "./data";
 
 interface ChannelComponentProps {
     children: React.ReactNode,
@@ -25,29 +26,25 @@ interface ChannelComponentProps {
     selected: boolean;
 }
 
+
 const headerClasses = findByPropsLazy("privateChannelsHeaderContainer");
+
+const PrivateChannelSortStore = findStoreLazy("PrivateChannelSortStore") as { getPrivateChannelIds: () => string[]; };
 
 export let instance: any;
 export const forceUpdate = () => instance?.props?._forceUpdate?.();
-
-// the flux property in definePlugin doenst fire, probably because startAt isnt Init
-waitFor(["dispatch", "subscribe"], m => {
-    m.subscribe("CONNECTION_OPEN", async () => {
-        if (!Settings.plugins.PinDMs?.enabled) return;
-
-        const id = UserStore.getCurrentUser()?.id;
-        await initCategories(id);
-        await migrateData(id);
-        forceUpdate();
-        // dont want to unsubscribe because if they switch accounts we want to reinit
-    });
-});
-
 
 export const settings = definePluginSettings({
     sortDmsByNewestMessage: {
         type: OptionType.BOOLEAN,
         description: "Sort DMs by newest message",
+        default: false,
+        onChange: () => forceUpdate()
+    },
+
+    dmSectioncollapsed: {
+        type: OptionType.BOOLEAN,
+        description: "Collapse DM sections",
         default: false,
         onChange: () => forceUpdate()
     }
@@ -66,8 +63,8 @@ export default definePlugin({
             replacement: [
                 // Init
                 {
-                    match: /componentDidMount\(\){/,
-                    replace: "$&$self._instance = this;"
+                    match: /(?<=componentDidMount\(\){).{1,100}scrollToChannel/,
+                    replace: "$self._instance = this;$&"
                 },
                 {
                     // Filter out pinned channels from the private channel list
@@ -83,17 +80,21 @@ export default definePlugin({
                 // Rendering
                 {
                     match: /this\.renderDM=\(.+?(\i\.default),{channel.+?this.renderRow=(\i)=>{/,
-                    replace: "$&if($self.isCategoryIndex($2.section))return $self.renderChannel($2.section,$2.row,$1);"
+                    replace: "$&if($self.isChannelIndex($2.section, $2.row))return $self.renderChannel($2.section,$2.row,$1);"
                 },
                 {
                     match: /this\.renderSection=(\i)=>{/,
                     replace: "$&if($self.isCategoryIndex($1.section))return $self.renderCategory($1);"
                 },
+                {
+                    match: /(?<=span",{)className:\i\.headerText,/,
+                    replace: "...$self.makeSpanProps(),$&"
+                },
 
                 // Fix Row Height
                 {
-                    match: /(this\.getRowHeight=.{1,100}return 1===)(\i)/,
-                    replace: "$1($2-$self.categoryLen())"
+                    match: /(?<=this\.getRowHeight=.{1,100}return 1===)\i/,
+                    replace: "($&-$self.categoryLen())"
                 },
                 {
                     match: /this.getRowHeight=\((\i),(\i)\)=>{/,
@@ -108,7 +109,7 @@ export default definePlugin({
                 },
                 {
                     match: /(?<=scrollToChannel\(\i\){.{1,300})this\.props\.privateChannelIds/,
-                    replace: "[...$&,...$self.getAllUncolapsedChannels()]"
+                    replace: "[...$&,...$self.getAllUncollapsedChannels()]"
                 },
 
             ]
@@ -120,8 +121,8 @@ export default definePlugin({
         {
             find: ".FRIENDS},\"friends\"",
             replacement: {
-                match: /(\i=\i=>{)(.{1,850})showDMHeader:/,
-                replace: "$1let forceUpdate = Vencord.Util.useForceUpdater();$2_forceUpdate:forceUpdate,showDMHeader:"
+                match: /(?<=\i=\i=>{).{1,100}premiumTabSelected.{1,800}showDMHeader:.+?,/,
+                replace: "let forceUpdate = Vencord.Util.useForceUpdater();$&_forceUpdate:forceUpdate,"
             }
         },
 
@@ -132,7 +133,7 @@ export default definePlugin({
                 // channelIds = __OVERLAY__ ? stuff : [...getStaticPaths(),...channelIds)]
                 match: /(?<=\i=__OVERLAY__\?\i:\[\.\.\.\i\(\),\.\.\.)\i/,
                 // ....concat(pins).concat(toArray(channelIds).filter(c => !isPinned(c)))
-                replace: "$self.getAllUncolapsedChannels().concat($&.filter(c=>!$self.isPinned(c)))"
+                replace: "$self.getAllUncollapsedChannels().concat($&.filter(c=>!$self.isPinned(c)))"
             }
         },
 
@@ -141,7 +142,7 @@ export default definePlugin({
             find: ".getFlattenedGuildIds()],",
             replacement: {
                 match: /(?<=\i===\i\.ME\?)\i\.\i\.getPrivateChannelIds\(\)/,
-                replace: "$self.getAllUncolapsedChannels().concat($&.filter(c=>!$self.isPinned(c)))"
+                replace: "$self.getAllUncollapsedChannels().concat($&.filter(c=>!$self.isPinned(c)))"
             }
         },
     ],
@@ -152,19 +153,21 @@ export default definePlugin({
         instance = i;
     },
 
+    startAt: StartAt.WebpackReady,
+    start: init,
+    flux: {
+        CONNECTION_OPEN: init,
+    },
+
     isPinned,
     categoryLen,
     getSections,
-    getAllUncolapsedChannels,
-
-    start() {
-        requireSettingsMenu();
-    },
-
+    getAllUncollapsedChannels,
+    requireSettingsMenu,
     makeProps(instance, { sections }: { sections: number[]; }) {
         this.sections = sections;
 
-        this.sections.splice(1, 0, ...this.usePinCount(instance.props.privateChannelIds || []));
+        this.sections.splice(1, 0, ...this.getPinCount(instance.props.privateChannelIds || []));
 
         if (this.instance?.props?.privateChannelIds?.length === 0) {
             this.sections[this.sections.length - 1] = 0;
@@ -173,6 +176,14 @@ export default definePlugin({
         return {
             sections: this.sections,
             chunkSize: this.getChunkSize(),
+        };
+    },
+
+    makeSpanProps() {
+        return {
+            onClick: () => this.collapseDMList(),
+            role: "button",
+            style: { cursor: "pointer" }
         };
     },
 
@@ -188,7 +199,7 @@ export default definePlugin({
         return (sectionHeaderSizePx + sections.reduce((acc, v) => acc += v + 44, 0) + DEFAULT_CHUNK_SIZE) * 1.5;
     },
 
-    usePinCount(channelIds: string[]) {
+    getPinCount(channelIds: string[]) {
         return channelIds.length ? this.getSections() : [];
     },
 
@@ -197,40 +208,58 @@ export default definePlugin({
     },
 
     isChannelIndex(sectionIndex: number, channelIndex: number) {
-        return this.isCategoryIndex(sectionIndex) && categories[sectionIndex - 1]?.channels[channelIndex];
+        if (settings.store.dmSectioncollapsed && sectionIndex !== 0)
+            return true;
+        const cat = categories[sectionIndex - 1];
+        return this.isCategoryIndex(sectionIndex) && (cat.channels.length === 0 || cat?.channels[channelIndex]);
+    },
+
+    isDMSectioncollapsed() {
+        return settings.store.dmSectioncollapsed;
+    },
+
+    collapseDMList() {
+        // console.log("HI");
+        settings.store.dmSectioncollapsed = !settings.store.dmSectioncollapsed;
+        forceUpdate();
     },
 
     isChannelHidden(categoryIndex: number, channelIndex: number) {
+        if (categoryIndex === 0) return false;
+
+        if (settings.store.dmSectioncollapsed && this.getSections().length + 1 === categoryIndex)
+            return true;
+
         if (!this.instance || !this.isChannelIndex(categoryIndex, channelIndex)) return false;
 
         const category = categories[categoryIndex - 1];
         if (!category) return false;
 
-        return category.colapsed && this.instance.props.selectedChannelId !== category.channels[channelIndex];
+        return category.collapsed && this.instance.props.selectedChannelId !== category.channels[channelIndex];
     },
 
     getScrollOffset(channelId: string, rowHeight: number, padding: number, preRenderedChildren: number, originalOffset: number) {
         if (!isPinned(channelId))
             return (
                 (rowHeight + padding) * 2 // header
-                + rowHeight * this.getAllUncolapsedChannels().length // pins
+                + rowHeight * this.getAllUncollapsedChannels().length // pins
                 + originalOffset // original pin offset minus pins
             );
 
-        return rowHeight * (this.getAllUncolapsedChannels().indexOf(channelId) + preRenderedChildren) + padding;
+        return rowHeight * (this.getAllUncollapsedChannels().indexOf(channelId) + preRenderedChildren) + padding;
     },
 
-    renderCategory({ section }: { section: number; }) {
+    renderCategory: ErrorBoundary.wrap(({ section }: { section: number; }) => {
         const category = categories[section - 1];
 
         if (!category) return null;
 
         return (
             <h2
-                className={classes(headerClasses.privateChannelsHeaderContainer, "vc-pindms-section-container", category.colapsed ? "vc-pindms-colapsed" : "")}
+                className={classes(headerClasses.privateChannelsHeaderContainer, "vc-pindms-section-container", category.collapsed ? "vc-pindms-collapsed" : "")}
                 style={{ color: `#${category.color.toString(16).padStart(6, "0")}` }}
                 onClick={async () => {
-                    await collapseCategory(category.id, !category.colapsed);
+                    await collapseCategory(category.id, !category.collapsed);
                     forceUpdate();
                 }}
                 onContextMenu={e => {
@@ -285,37 +314,46 @@ export default definePlugin({
                 <span className={headerClasses.headerText}>
                     {category?.name ?? "uh oh"}
                 </span>
-                <svg className="vc-pindms-colapse-icon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <svg className="vc-pindms-collapse-icon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                     <path fill="currentColor" d="M9.3 5.3a1 1 0 0 0 0 1.4l5.29 5.3-5.3 5.3a1 1 0 1 0 1.42 1.4l6-6a1 1 0 0 0 0-1.4l-6-6a1 1 0 0 0-1.42 0Z"></path>
                 </svg>
             </h2>
         );
-    },
+    }),
 
     renderChannel(sectionIndex: number, index: number, ChannelComponent: React.ComponentType<ChannelComponentProps>) {
         const { channel, category } = this.getChannel(sectionIndex, index, this.instance.props.channels);
 
         if (!channel || !category) return null;
-        const selected = this.instance.props.selectedChannelId === channel.id;
-
-        if (!selected && category.colapsed) return null;
+        if (this.isChannelHidden(sectionIndex, index)) return null;
 
         return (
             <ChannelComponent
                 channel={channel}
-                selected={selected}
+                selected={this.instance.props.selectedChannelId === channel.id}
             >
                 {channel.id}
             </ChannelComponent>
         );
     },
 
+
     getChannel(sectionIndex: number, index: number, channels: Record<string, Channel>) {
         const category = categories[sectionIndex - 1];
         if (!category) return { channel: null, category: null };
 
-        const channelId = category.channels[index];
+        const channelId = this.getCategoryChannels(category)[index];
 
         return { channel: channels[channelId], category };
+    },
+
+    getCategoryChannels(category: Category) {
+        if (category.channels.length === 0) return [];
+
+        if (settings.store.sortDmsByNewestMessage) {
+            return PrivateChannelSortStore.getPrivateChannelIds().filter(c => category.channels.includes(c));
+        }
+
+        return category?.channels ?? [];
     }
 });
