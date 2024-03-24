@@ -28,7 +28,7 @@ export default definePlugin({
             find: "multiaccount_cta_tooltip_seen",
             replacement: {
                 match: /(let \i=)/,
-                replace: "$1Infinity",
+                replace: "$1Infinity$2",
             },
         },
     ],
