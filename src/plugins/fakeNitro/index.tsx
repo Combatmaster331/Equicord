@@ -407,7 +407,7 @@ export default definePlugin({
 
     handleProtoChange(proto: any, user: any) {
         if (proto == null || typeof proto === "string" || !UserSettingsProtoStore || !PreloadedUserSettingsActionCreators || !AppearanceSettingsActionCreators || !ClientThemeSettingsActionsCreators) return;
-
+        //@ts-ignore
         const premiumType: number = user._realPremiumType ?? user?.premium_type ?? UserStore?.getCurrentUser()?.premiumType ?? 0;
 
         if (premiumType !== 2) {
