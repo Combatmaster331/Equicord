@@ -39,7 +39,7 @@ export default definePlugin({
         if ("_realPremiumType" in user) return;
 
         user._realPremiumType = user.premiumType ?? 0;
-        user.premiumType = 2;
+        user.premiumType = 1;
         lastUserId = user.id;
     },
 
