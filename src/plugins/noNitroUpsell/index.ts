@@ -63,7 +63,7 @@ export default definePlugin({
         if (!("_realPremiumType" in user)) return;
         UserStore?.getCurrentUser()?.premiumType;
         //@ts-ignore
-        user.premiumType = UserStore?.getCurrentUser()?._realPremiumType;
+        user.premiumType = user._realPremiumType;
         delete user._realPremiumType;
     }
 });
