@@ -397,7 +397,7 @@ export default definePlugin({
 
     get canUseEmotes() {
         //@ts-ignore
-        return (UserStore?.getCurrentUser()?._realPremiumType ?? UserStore?.getCurrentUser()?.premiumType ?? 0) > 0;
+        return (UserStore?.getCurrentUser()?._realPremiumType ?? UserStore?.getCurrentUser().premiumType ?? 0) > 0;
     },
 
     get canUseStickers() {

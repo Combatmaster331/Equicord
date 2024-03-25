@@ -62,7 +62,8 @@ export default definePlugin({
         if (!user) return;
         if (!("_realPremiumType" in user)) return;
         UserStore?.getCurrentUser()?.premiumType;
-        // Will fix this eventually as it breaks fake nitro
-        //delete user._realPremiumType;
+        //@ts-ignore
+        user.premiumType = UserStore?.getCurrentUser()?._realPremiumType;
+        delete user._realPremiumType;
     }
 });
