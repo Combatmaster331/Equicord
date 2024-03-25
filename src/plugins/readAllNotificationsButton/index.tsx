@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import "./style.css";
 import { addServerListElement, removeServerListElement, ServerListRenderPosition } from "@api/ServerList";
 import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
@@ -50,14 +51,14 @@ const ReadAllButton = () => (
         onClick={onClick}
         size={Button.Sizes.MIN}
         color={Button.Colors.BRAND}
-        style={{ marginTop: "2px", marginBottom: "8px", marginLeft: "9px" }}
+        className="vc-readAllNotis-button"
     >Read all</Button>
 );
 
 export default definePlugin({
     name: "ReadAllNotificationsButton",
     description: "Read all server notifications with a single button click!",
-    authors: [Devs.kemo],
+    authors: [Devs.kemo, Devs.KrystalSkull],
     dependencies: ["ServerListAPI"],
 
     renderReadAllButton: () => <ReadAllButton />,
