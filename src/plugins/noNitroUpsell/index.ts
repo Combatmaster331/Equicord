@@ -33,7 +33,6 @@ export default definePlugin({
     name: "NoNitroUpsell",
     description: "Removes ALL of Discord's nitro upsells by tricking the client into thinking you have nitro.",
     authors: [Devs.thororen],
-
     ready(user: ModifiedUser): void {
         if (!user) return;
         if ("_realPremiumType" in user) return;
@@ -42,7 +41,6 @@ export default definePlugin({
         user.premiumType = 2;
         lastUserId = user.id;
     },
-
     start(): void {
         user = UserStore.getCurrentUser();
         if (user) this.ready(user);
@@ -58,13 +56,13 @@ export default definePlugin({
         UserStore.addChangeListener(onChange);
         uninject = () => UserStore.removeChangeListener(onChange);
     },
-
     stop(): void {
         uninject?.();
         const user = UserStore.getCurrentUser();
         if (!user) return;
         if (!("_realPremiumType" in user)) return;
         UserStore?.getCurrentUser()?.premiumType;
-        delete user._realPremiumType;
+        // Will fix this eventually as it breaks fake nitro
+        //delete user._realPremiumType;
     }
 });
