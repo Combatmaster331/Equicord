@@ -110,7 +110,7 @@ const DefaultSettings: Settings = {
 
     cloud: {
         authenticated: false,
-        url: "https://equicord.patrickdk.com/",
+        url: "https://api.vencord.dev/",
         settingsSync: false,
         settingsSyncVersion: 0
     },

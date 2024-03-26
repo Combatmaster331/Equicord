@@ -18,68 +18,9 @@
 
 import { findGroupChildrenByChildId } from "@api/ContextMenu";
 import { definePluginSettings } from "@api/Settings";
-import ErrorBoundary from "@components/ErrorBoundary";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
-import { findByPropsLazy } from "@webpack";
-import { Button, i18n, Menu, Tooltip, useEffect, useState } from "@webpack/common";
-
-const ChannelRowClasses = findByPropsLazy("modeConnected", "modeLocked", "icon");
-
-let currentShouldViewServerHome = false;
-const shouldViewServerHomeStates = new Set<React.Dispatch<React.SetStateAction<boolean>>>();
-
-function ViewServerHomeButton() {
-    return (
-        <Tooltip text="View Server Home">
-            {tooltipProps => (
-                <Button
-                    {...tooltipProps}
-                    look={Button.Looks.BLANK}
-                    size={Button.Sizes.NONE}
-                    innerClassName={ChannelRowClasses.icon}
-                    onClick={e => {
-                        e.preventDefault();
-
-                        currentShouldViewServerHome = true;
-                        for (const setState of shouldViewServerHomeStates) {
-                            setState(true);
-                        }
-                    }}
-
-                >
-                    <svg width="20" height="20" viewBox="0 0 24 24">
-                        <path fill="currentColor" d="m2.4 8.4 8.38-6.46a2 2 0 0 1 2.44 0l8.39 6.45a2 2 0 0 1-.79 3.54l-.32.07-.82 8.2a2 2 0 0 1-1.99 1.8H16a1 1 0 0 1-1-1v-5a3 3 0 0 0-6 0v5a1 1 0 0 1-1 1H6.31a2 2 0 0 1-1.99-1.8L3.5 12l-.32-.07a2 2 0 0 1-.79-3.54Z" />
-                    </svg>
-                </Button>
-            )}
-        </Tooltip>
-    );
-}
-
-function useForceServerHome() {
-    const { forceServerHome } = settings.use(["forceServerHome"]);
-    const [shouldViewServerHome, setShouldViewServerHome] = useState(currentShouldViewServerHome);
-
-    useEffect(() => {
-        shouldViewServerHomeStates.add(setShouldViewServerHome);
-
-        return () => {
-            shouldViewServerHomeStates.delete(setShouldViewServerHome);
-        };
-    }, []);
-
-    return shouldViewServerHome || forceServerHome;
-}
-
-function useDisableViewServerHome() {
-    useEffect(() => () => {
-        currentShouldViewServerHome = false;
-        for (const setState of shouldViewServerHomeStates) {
-            setState(false);
-        }
-    }, []);
-}
+import { Menu } from "@webpack/common";
 
 const settings = definePluginSettings({
     forceServerHome: {
@@ -88,6 +29,12 @@ const settings = definePluginSettings({
         default: false
     }
 });
+
+function useForceServerHome() {
+    const { forceServerHome } = settings.use(["forceServerHome"]);
+
+    return forceServerHome;
+}
 
 export default definePlugin({
     name: "ResurrectHome",
@@ -145,37 +92,14 @@ export default definePlugin({
                 match: /(?<=getMutableGuildChannelsForGuild\(\i\)\);)(?=if\(null==\i\|\|)/,
                 replace: "if($self.useForceServerHome())return false;"
             }
-        },
-        // Add View Server Home Button to Server Guide
-        {
-            find: [".unreadImportant)", "text:"],
-            replacement: {
-                match: /\.name,.+?}\),\i/,
-                replace: "$&,$self.ViewServerHomeButton(arguments[0])"
-            }
-        },
-        // Disable view Server Home override when the Server Home is unmouted
-        {
-            find: "69386d_5",
-            replacement: {
-                match: /location:"69386d_5".+?;/,
-                replace: "$&$self.useDisableViewServerHome();"
-            }
         }
     ],
 
-    ViewServerHomeButton: ErrorBoundary.wrap(({ text }: { text?: string; }) => {
-        if (text == null || text !== i18n.Messages.SERVER_GUIDE) return null;
-
-        return <ViewServerHomeButton />;
-    }),
-
     useForceServerHome,
-    useDisableViewServerHome,
 
     contextMenus: {
         "guild-context"(children, props) {
-            const { forceServerHome } = settings.use(["forceServerHome"]);
+            const forceServerHome = useForceServerHome();
 
             if (!props?.guild) return;
 
