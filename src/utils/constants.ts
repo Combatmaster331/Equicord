@@ -531,8 +531,8 @@ export const Devs = /* #__PURE__*/ Object.freeze({
         id: 929208515883569182n
     },
     puv: {
-        id: 469441552251355137n,
         name: "puv",
+        id: 469441552251355137n
     },
 } satisfies Record<string, Dev>);
 
