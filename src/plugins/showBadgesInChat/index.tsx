@@ -10,11 +10,11 @@ import { Devs } from "@utils/constants";
 import { isPluginDev } from "@utils/misc";
 import definePlugin, { OptionType } from "@utils/types";
 import { findByProps } from "@webpack";
-import { useEffect, useState } from "@webpack/common";
+
+import BadgeApi from "../../plugins/_api/badges";
 
 let RoleIconComponent: React.ComponentType<any> = () => null;
 let roleIconClassName = "";
-let VencordBadges, EquicordBadges = {} as Record<string, Array<Record<"tooltip" | "badge", string>>>;
 
 const discordBadges: readonly [number, string, string][] = Object.freeze([
     [0, "Discord Staff", "5e74e9b61934fc1f67c65515d1f7e60d"],
@@ -31,70 +31,19 @@ const discordBadges: readonly [number, string, string][] = Object.freeze([
     [18, "Moderator Programs Alumni", "fee1624003e2fee35cb398e125dc479b"]
 ]);
 
-function useVencordDonorBadges(userID: string) {
-    const [vencordDonorBadges, setVencordDonorBadges] = useState<[string, string][]>([]);
-    VencordBadges = {};
-    useEffect(() => {
-        fetch("https://badges.vencord.dev/badges.json")
-            .then(res => res.json())
-            .then(data => {
-                VencordBadges = { ...data };
-                setVencordDonorBadges(VencordBadges[userID]?.map(m => [m.tooltip, m.badge]));
-            })
-            .catch(e => { console.error(e); });
-    }, []);
-
-    return vencordDonorBadges;
-}
-
 function vencordDonorChatBadges(userID: string) {
-    const vencordDonorBadges = useVencordDonorBadges(userID);
-
-    return vencordDonorBadges ? [
+    return [
         <span style={{ order: settings.store.VencordDonorBadgesPosition }}>
-            {vencordDonorBadges.map(badge =>
+            {BadgeApi.getDonorBadges(userID)?.map(badge =>
                 <RoleIconComponent
                     className={roleIconClassName}
-                    name={badge[0]}
+                    name={badge.description}
                     size={20}
-                    src={badge[1]}
+                    src={badge.image}
                 />
             )}
         </span>
-    ] : [];
-}
-
-function useEquicordDonorBadges(userID: string) {
-    const [equicordDonorBadges, setEquicordDonorBadges] = useState<[string, string][]>([]);
-    EquicordBadges = {};
-    useEffect(() => {
-        fetch("https://raw.githubusercontent.com/Equicord/Ignore/main/badgesShow.json")
-            .then(res => res.json())
-            .then(data => {
-                EquicordBadges = { ...data };
-                setEquicordDonorBadges(EquicordBadges[userID]?.map(m => [m.tooltip, m.badge]));
-            })
-            .catch(e => { console.error(e); });
-    }, []);
-
-    return equicordDonorBadges;
-}
-
-function equicordDonorChatBadges(userID: string) {
-    const equicordDonorBadges = useEquicordDonorBadges(userID);
-
-    return equicordDonorBadges ? [
-        <span style={{ order: settings.store.EquicordDonorBadgesPosition }}>
-            {equicordDonorBadges.map(badge =>
-                <RoleIconComponent
-                    className={roleIconClassName}
-                    name={badge[0]}
-                    size={20}
-                    src={badge[1]}
-                />
-            )}
-        </span>
-    ] : [];
+    ];
 }
 
 function vencordEquicordContributorChatBadge(userID: string) {
@@ -147,7 +96,6 @@ function discordNitroChatBadge(userPremiumType: number) {
 function ChatBadges({ author }) {
     const chatBadges = [
         ...settings.store.showVencordDonorBadges ? vencordDonorChatBadges(author.id) : [],
-        ...settings.store.showEquicordDonorBadges ? equicordDonorChatBadges(author.id) : [],
         ...settings.store.showVencordEquicordContributorBadges ? vencordEquicordContributorChatBadge(author.id) : [],
         ...settings.store.showDiscordProfileBadges ? discordProfileChatBadges(author.flags || author.publicFlags) : [],
         ...settings.store.showDiscordNitroBadges ? discordNitroChatBadge(author.premiumType) : []
@@ -171,16 +119,6 @@ const settings = definePluginSettings({
         description: "The position of the Equicord Donor badges.",
         default: 0
     },
-    showEquicordDonorBadges: {
-        type: OptionType.BOOLEAN,
-        description: "Enable to show Equicord donor badges in chat.",
-        default: true
-    },
-    EquicordDonorBadgesPosition: {
-        type: OptionType.NUMBER,
-        description: "The position of the Equicord Donor badges.",
-        default: 1
-    },
     showVencordEquicordContributorBadges: {
         type: OptionType.BOOLEAN,
         description: "Enable to show Vencord/Equicord contributor badges in chat.",
@@ -189,7 +127,7 @@ const settings = definePluginSettings({
     vencordEquicordContributorBadgePosition: {
         type: OptionType.NUMBER,
         description: "The position of the Vencord/Equicord Contributor badge.",
-        default: 2
+        default: 1
     },
     showDiscordProfileBadges: {
         type: OptionType.BOOLEAN,
@@ -199,7 +137,7 @@ const settings = definePluginSettings({
     discordProfileBadgesPosition: {
         type: OptionType.NUMBER,
         description: "The position of the Discord profile badges.",
-        default: 3
+        default: 2
     },
     showDiscordNitroBadges: {
         type: OptionType.BOOLEAN,
@@ -209,7 +147,7 @@ const settings = definePluginSettings({
     discordNitroBadgePosition: {
         type: OptionType.NUMBER,
         description: "The position of the Discord Nitro badge.",
-        default: 4
+        default: 3
     }
 });
 
