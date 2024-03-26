@@ -526,13 +526,13 @@ export const Devs = /* #__PURE__*/ Object.freeze({
         name: "Inbestigator",
         id: 761777382041714690n
     },
+    coolesding: {
+        name: "cooles",
+        id: 406084422308331522n,
+    },
     KrystalSkull: {
         name: "krystalskullofficial",
         id: 929208515883569182n
-    },
-    puv: {
-        name: "puv",
-        id: 469441552251355137n
     },
 } satisfies Record<string, Dev>);
 
