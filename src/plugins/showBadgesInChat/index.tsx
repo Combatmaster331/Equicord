@@ -153,7 +153,7 @@ const settings = definePluginSettings({
 
 export default definePlugin({
     name: "ShowBadgesInChat",
-    authors: [Devs.Shalev, Devs.fres, Devs.ryan],
+    authors: [Devs.Shalev, Devs.fres, Devs.ryan, Devs.KrystalSkull],
     description: "Shows profile badges in chat. Shoutout krystalskullofficial for the idea.",
     dependencies: ["MessageDecorationsAPI"],
     patches: [
