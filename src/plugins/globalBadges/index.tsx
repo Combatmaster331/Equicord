@@ -112,7 +112,6 @@ export default definePlugin({
     name: "GlobalBadges",
     description: "Adds global badges from other client mods",
     authors: [Devs.HypedDomi, Devs.Wolfie],
-    required: true,
 
     start: () => addBadge(Badge),
     stop: () => removeBadge(Badge),

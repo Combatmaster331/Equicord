@@ -34,7 +34,6 @@ export default definePlugin({
     name: "UserPFP",
     description: "Allows you to use an animated avatar without Nitro",
     authors: [Devs.nexpid, Devs.thororen, Devs.FoxStorm1, Devs.coolesding],
-    required: true,
     settings,
     settingsAboutComponent: () => (
         <Link href="https://userpfp.github.io/UserPFP/#how-to-request-a-profile-picture-pfp">
