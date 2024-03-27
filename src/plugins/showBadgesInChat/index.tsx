@@ -10,9 +10,10 @@ import { Devs } from "@utils/constants";
 import { isPluginDev } from "@utils/misc";
 import definePlugin, { OptionType } from "@utils/types";
 import { findByProps } from "@webpack";
-import BadgeApi from "../../plugins/_api/badges";
 import { React } from "@webpack/common";
-import { CustomBadge, BadgeCache } from "./types";
+
+import BadgeApi from "../../plugins/_api/badges";
+import { BadgeCache } from "./types";
 
 let RoleIconComponent: React.ComponentType<any> = () => null;
 let roleIconClassName = "";
