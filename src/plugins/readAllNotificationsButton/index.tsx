@@ -49,9 +49,13 @@ const ReadAllButton = () => (
     <Button
         onClick={onClick}
         size={Button.Sizes.MIN}
+        style={{
+            color: "var(--interactive-normal)",
+            backgroundColor: "var(--background-tertiary)",
+            borderRadius: "5px",
+            margin: "2px 0 8px 9px"
+        }}
         className="vc-readAllNotis-button"
-        color={Button.Colors.PRIMARY}
-        background-color={Button.Colors.TRANSPARENT}
     >Read All</Button>
 );
 
