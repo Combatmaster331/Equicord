@@ -16,7 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import "./style.css";
 import { addServerListElement, removeServerListElement, ServerListRenderPosition } from "@api/ServerList";
 import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
@@ -50,9 +49,10 @@ const ReadAllButton = () => (
     <Button
         onClick={onClick}
         size={Button.Sizes.MIN}
-        color={Button.Colors.BRAND}
         className="vc-readAllNotis-button"
-    >Read all</Button>
+        color={Button.Colors.PRIMARY}
+        background-color={Button.Colors.TRANSPARENT}
+    >Read All</Button>
 );
 
 export default definePlugin({
