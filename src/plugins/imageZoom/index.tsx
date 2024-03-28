@@ -168,7 +168,7 @@ export default definePlugin({
         },
 
         {
-            find: "handleImageLoad=",
+            find: ".handleImageLoad)",
             replacement: [
                 {
                     match: /placeholderVersion:\i,/,

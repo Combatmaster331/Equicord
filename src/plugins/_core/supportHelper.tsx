@@ -46,14 +46,14 @@ export default definePlugin({
 
     commands: [{
         name: "equicord-debug",
-        description: "Send Vencord Debug info",
+        description: "Send Equicord Debug info",
         predicate: ctx => AllowedChannelIds.includes(ctx.channel.id),
         async execute() {
             const { RELEASE_CHANNEL } = window.GLOBAL_ENV;
 
             const client = (() => {
                 if (IS_DISCORD_DESKTOP) return `Discord Desktop v${DiscordNative.app.getVersion()}`;
-                if (IS_VESKTOP) return `Vesktop v${VesktopNative.app.getVersion()}`;
+                if (IS_VESKTOP) return `Vesktop w Equicord v${VesktopNative.app.getVersion()}`;
                 if ("armcord" in window) return `ArmCord v${window.armcord.version}`;
 
                 // @ts-expect-error
@@ -80,7 +80,7 @@ export default definePlugin({
             }
 
             const debugInfo = `
-**Vencord Debug Info**
+**Equicord Debug Info**
 >>> ${Object.entries(info).map(([k, v]) => `${k}: ${v}`).join("\n")}
 
 Enabled Plugins (${enabledPlugins.length + enabledApiPlugins.length}):
