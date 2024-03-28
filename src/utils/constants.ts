@@ -462,7 +462,7 @@ export const Devs = /* #__PURE__*/ Object.freeze({
         name: "0xGingi",
         id: 351859727568994314n,
     },
-    Kyuu: {
+    Kyuuhachi: {
         name: "Kyuuhachi",
         id: 236588665420251137n,
     },

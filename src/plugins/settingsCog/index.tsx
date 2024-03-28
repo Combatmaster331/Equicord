@@ -7,7 +7,7 @@ type SettingsEntry = { section: string, label: string; };
 export default definePlugin({
     name: "SettingsCog",
     description: "Adds categories when right-clicking the settings cog. It's way too long.",
-    authors: [Devs.Kyuu],
+    authors: [Devs.Kyuuhachi],
 
     patches: [
         {
