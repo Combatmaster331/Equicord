@@ -36,7 +36,7 @@ function Sep(props: HTMLAttributes<HTMLElement>) {
 export default definePlugin({
     name: "ReplyTimestamp",
     description: "Shows a timestamp on replied-message previews",
-    authors: [Devs.Kyuu],
+    authors: [Devs.Kyuuhachi],
 
     patches: [
         {

@@ -1,10 +1,11 @@
+
 /*
  * Vencord, a Discord client mod
  * Copyright (c) 2024 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { definePluginSettings, migratePluginSettings } from "@api/Settings";
+import { definePluginSettings } from "@api/Settings";
 import { classNameFactory } from "@api/Styles";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { Devs } from "@utils/constants";
@@ -71,11 +72,10 @@ function Layer({ mode, baseLayer = false, ...props }: LayerProps) {
         : <FocusLock containerRef={containerRef}>{node}</FocusLock>;
 }
 
-migratePluginSettings("BetterSettings", "FastMenu");
 export default definePlugin({
     name: "BetterSettings",
     description: "Enhances your settings-menu-opening experience",
-    authors: [Devs.Kyuu],
+    authors: [Devs.Kyuuhachi],
     settings,
 
     patches: [
@@ -83,7 +83,7 @@ export default definePlugin({
             find: "this.renderArtisanalHack()",
             replacement: [
                 { // Fade in on layer
-                    match: /(?<=(\i)\.contextType=\i\.AccessibilityPreferencesContext;)/,
+                    match: /(?<=\((\i),"contextType",\i\.AccessibilityPreferencesContext\);)/,
                     replace: "$1=$self.Layer;",
                     predicate: () => settings.store.disableFade
                 },
@@ -108,11 +108,11 @@ export default definePlugin({
             ],
             predicate: () => settings.store.disableFade
         },
-        { // Load menu stuff on hover, not on click
+        { // Load menu TOC eagerly
             find: "Messages.USER_SETTINGS_WITH_BUILD_OVERRIDE.format",
             replacement: {
-                match: /(?<=handleOpenSettingsContextMenu.{0,250}?\i\.el\(("[^"]+")\)\.then\([^;]*?("\d+").*?Messages\.USER_SETTINGS,)(?=onClick:)/,
-                replace: "onMouseEnter(){Vencord.Webpack.wreq.el($1).then(()=>Vencord.Webpack.wreq($2));},"
+                match: /(?<=(\i)\(this,"handleOpenSettingsContextMenu",.{0,100}?openContextMenuLazy.{0,100}?(await Promise\.all[^};]*?\)\)).*?,)(?=\1\(this)/,
+                replace: "(async ()=>$2)(),"
             },
             predicate: () => settings.store.eagerLoad
         },
