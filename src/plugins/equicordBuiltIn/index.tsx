@@ -29,7 +29,6 @@ import equicord from "./css/equicord.css?managed";
 import graidentbuttons from "./css/graidentbuttons.css?managed";
 import nitrothemesfix from "./css/nitrothemesfix.css?managed";
 import settingsicons from "./css/settingsicons.css?managed";
-import titlebar from "./css/titlebar.css?managed";
 import user from "./css/userreimagined.css?managed";
 
 // Define the Vencord plugin
@@ -47,7 +46,6 @@ export default definePlugin({
         enableStyle(graidentbuttons);
         enableStyle(nitrothemesfix);
         enableStyle(settingsicons);
-        enableStyle(titlebar);
         enableStyle(user);
     },
     stop() {
@@ -58,7 +56,6 @@ export default definePlugin({
         disableStyle(graidentbuttons);
         disableStyle(nitrothemesfix);
         disableStyle(settingsicons);
-        disableStyle(titlebar);
         disableStyle(user);
     }
 });
