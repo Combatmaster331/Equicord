@@ -17,13 +17,20 @@
 */
 
 // Import required modules and components
-import { enableStyle } from "@api/Styles";
+import { disableStyle, enableStyle } from "@api/Styles";
 import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
 
 // Importing the style managed fixes on and off switch
-import equicord from "./equicord.css?managed";
-import user from "./userreimagined.css?managed";
+import betterauthapps from "./css/betterauthapps.css?managed";
+import betterstatuspicker from "./css/betterstatuspicker.css?managed";
+import consistentchatbar from "./css/consistentchatbar.css?managed";
+import equicord from "./css/equicord.css?managed";
+import graidentbuttons from "./css/graidentbuttons.css?managed";
+import nitrothemesfix from "./css/nitrothemesfix.css?managed";
+import settingsicons from "./css/settingsicons.css?managed";
+import titlebar from "./css/titlebar.css?managed";
+import user from "./css/userreimagined.css?managed";
 
 // Define the Vencord plugin
 export default definePlugin({
@@ -32,8 +39,26 @@ export default definePlugin({
     authors: [Devs.FoxStorm1, Devs.thororen],
     dependencies: ["ThemeAttributes"],
 
-    async start() {
+    start() {
+        enableStyle(betterauthapps);
+        enableStyle(betterstatuspicker);
+        enableStyle(consistentchatbar);
         enableStyle(equicord);
+        enableStyle(graidentbuttons);
+        enableStyle(nitrothemesfix);
+        enableStyle(settingsicons);
+        enableStyle(titlebar);
         enableStyle(user);
+    },
+    stop() {
+        disableStyle(betterauthapps);
+        disableStyle(betterstatuspicker);
+        disableStyle(consistentchatbar);
+        disableStyle(equicord);
+        disableStyle(graidentbuttons);
+        disableStyle(nitrothemesfix);
+        disableStyle(settingsicons);
+        disableStyle(titlebar);
+        disableStyle(user);
     }
 });

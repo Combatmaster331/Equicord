@@ -1,0 +1,51 @@
+/* stylelint-disable rule-empty-line-before */
+/* stylelint-disable indentation */
+/* stylelint-disable selector-class-pattern */
+.wrapper__57349 {
+    margin-bottom: 0;
+    border-radius: 0;
+    padding: 16.5px 0;
+  }
+  .form_d8a4a1 {
+    padding: 0;
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .channelTextArea_c2094b {
+    margin-bottom: 0;
+    border-radius: 0;
+  }
+  .base__06abc {
+    position: absolute;
+    width: calc(100% - 16px);
+    display: flex;
+    justify-content: space-between;
+    padding: 0 8px;
+    box-sizing: border-box;
+    top: -24px;
+    left: 0;
+    background: var(--bg-overlay-chat,var(--background-primary));
+  }
+  .base__06abc > .cooldownWrapper__193b2 {
+    margin: 0;
+    position: static;
+  }
+  .scroller_e412fe {
+    position: static;
+  }
+  .scrollableContainer_ff917f {
+    border-radius: 0;
+  }
+  .scrollableContainer_ff917f > .inner__9fd0b {
+    min-height: 53px;
+    align-items: center;
+  }
+  .attachWrapper_d01704 {
+    display: flex;
+    position: static;
+    align-items: center;
+  }
+  .attachedBars_c1606a {
+    border-radius: 0;
+  }

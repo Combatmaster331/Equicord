@@ -1,0 +1,14 @@
+/* stylelint-disable rule-empty-line-before */
+/* stylelint-disable selector-class-pattern */
+.typeWindows_e41dab {
+    height: 30px;
+    margin: 0;
+}
+.typeWindows_e41dab .winButton_f17fb6 {
+    top: 0;
+    width: 45px;
+    height: 30px;
+}
+.typeWindows_e41dab .winButton_f17fb6.winButtonClose__6396d:hover {
+    background-color: #cd0f1f;
+}

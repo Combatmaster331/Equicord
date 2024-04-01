@@ -3,21 +3,6 @@
 /* stylelint-disable declaration-block-single-line-max-declarations */
 /* stylelint-disable selector-class-pattern */
 
-/* Gradient Buttons */
-@import url('https://discord-extensions.github.io/snippets/gradient-buttons/source.css');
-
-/* Windows Titlebar */
-@import url('https://discord-extensions.github.io/snippets/windows-titlebar/source.css');
-
-/* Settings Icons */
-@import url('https://minidiscordthemes.github.io/SettingsIcons/SettingsIcons.theme.css');
-
-/* Dabliu's Better Discord Looks/Tweaks */
-@import url("https://dablulite.github.io/css-snippets/ConsistentChatbar/import.css");
-@import url("https://dablulite.github.io/css-snippets/BetterAuthApps/import.css");
-@import url("https://dablulite.github.io/css-snippets/BetterStatusPicker/import.css");
-@import url("https://dablulite.github.io/css-snippets/NitroThemesFix/import.css");
-
 /* Make pronouns stand out more */
 [class*="pronouns"] {
     color: var(--text-normal);
