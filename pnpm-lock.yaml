@@ -41,8 +41,8 @@ dependencies:
     specifier: github:mattdesl/gifenc#64842fca317b112a8590f8fef2bf3825da8f6fe3
     version: github.com/mattdesl/gifenc/64842fca317b112a8590f8fef2bf3825da8f6fe3
   monaco-editor:
-    specifier: ^0.43.0
-    version: 0.43.0
+    specifier: 0.47.0
+    version: 0.47.0
   nanoid:
     specifier: ^4.0.2
     version: 4.0.2
@@ -2198,8 +2198,8 @@ packages:
     resolution: {integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==}
     dev: true
 
-  /monaco-editor@0.43.0:
-    resolution: {integrity: sha512-cnoqwQi/9fml2Szamv1XbSJieGJ1Dc8tENVMD26Kcfl7xGQWp7OBKMjlwKVGYFJ3/AXJjSOGvcqK7Ry/j9BM1Q==}
+  /monaco-editor@0.47.0:
+    resolution: {integrity: sha512-VabVvHvQ9QmMwXu4du008ZDuyLnHs9j7ThVFsiJoXSOQk18+LF89N4ADzPbFenm0W4V2bGHnFBztIRQTgBfxzw==}
     dev: false
 
   /ms@2.1.2:
