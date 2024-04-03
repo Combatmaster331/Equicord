@@ -22,7 +22,6 @@ import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { RelationshipStore } from "@webpack/common";
 import { User } from "discord-types/general";
-import { Settings } from "Vencord";
 
 const settings = definePluginSettings({
     showDates: {

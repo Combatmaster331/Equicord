@@ -1,7 +1,13 @@
+/*
+ * Vencord, a Discord client mod
+ * Copyright (c) 2024 Vendicated and contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
 import { i18n, Menu, SettingsRouter } from "@webpack/common";
 import type { ReactElement } from "react";
-import { Devs } from "@utils/constants";
 type SettingsEntry = { section: string, label: string; };
 
 export default definePlugin({
