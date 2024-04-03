@@ -1,4 +1,3 @@
-
 /*
  * Vencord, a modification for Discord's desktop app
  * Copyright (c) 2023 Vendicated and contributors
