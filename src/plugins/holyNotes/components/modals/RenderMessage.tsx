@@ -8,8 +8,9 @@ import { classes } from "@utils/misc";
 import { ModalProps } from "@utils/modal";
 import { findByCode, findByProps } from "@webpack";
 import { Clipboard, ContextMenuApi, FluxDispatcher, Menu, NavigationRouter, React } from "@webpack/common";
-import noteHandler from "plugins/holyNotes/NoteHandler";
-import { HolyNotes } from "plugins/holyNotes/types";
+
+import noteHandler from "../../NoteHandler";
+import { HolyNotes } from "../../types";
 
 
 export const RenderMessage = ({
