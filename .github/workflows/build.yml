@@ -14,13 +14,30 @@ env:
     FORCE_COLOR: true
 
 jobs:
-    Build:
+    DetermineRunner:
+        name: Determine Runner
         runs-on: ubuntu-latest
+        outputs:
+          runner: ${{ steps.set-runner.outputs.runner }}
+        steps:
+          - name: Determine which runner to use
+            id: set-runner
+            uses: benjaminmichaelis/get-soonest-available-runner@v1.1.0
+            with:
+              primary-runner: "self-hosted"
+              fallback-runner: "ubuntu-latest"
+              min-available-runners: 2
+              github-token: ${{ secrets.TOKEN }}
+
+    Build:
+        name: Build Equicord
+        needs: DetermineRunner
+        runs-on: ${{ needs.DetermineRunner.outputs.runner }}
 
         steps:
             - uses: actions/checkout@v3
 
-            - uses: pnpm/action-setup@v2 # Install pnpm using packageManager key in package.json
+            - uses: pnpm/action-setup@v2
 
             - name: Use Node.js 19
               uses: actions/setup-node@v3

@@ -6,15 +6,32 @@ on:
         - cron: 0 0 * * *
 
 jobs:
-    TestPlugins:
-        if: github.repository == 'Equicord/Equicord'
+    DetermineRunner:
+        name: Determine Runner
         runs-on: ubuntu-latest
+        outputs:
+          runner: ${{ steps.set-runner.outputs.runner }}
+        steps:
+          - name: Determine which runner to use
+            id: set-runner
+            uses: benjaminmichaelis/get-soonest-available-runner@v1.1.0
+            with:
+              primary-runner: "self-hosted"
+              fallback-runner: "ubuntu-latest"
+              min-available-runners: 2
+              github-token: ${{ secrets.TOKEN }}
+
+    TestPlugins:
+        name: Test Patches
+        if: github.repository == 'Equicord/Equicord'
+        needs: DetermineRunner
+        runs-on: ${{ needs.DetermineRunner.outputs.runner }}
 
         steps:
             - uses: actions/checkout@v3
-                if: ${{ github.event_name == 'schedule' }}
-                with:
-                    ref: dev
+              if: ${{ github.event_name == 'schedule' }}
+              with:
+                  ref: dev
 
             - uses: actions/checkout@v3
               if: ${{ github.event_name == 'workflow_dispatch' }}
@@ -46,8 +63,8 @@ jobs:
                   esbuild scripts/generateReport.ts > dist/report.mjs
                   node dist/report.mjs >> $GITHUB_STEP_SUMMARY
               env:
-                  DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-                  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+                  DISCORD_TOKEN: ${{ secrets.DTOKEN }}
+                  DISCORD_WEBHOOK: ${{ secrets.WEBHOOK }}
 
             - name: Create Report (Canary)
               timeout-minutes: 10
@@ -60,5 +77,5 @@ jobs:
                   esbuild scripts/generateReport.ts > dist/report.mjs
                   node dist/report.mjs >> $GITHUB_STEP_SUMMARY
               env:
-                  DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-                  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+                  DISCORD_TOKEN: ${{ secrets.DTOKEN }}
+                  DISCORD_WEBHOOK: ${{ secrets.WEBHOOK }}
