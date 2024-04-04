@@ -23,7 +23,7 @@ export default definePlugin({
     authors: [Devs.Elvyra],
     patches: [
         {
-            find: ".AnalyticsSections.USER_PROFILE}",
+            find: ".AnalyticsSections.USER_PROFILE}};",
             replacement: {
                 match: /\i.default,\{userId:(\i.id).{0,30}}\)/,
                 replace: "$&,$self.friendsSince({ userId: $1 })"

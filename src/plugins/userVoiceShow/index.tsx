@@ -104,7 +104,7 @@ export default definePlugin({
         },
         // below username
         {
-            find: ".USER_PROFILE_MODAL",
+            find: ".AnalyticsSections.PROFILE_MODAL,children",
             replacement: {
                 match: /\.body.+?displayProfile:\i}\),/,
                 replace: "$&$self.patchModal(arguments[0]),",

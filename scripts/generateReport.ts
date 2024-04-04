@@ -79,7 +79,7 @@ function toCodeBlock(s: string) {
 async function printReport() {
     console.log();
 
-    console.log("# Vencord Report" + (CANARY ? " (Canary)" : ""));
+    console.log("# Equicord Report" + (CANARY ? " (Canary)" : ""));
 
     console.log();
 
@@ -136,9 +136,9 @@ async function printReport() {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                description: "Here's the latest Vencord Report!",
-                username: "Vencord Reporter" + (CANARY ? " (Canary)" : ""),
-                avatar_url: "https://cdn.discordapp.com/avatars/1017176847865352332/c312b6b44179ae6817de7e4b09e9c6af.webp?size=512",
+                description: "Here's the latest Equicord Report!",
+                username: "Equicord Reporter" + (CANARY ? " (Canary)" : ""),
+                avatar_url: "https://avatars.githubusercontent.com/u/150590884?s=48&v=4",
                 embeds: [
                     {
                         title: "Bad Patches",
