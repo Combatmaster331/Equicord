@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { ChatBarButton } from "@api/ChatButtons";
+import { addChatBarButton, ChatBarButton, removeChatBarButton } from "@api/ChatButtons";
 import { addButton, removeButton } from "@api/MessagePopover";
 import { definePluginSettings } from "@api/Settings";
 import ErrorBoundary from "@components/ErrorBoundary";
@@ -65,12 +65,17 @@ function Indicator() {
 
 }
 
-const ChatBarIcon: ChatBarButton = ({ isMainChat }) => {
-    if (!isMainChat) return null;
+const settings = definePluginSettings({
+    savedPasswords: {
+        type: OptionType.STRING,
+        default: "password, Password",
+        description: "Saved Passwords (Seperated with a , )"
+    }
+});
 
+const generateChatButton: ChatBarButton = () => {
     return (
-        <ChatBarButton
-            tooltip="Encrypt Message"
+        <ChatBarButton tooltip="Encrypt Message"
             onClick={() => buildEncModal()}
 
             buttonProps={{
@@ -91,14 +96,6 @@ const ChatBarIcon: ChatBarButton = ({ isMainChat }) => {
     );
 };
 
-const settings = definePluginSettings({
-    savedPasswords: {
-        type: OptionType.STRING,
-        default: "password, Password",
-        description: "Saved Passwords (Seperated with a , )"
-    }
-});
-
 export default definePlugin({
     name: "InvisibleChat",
     description: "Encrypt your Messages in a non-suspicious way!",
@@ -111,13 +108,6 @@ export default definePlugin({
             replacement: {
                 match: /let\{className:\i,message:\i[^}]*\}=(\i)/,
                 replace: "try {$1 && $self.INV_REGEX.test($1.message.content) ? $1.content.push($self.indicator()) : null } catch {};$&"
-            }
-        },
-        {
-            find: "ChannelTextAreaButtons",
-            replacement: {
-                match: /(\i)\.push.{1,30}disabled:(\i),.{1,20}\},"gift"\)\)/,
-                replace: "$&,(()=>{try{$2||$1.push($self.chatBarIcon(arguments[0]))}catch{}})()",
             }
         },
     ],
@@ -148,10 +138,12 @@ export default definePlugin({
                 }
                 : null;
         });
+        addChatBarButton("invButton", generateChatButton);
     },
 
     stop() {
         removeButton("invDecrypt");
+        removeChatBarButton("invButton");
     },
 
     // Gets the Embed of a Link
@@ -194,7 +186,7 @@ export default definePlugin({
         });
     },
 
-    chatBarIcon: ErrorBoundary.wrap(ChatBarIcon, { noop: true }),
+    chatBarIcon: ErrorBoundary.wrap(generateChatButton, { noop: true }),
     popOverIcon: () => <PopOverIcon />,
     indicator: ErrorBoundary.wrap(Indicator, { noop: true })
 });

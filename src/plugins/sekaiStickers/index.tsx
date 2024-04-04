@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { addChatBarButton, ChatBarButton } from "@api/ChatButtons";
+import { addChatBarButton, ChatBarButton, removeChatBarButton } from "@api/ChatButtons";
 import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
 import { openModal } from "@utils/modal";
@@ -44,4 +44,7 @@ export default definePlugin({
         });
         addChatBarButton("SekaiStickers", generateChatButton);
     },
+    stop: () => {
+        removeChatBarButton("SekaiStickers");
+    }
 });

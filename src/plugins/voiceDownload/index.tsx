@@ -16,7 +16,7 @@ export default definePlugin({
     authors: [Devs.puv],
     patches: [
         {
-            find: "className:C.rippleContainer",
+            find: ".rippleContainer",
             replacement: {
                 match: /\(0,i.jsx\).{0,150},children:.{0,50}\("source",{src:(.{1,2})}\)}\)/,
                 replace: "[$&, $self.renderDownload($1)]"

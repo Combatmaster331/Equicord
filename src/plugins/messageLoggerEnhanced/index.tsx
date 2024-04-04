@@ -554,7 +554,7 @@ export default definePlugin({
     },
     patches: [
         {
-            find: "displayName=\"MessageStore\"",
+            find: '"MessageStore"',
             replacement: {
                 match: /LOAD_MESSAGES_SUCCESS:function\(\i\){/,
                 replace: "$&$self.messageLoadSuccess(arguments[0]);"
@@ -595,7 +595,7 @@ export default definePlugin({
         },
 
         {
-            find: "handleImageLoad=",
+            find: ".handleImageLoad)",
             replacement: {
                 match: /(render\(\){)(.{1,100}zoomThumbnailPlaceholder)/,
                 replace: "$1$self.checkImage(this);$2"
