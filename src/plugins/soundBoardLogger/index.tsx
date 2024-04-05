@@ -53,11 +53,11 @@ export default definePlugin({
             await updateLoggedSounds(sound);
             getListeners().forEach(cb => cb());
         });
-        addChatBarButton("soundboardlogger-button", chatBarIcon);
+        if (settings.store.IconLocation === "chat") addChatBarButton("soundboardlogger-button", chatBarIcon);
     },
     stop() {
         disableStyle(styles);
-        removeChatBarButton("soundboardlogger-button");
+        if (settings.store.IconLocation === "chat") removeChatBarButton("soundboardlogger-button");
     },
     toolbarPatch: obj => {
         if (!obj?.props?.children) return obj;
