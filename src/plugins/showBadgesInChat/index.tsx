@@ -80,7 +80,7 @@ const GlobalBadges = (userID: string) => {
 
 function vencordDonorChatBadges(userID: string) {
     return [
-        <span style={{ order: settings.store.VencordDonorBadgesPosition }}>
+        <span style={{ order: settings.store.vencordDonorBadgesPosition }}>
             {BadgeApi.getDonorBadges(userID)?.map(badge =>
                 <RoleIconComponent
                     className={roleIconClassName}
@@ -162,7 +162,7 @@ const settings = definePluginSettings({
         description: "Enable to show Equicord donor badges in chat.",
         default: true
     },
-    VencordDonorBadgesPosition: {
+    vencordDonorBadgesPosition: {
         type: OptionType.NUMBER,
         description: "The position of the Equicord Donor badges.",
         default: 0
