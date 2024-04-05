@@ -35,7 +35,7 @@ interface VoiceChannelContextProps {
     channel: Channel;
 }
 
-const VoiceChannelContext: NavContextMenuPatchCallback = (children, { channel }: VoiceChannelContextProps) => () => {
+const VoiceChannelContext: NavContextMenuPatchCallback = (children, { channel }: VoiceChannelContextProps) => {
     // only for voice and stage channels
     if (!channel || (channel.type !== 2 && channel.type !== 13)) return;
     const userCount = Object.keys(VoiceStateStore.getVoiceStatesForChannel(channel.id)).length;
@@ -128,5 +128,5 @@ export default definePlugin({
     authors: [Devs.Dams, Devs.D3SOX],
     contextMenus: {
         "channel-context": VoiceChannelContext
-    }
+    },
 });

@@ -39,11 +39,11 @@ export default definePlugin({
     }),
     patches: [
         {
-            find: ".AnalyticEvents.APPLICATION_COMMAND_VALIDATION_FAILED,",
+            find: '.slateContainer)',
             replacement: [
                 // Pass type prop to slate wrapper
                 {
-                    match: /className:\i\(\i,\i.slateContainer\),children:\(0,\i.jsx\)\(\i.\i,{/,
+                    match: /,children:\(0,\i.jsx\)\(\i.\i,{/,
                     replace: "$& type: arguments[0].type,"
                 }
             ]

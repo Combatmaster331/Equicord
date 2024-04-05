@@ -47,7 +47,7 @@ export default definePlugin({
         {
             find: ".tabBarContainer", // Note: the module is lazy-loaded
             replacement: {
-                match: /(?<=\.tabBarItem.{0,50}MUTUAL_GUILDS.+?}\),)(?=.+?(\(0,\i\.jsxs?\)\(.{0,100}id:))/,
+                match: /(?<=\.tabBarItem,.+?MUTUAL_GUILDS.+?,)(?=.+?(\(0,\i\.jsxs?\)\(.{0,100}id:))/,
                 replace: '(arguments[0].user.bot||arguments[0].isCurrentUser)?null:$1"MUTUAL_GDMS",children:"Mutual Groups"}),'
             }
         },
