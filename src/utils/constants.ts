@@ -551,7 +551,7 @@ export const Devs = /* #__PURE__*/ Object.freeze({
         id: 861631850681729045n
     },
     Dropped: {
-        name: "dropped#0001",
+        name: "dropped",
         id: 328165170536775680n,
     },
 } satisfies Record<string, Dev>);
