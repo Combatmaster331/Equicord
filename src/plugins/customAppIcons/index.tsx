@@ -1,92 +1,111 @@
 /*
- * Vencord, a Discord client mod
- * Copyright (c) 2023 Vendicated and contributors
- * SPDX-License-Identifier: GPL-3.0-or-later
- */
+ * Vencord, a modification for Discord's desktop app
+ * Copyright (c) 2022 Vendicated and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 
-import { definePluginSettings } from "@api/Settings";
-import { CodeBlock } from "@components/CodeBlock";
+import { Link } from "@components/Link";
 import { Devs } from "@utils/constants";
-import definePlugin, { OptionType, PluginSettingComponentDef } from "@utils/types";
-import { Forms, React, TextArea } from "@webpack/common";
+import { localStorage } from "@utils/localStorage";
+import { closeAllModals, openModal } from "@utils/modal";
+import definePlugin from "@utils/types";
+import { findByProps } from "@webpack";
+import { Button, FluxDispatcher, Forms, React, showToast, Toasts } from "@webpack/common";
 
-type Icon = {
-    id: string,
-    iconSource: string,
-    isPremium: boolean,
-    name: string,
-};
+import AppIconModal from "./AppIconModal";
 
-const settings = definePluginSettings({
-    icons: {
-        description: "Icons to add",
-        type: OptionType.COMPONENT,
-        restartNeeded: true,
-        // stickToMarkers: true,
-        component: iconSettingsComponent
-    }
-});
-
-function iconSettingsComponent(props: Parameters<PluginSettingComponentDef["component"]>[0]) {
-    const [state, setState] = React.useState(settings.store.icons ?? "");
-
-    function handleChange(newValue: string) {
-        setState(newValue);
-        props.setValue(newValue);
-    }
-
-    return <Forms.FormSection>
-        <Forms.FormTitle>Icons</Forms.FormTitle>
-        <Forms.FormText>The icons you want to add.</Forms.FormText>
-        <CodeBlock lang="yaml" content={"# Config Format - New Lines are separators\nName: Url"} />
-        <TextArea type="text" value={state} onChange={handleChange} />
-    </Forms.FormSection>;
-}
-
-function getCustomIcons(_match: string, original: string) {
-    var icons: Icon[] = [];
-    const settingsIcons = settings.store.icons?.split("\n") as string[];
-
-    let index = 0;
-    for (const icon of settingsIcons) {
-        const matched = /([^:]+):\s*(.+)/.exec(icon);
-        if (!matched || matched.length < 3) continue;
-
-        const name = matched[1].trim(),
-            iconSource = matched[2].trim();
-
-        const idName = name
-            .toLowerCase()
-            .replace(/\s/g, "_")
-            .replace(/\W/g, "#");
-
-        icons.push({
-            id: `CustomAppIcon-${index}:${idName}`,
-            iconSource,
-            isPremium: false,
-            name
+function removeAppIcon() {
+    const current_icon = findByProps("getCurrentDesktopIcon").getCurrentDesktopIcon();
+    let icons = JSON.parse(localStorage.getItem("vc_app_icons") || "[]");
+    const index = icons.findIndex(icon => current_icon === icon.id);
+    if (index !== -1) {
+        icons = icons.filter(e => e.id !== current_icon);
+        delete findByProps("ICONS", "ICONS_BY_ID").ICONS_BY_ID[current_icon];
+        delete findByProps("ICONS", "ICONS_BY_ID").ICONS[findByProps("ICONS", "ICONS_BY_ID").ICONS.findIndex((icon => current_icon === icon?.id))];
+        localStorage.setItem("vc_app_icons", JSON.stringify(icons));
+        showToast("Icon successfully deleted!", Toasts.Type.SUCCESS);
+        FluxDispatcher.dispatch({
+            type: "APP_ICON_UPDATED",
+            id: "AppIcon"
         });
-
-        index++;
+    } else {
+        showToast("Cannot delete native App Icons!", Toasts.Type.FAILURE);
+        return;
     }
 
-    const outIcons = icons.map(i => JSON.stringify(i)).join(",");
-
-    return `[${original}${icons.length > 0 ? "," : ""}${outIcons}]`;
 }
+
 
 export default definePlugin({
     name: "CustomAppIcons",
-    description: "Allows you to add your own app icons to the list.",
-    settings,
-    authors: [Devs.nakoyasha, Devs.SimplyData],
+    description: "Add/upload custom (In-)App Icons.",
+    authors: [Devs.HAPPY_ENDERMAN, Devs.SerStars],
     patches: [
         {
-            find: "APP_ICON_HOLO_WAVES}",
-            replacement: {
-                match: /\[({[^]*?})\]/,
-                replace: getCustomIcons,
-            }
+            find: ".PremiumUpsellTypes.APP_ICON_UPSELL",
+            replacement: [
+                {
+                    match: /\w+\.jsx\)\(\w+,{markAsDismissed:\w+,isCoachmark:\w+}\)/,
+                    replace(str) {
+                        return str + ",$self.addButtons()";
+                    }
+                }
+            ]
         }
     ],
+
+
+    start() {
+        console.log("Well hello there!, CustomAppIcons has started :)");
+        const appIcons = JSON.parse(localStorage.getItem("vc_app_icons") ?? "[]");
+        for (const icon of appIcons) {
+            findByProps("ICONS", "ICONS_BY_ID").ICONS.push(icon);
+            findByProps("ICONS", "ICONS_BY_ID").ICONS_BY_ID[icon.id] = icon;
+        }
+    },
+    stop() {
+
+    },
+    addButtons() {
+
+        const { editorFooter } = findByProps("editorFooter");
+        return (
+            <>
+                <Button color={Button.Colors.BRAND_NEW} size={Button.Sizes.MEDIUM} className={editorFooter} onClick={() => {
+                    openModal(props => <AppIconModal {...props} />);
+                }}>
+                    Add Custom App Icon
+                </Button>
+                <Button color={Button.Colors.RED} size={Button.Sizes.MEDIUM} className={editorFooter} onClick={removeAppIcon}>
+                    Remove Custom selected App Icon
+                </Button>
+            </>
+        );
+    },
+
+    settingsAboutComponent: () => {
+        return (
+            <><Forms.FormTitle>
+                <Forms.FormTitle>How to use?</Forms.FormTitle>
+            </Forms.FormTitle>
+                <Forms.FormText>
+                    <Forms.FormText>Go to <Link href="/settings/appearance" onClick={e => { e.preventDefault(); closeAllModals(); FluxDispatcher.dispatch({ type: "USER_SETTINGS_MODAL_SET_SECTION", section: "Appearance" }); }}>Appearance Settings</Link> tab.</Forms.FormText>
+                    <Forms.FormText>Scroll down to "In-app Icons" and click on "Preview App Icon".</Forms.FormText>
+                    <Forms.FormText>And upload your own custom icon!</Forms.FormText>
+                    <Forms.FormText>You can only use links when you are uploading your Custom Icon.</Forms.FormText>
+                </Forms.FormText></>
+        );
+    }
 });
