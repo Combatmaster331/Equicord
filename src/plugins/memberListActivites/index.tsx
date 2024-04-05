@@ -209,13 +209,7 @@ function getApplicationIcons(activities: Activity[]) {
 export default definePlugin({
     name: "MemberListActivities",
     description: "Shows activity icons in the member list",
-    authors: [
-        Devs.D3SOX,
-        {
-            name: "dropped#0001",
-            id: 328165170536775680n,
-        },
-    ],
+    authors: [Devs.D3SOX, Devs.Dropped],
     tags: ["activity"],
 
     settings,
