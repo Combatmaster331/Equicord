@@ -30,7 +30,7 @@ jobs:
 
             - name: Install dependencies
               run: |
-                  pnpm install --frozen-lockfile
+                  pnpm install
                   pnpm add puppeteer
 
                   sudo apt-get install -y chromium-browser
