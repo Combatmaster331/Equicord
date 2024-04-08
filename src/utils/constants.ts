@@ -19,6 +19,8 @@
 export const WEBPACK_CHUNK = "webpackChunkdiscord_app";
 export const REACT_GLOBAL = "Vencord.Webpack.Common.React";
 export const SUPPORT_CHANNEL_ID = "1173342942858055721";
+export const SUPPORT_CHANNEL_IDS = ["1173342942858055721", "1026515880080842772"];
+export const VC_SUPPORT_CHANNEL_ID = "1026515880080842772";
 
 export interface Dev {
     name: string;
