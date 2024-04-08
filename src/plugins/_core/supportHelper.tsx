@@ -97,7 +97,7 @@ ${makeCodeblock(enabledPlugins.join(", ") + "\n\n" + enabledApiPlugins.join(", "
         async CHANNEL_SELECT({ channelId }) {
             if (!SUPPORT_CHANNEL_IDS.includes(channelId)) return;
 
-            if (channelId === VC_SUPPORT_CHANNEL_ID) return Alerts.show({
+            if (channelId === VC_SUPPORT_CHANNEL_ID && Vencord.Plugins.isPluginEnabled("VCSupport")) return Alerts.show({
                 title: "You are entering the support channel!",
                 body: <div>
                     <style>
