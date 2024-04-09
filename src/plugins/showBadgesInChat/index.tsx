@@ -107,18 +107,14 @@ function vencordEquicordContributorChatBadge(userID: string) {
 }
 
 function discordProfileChatBadges(userFlags: number) {
-    const chatBadges = discordBadges.reduce((badges: JSX.Element[], curr) => {
-        if ((userFlags & 1 << curr[0]) !== 0)
-            badges.push(
-                <RoleIconComponent
-                    className={roleIconClassName}
-                    name={curr[1]}
-                    size={20}
-                    src={`https://cdn.discordapp.com/badge-icons/${curr[2]}.png`}
-                />
-            );
-        return badges;
-    }, []);
+    const chatBadges = discordBadges.filter(badge => (userFlags & 1 << badge[0])).map(badge =>
+        <RoleIconComponent
+            className={roleIconClassName}
+            name={badge[1]}
+            size={20}
+            src={`https://cdn.discordapp.com/badge-icons/${badge[2]}.png`}
+        />
+    );
 
     return chatBadges.length > 0 ? [
         <span style={{ order: settings.store.discordProfileBadgesPosition }}>
