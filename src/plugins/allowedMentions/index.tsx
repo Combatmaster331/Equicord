@@ -39,7 +39,7 @@ export default definePlugin({
     }),
     patches: [
         {
-            find: '.slateContainer)',
+            find: ".slateContainer)",
             replacement: [
                 // Pass type prop to slate wrapper
                 {
