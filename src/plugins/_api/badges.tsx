@@ -28,7 +28,7 @@ import { closeModal, Modals, openModal } from "@utils/modal";
 import definePlugin from "@utils/types";
 import { Forms, Toasts } from "@webpack/common";
 
-const CONTRIBUTOR_BADGE = "https://i.ibb.co/RHqhhVG/Untitled-design-83-removebg-preview.png";
+const CONTRIBUTOR_BADGE = "https://i.imgur.com/OypoHrV.png";
 
 const ContributorBadge: ProfileBadge = {
     description: "Vencord/Equicord Contributor",

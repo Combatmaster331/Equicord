@@ -1,22 +1,20 @@
 /*
  * Vencord, a Discord client mod
- * Copyright (c) 2023 Vendicated and contributors
+ * Copyright (c) 2024 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 import { addDecoration, removeDecoration } from "@api/MessageDecorations";
-import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
 import { isPluginDev } from "@utils/misc";
-import definePlugin, { OptionType } from "@utils/types";
-import { findByProps } from "@webpack";
-import { React } from "@webpack/common";
+import definePlugin from "@utils/types";
+import { findByPropsLazy } from "@webpack";
+import badges from "plugins/_api/badges";
 
-import BadgeApi from "../../plugins/_api/badges";
-import { BadgeCache } from "./types";
+import settings from "./settings";
 
 let RoleIconComponent: React.ComponentType<any> = () => null;
-let roleIconClassName = "";
+let roleIconClassName: string;
 
 const discordBadges: readonly [number, string, string][] = Object.freeze([
     [0, "Discord Staff", "5e74e9b61934fc1f67c65515d1f7e60d"],
@@ -33,198 +31,98 @@ const discordBadges: readonly [number, string, string][] = Object.freeze([
     [18, "Moderator Programs Alumni", "fee1624003e2fee35cb398e125dc479b"]
 ]);
 
-const API_URL = "https://clientmodbadges-api.herokuapp.com/";
-const cache = new Map<string, BadgeCache>();
-const EXPIRES = 1000 * 60 * 15;
-
-const fetchBadges = (id: string): BadgeCache["badges"] | undefined => {
-    const cachedValue = cache.get(id);
-    if (!cache.has(id) || (cachedValue && cachedValue.expires < Date.now())) {
-        fetch(`${API_URL}users/${id}`)
-            .then(res => res.json() as Promise<BadgeCache["badges"]>)
-            .then(body => {
-                cache.set(id, { badges: body, expires: Date.now() + EXPIRES });
-                return body;
-            });
-    } else if (cachedValue) {
-        return cachedValue.badges;
+function CheckBadge({ badge, author }: { badge: string; author: any; }): JSX.Element | null {
+    switch (badge) {
+        case "VencordDonor":
+            return (
+                <span style={{ order: settings.store.VencordDonorPosition }}>
+                    {badges.getDonorBadges(author.id)?.map((badge: any) => (
+                        <RoleIconComponent
+                            className={roleIconClassName}
+                            name={badge.description}
+                            size={20}
+                            src={badge.image}
+                        />
+                    ))}
+                </span>
+            );
+        case "VencordContributer":
+            return isPluginDev(author.id) ? (
+                <span style={{ order: settings.store.VencordContributorPosition }}>
+                    <RoleIconComponent
+                        className={roleIconClassName}
+                        name={"Vencord/Equicord Contributor"}
+                        size={20}
+                        src={"https://i.imgur.com/OypoHrV.png"}
+                    />
+                </span>
+            ) : null;
+        case "DiscordProfile":
+            const chatBadges = discordBadges
+                .filter((badge: any) => (author.flags || author.publicFlags) & (1 << badge[0]))
+                .map((badge: any) => (
+                    <RoleIconComponent
+                        className={roleIconClassName}
+                        name={badge[1]}
+                        size={20}
+                        src={`https://cdn.discordapp.com/badge-icons/${badge[2]}.png`}
+                    />
+                ));
+            return chatBadges.length > 0 ? (
+                <span style={{ order: settings.store.DiscordProfilePosition }}>
+                    {chatBadges}
+                </span>
+            ) : null;
+        case "DiscordNitro":
+            return author.premiumType > 0 ? (
+                <span style={{ order: settings.store.DiscordNitroPosition }}>
+                    <RoleIconComponent
+                        className={roleIconClassName}
+                        name={
+                            "Discord Nitro" +
+                            (author.premiumType === 3 ? " Basic" : author.premiumType === 1 ? " Classic" : "")
+                        }
+                        size={20}
+                        src={"https://cdn.discordapp.com/badge-icons/2ba85e8026a8614b640c2837bcdfe21b.png"}
+                    />
+                </span>
+            ) : null;
+        default:
+            return null;
     }
-};
-
-const GlobalBadges = (userID: string) => {
-    const [badges, setBadges] = React.useState<BadgeCache["badges"]>({});
-    React.useEffect(() => setBadges(fetchBadges(userID) ?? {}), [userID]);
-    const globalBadges: JSX.Element[] = [];
-
-    Object.keys(badges).forEach(mod => {
-        if (mod.toLowerCase() === "vencord") return;
-        badges[mod].forEach(badge => {
-            if (typeof badge === "string") {
-                badge = {
-                    name: badge,
-                    badge: `${API_URL}badges/${mod}/${(badge as string).replace(mod, "").trim().split(" ")[0]}`
-                };
-            } else if (typeof badge === "object") badge.custom = true;
-            const cleanName = badge.name.replace(mod, "").trim();
-            if (!badge.custom) badge.name = `${cleanName.charAt(0).toUpperCase() + cleanName.slice(1)}`;
-            globalBadges.push(<RoleIconComponent className={roleIconClassName} name={badge.name} size={20} src={badge.badge} />);
-        });
-    });
-
-    return [
-        <span style={{ order: settings.store.globalBadgesPosition }}>
-            {globalBadges}
-        </span>
-    ];
-};
-
-function vencordDonorChatBadges(userID: string) {
-    return [
-        <span style={{ order: settings.store.vencordDonorBadgesPosition }}>
-            {BadgeApi.getDonorBadges(userID)?.map(badge =>
-                <RoleIconComponent
-                    className={roleIconClassName}
-                    name={badge.description}
-                    size={20}
-                    src={badge.image}
-                />
-            )}
-        </span>
-    ];
 }
 
-function vencordEquicordContributorChatBadge(userID: string) {
-    return isPluginDev(userID) ? [
-        <span style={{ order: settings.store.vencordEquicordContributorBadgePosition }}>
-            <RoleIconComponent
-                className={roleIconClassName}
-                name={"Vencord/Equicord Contributor"}
-                size={20}
-                src={"https://i.ibb.co/RHqhhVG/Untitled-design-83-removebg-preview.png"}
-            />
-        </span>
-    ] : [];
-}
-
-function discordProfileChatBadges(userFlags: number) {
-    const chatBadges = discordBadges.filter(badge => (userFlags & 1 << badge[0])).map(badge =>
-        <RoleIconComponent
-            className={roleIconClassName}
-            name={badge[1]}
-            size={20}
-            src={`https://cdn.discordapp.com/badge-icons/${badge[2]}.png`}
-        />
-    );
-
-    return chatBadges.length > 0 ? [
-        <span style={{ order: settings.store.discordProfileBadgesPosition }}>
-            {chatBadges}
-        </span>
-    ] : [];
-}
-
-function discordNitroChatBadge(userPremiumType: number) {
-    return userPremiumType > 0 ? [
-        <span style={{ order: settings.store.discordNitroBadgePosition }}>
-            <RoleIconComponent
-                className={roleIconClassName}
-                name={"Discord Nitro" + (userPremiumType === 3 ? " Basic" : userPremiumType === 1 ? " Classic" : "")}
-                size={20}
-                src={"https://cdn.discordapp.com/badge-icons/2ba85e8026a8614b640c2837bcdfe21b.png"}
-            />
-        </span>
-    ] : [];
-}
-
-function ChatBadges({ author }) {
-    const chatBadges = [
-        ...settings.store.showGlobalBadges ? GlobalBadges(author.id) : [],
-        ...settings.store.showVencordDonorBadges ? vencordDonorChatBadges(author.id) : [],
-        ...settings.store.showVencordEquicordContributorBadges ? vencordEquicordContributorChatBadge(author.id) : [],
-        ...settings.store.showDiscordProfileBadges ? discordProfileChatBadges(author.flags || author.publicFlags) : [],
-        ...settings.store.showDiscordNitroBadges ? discordNitroChatBadge(author.premiumType) : []
-    ];
-
-    return chatBadges.length > 0 ?
+function ChatBadges({ author }: any) {
+    return (
         <span style={{ display: "inline-flex", verticalAlign: "top" }}>
-            {chatBadges}
+            {settings.store.showVencordDonor && <CheckBadge badge={"VencordDonor"} author={author} />}
+            {settings.store.showVencordContributor && <CheckBadge badge={"VencordContributer"} author={author} />}
+            {settings.store.showDiscordProfile && <CheckBadge badge={"DiscordProfile"} author={author} />}
+            {settings.store.showDiscordNitro && <CheckBadge badge={"DiscordNitro"} author={author} />}
         </span>
-        : null;
+    );
 }
-
-const settings = definePluginSettings({
-    showVencordDonorBadges: {
-        type: OptionType.BOOLEAN,
-        description: "Enable to show Equicord donor badges in chat.",
-        default: true
-    },
-    vencordDonorBadgesPosition: {
-        type: OptionType.NUMBER,
-        description: "The position of the Equicord Donor badges.",
-        default: 0
-    },
-    showVencordEquicordContributorBadges: {
-        type: OptionType.BOOLEAN,
-        description: "Enable to show Vencord/Equicord contributor badges in chat.",
-        default: true
-    },
-    vencordEquicordContributorBadgePosition: {
-        type: OptionType.NUMBER,
-        description: "The position of the Vencord/Equicord Contributor badge.",
-        default: 1
-    },
-    showGlobalBadges: {
-        type: OptionType.BOOLEAN,
-        description: "Enable to show Global Badges in chat. A bit buggy so switch channels for it to load.",
-        default: true
-    },
-    globalBadgesPosition: {
-        type: OptionType.NUMBER,
-        description: "The position of the Discord Nitro badge.",
-        default: 2
-    },
-    showDiscordNitroBadges: {
-        type: OptionType.BOOLEAN,
-        description: "Enable to show Discord Nitro badges in chat.",
-        default: true
-    },
-    discordProfileBadgesPosition: {
-        type: OptionType.NUMBER,
-        description: "The position of the Discord profile badges.",
-        default: 3
-    },
-    showDiscordProfileBadges: {
-        type: OptionType.BOOLEAN,
-        description: "Enable to show Discord Nitro badges in chat.",
-        default: true
-    },
-    discordNitroBadgePosition: {
-        type: OptionType.NUMBER,
-        description: "The position of the Discord Nitro badge.",
-        default: 4
-    }
-});
 
 export default definePlugin({
     name: "ShowBadgesInChat",
-    authors: [Devs.Shalev, Devs.fres, Devs.ryan, Devs.KrystalSkull],
-    description: "Shows profile badges in chat. That includes built in Discord Badges. Also shows Vencord Contributor Badges and all Donor badges.",
+    authors: [Devs.Inbestigator, Devs.KrystalSkull],
+    description: "Shows the message author's badges beside their name in chat.",
     dependencies: ["MessageDecorationsAPI"],
     patches: [
         {
             find: "Messages.ROLE_ICON_ALT_TEXT",
             replacement: {
-                match: /function \i\(\i\){let \i,{className:.*?\)}\)}/,
+                match: /function\s+\w+?\(\w+?\)\s*{let\s+\w+?,\s*{className:.+}\)}/,
                 replace: "$self.RoleIconComponent=$&;$&",
             }
         }
     ],
     settings,
-    set RoleIconComponent(c: any) {
-        RoleIconComponent = c;
+    set RoleIconComponent(component: any) {
+        RoleIconComponent = component;
     },
     start: () => {
-        roleIconClassName = findByProps("roleIcon", "separator").roleIcon;
+        roleIconClassName = findByPropsLazy("roleIcon", "separator").roleIcon;
         addDecoration("vc-show-badges-in-chat", props => <ChatBadges author={props.message?.author} />);
     },
     stop: () => {
