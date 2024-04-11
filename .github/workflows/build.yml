@@ -27,7 +27,8 @@ jobs:
           primary-runner: "self-hosted"
           fallback-runner: "ubuntu-latest"
           min-available-runners: 1
-          github-token: ${{ secrets.ETOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.ETOKEN }}
 
   Build:
     name: Build Equicord
@@ -66,4 +67,4 @@ jobs:
         run: |
           gh release upload latest --clobber dist/*
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ETOKEN }}
