@@ -33,7 +33,7 @@ jobs:
   Build:
     name: Build Equicord
     needs: DetermineRunner
-        runs-on: ${{ needs.DetermineRunner.outputs.runner }}
+    runs-on: ${{ needs.DetermineRunner.outputs.runner }}
 
     steps:
       - uses: actions/checkout@v3
