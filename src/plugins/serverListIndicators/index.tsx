@@ -18,7 +18,7 @@
 
 import { addServerListElement, removeServerListElement, ServerListRenderPosition } from "@api/ServerList";
 import { Settings } from "@api/Settings";
-import { disableStyle, enableStyle } from "@api/Styles";
+import { enableStyle } from "@api/Styles";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { Devs } from "@utils/constants";
 import { useForceUpdater } from "@utils/react";
@@ -196,6 +196,5 @@ export default definePlugin({
 
     stop() {
         removeServerListElement(ServerListRenderPosition.Above, this.renderIndicator);
-        disableStyle(style);
     }
 });
