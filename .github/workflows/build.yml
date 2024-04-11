@@ -27,7 +27,7 @@ jobs:
           primary-runner: "self-hosted"
           fallback-runner: "ubuntu-latest"
           min-available-runners: 1
-          github-token: ${{ $GITHUB_TOKEN }}
+          github-token: ${{ env.GITHUB_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.ETOKEN }}
 
