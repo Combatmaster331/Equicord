@@ -27,8 +27,7 @@ jobs:
           primary-runner: "self-hosted"
           fallback-runner: "ubuntu-latest"
           min-available-runners: 1
-        env:
-          GH_TOKEN: ${{ github.token }}
+          github-token: ${{ secrets.ETOKEN }}
 
   Build:
     name: Build Equicord
