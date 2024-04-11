@@ -14,9 +14,26 @@ env:
     FORCE_COLOR: true
 
 jobs:
+    DetermineRunner:
+        name: Determine Runner
+        runs-on: ubuntu-latest
+        outputs:
+          runner: ${{ steps.set-runner.outputs.runner-label }}
+        steps:
+            - name: Set runner
+            id: set-runner
+            run: |
+              runners=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: token ${{ secrets.REPO_ACCESS_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/actions/runners")
+              available=$(echo "$runners" | jq '.runners[] | select(.status == "online" and .busy == false and .labels[] .name == "self-hosted")')
+              if [ -n "$available" ]; then
+                echo "runner-label=self-hosted" >> $GITHUB_OUTPUT
+              else
+                echo "runner-label=ubuntu-latest" >> $GITHUB_OUTPUT
+              fi
     Build:
         name: Build Equicord
-        runs-on: ubuntu-latest
+        needs: DetermineRunner
+        runs-on: ${{ needs.DetermineRunner.outputs.runner}}
 
         steps:
             - uses: actions/checkout@v3
