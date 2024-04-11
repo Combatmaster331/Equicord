@@ -1,52 +1,52 @@
 name: test
 on:
-    push:
-        branches:
-            - main
-            - dev
-    pull_request:
-        branches:
-            - main
-            - dev
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
 jobs:
-    DetermineRunner:
-        name: Determine Runner
-        runs-on: ubuntu-latest
-        outputs:
-          runner: ${{ steps.set-runner.outputs.runner-label }}
-        steps:
-            - name: Set runner
-            id: set-runner
-            run: |
-              runners=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: token ${{ secrets.REPO_ACCESS_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/actions/runners")
-              available=$(echo "$runners" | jq '.runners[] | select(.status == "online" and .busy == false and .labels[] .name == "self-hosted")')
-              if [ -n "$available" ]; then
-                echo "runner-label=self-hosted" >> $GITHUB_OUTPUT
-              else
-                echo "runner-label=ubuntu-latest" >> $GITHUB_OUTPUT
-              fi
-    Test:
-        needs: DetermineRunner
-        runs-on: ${{ needs.DetermineRunner.outputs.runner}}
-        
-        steps:
-            - uses: actions/checkout@v3
-            - uses: pnpm/action-setup@v2 # Install pnpm using packageManager key in package.json
+  DetermineRunner:
+    name: Determine Runner
+    runs-on: ubuntu-latest
+    outputs:
+      runner: ${{ steps.set-runner.outputs.runner-label }}
+    steps:
+      - name: Set runner
+        id: set-runner
+        run: |
+          runners=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: token ${{ secrets.REPO_ACCESS_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/actions/runners")
+          available=$(echo "$runners" | jq '.runners[] | select(.status == "online" and .busy == false and .labels[] .name == "self-hosted")')
+          if [ -n "$available" ]; then
+            echo "runner-label=self-hosted" >> $GITHUB_OUTPUT
+          else
+            echo "runner-label=ubuntu-latest" >> $GITHUB_OUTPUT
+          fi
+  Test:
+    needs: DetermineRunner
+    runs-on: ${{ needs.DetermineRunner.outputs.runner}}
 
-            - name: Use Node.js 18
-              uses: actions/setup-node@v3
-              with:
-                  node-version: 18
-                  cache: "pnpm"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2 # Install pnpm using packageManager key in package.json
 
-            - name: Install dependencies
-              run: pnpm install --frozen-lockfile
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "pnpm"
 
-            - name: Lint & Test if desktop version compiles
-              run: pnpm test
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-            - name: Test if web version compiles
-              run: pnpm buildWeb
+      - name: Lint & Test if desktop version compiles
+        run: pnpm test
 
-            - name: Test if plugin structure is valid
-              run: pnpm generatePluginJson
+      - name: Test if web version compiles
+        run: pnpm buildWeb
+
+      - name: Test if plugin structure is valid
+        run: pnpm generatePluginJson
