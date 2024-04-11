@@ -155,7 +155,6 @@ export default definePlugin({
                                 onMouseEnter={onMouseEnter}
                                 onMouseLeave={onMouseLeave}>
                                 {!!(mode & IndicatorType.FRIEND) && <FriendsIndicator />}
-                                {!!(mode & IndicatorType.SERVER) && <ServersIndicator />}
                             </div>
                         )}
                     </Tooltip>
@@ -172,7 +171,6 @@ export default definePlugin({
                                 id="vc-serverlist-indicators"
                                 onMouseEnter={onMouseEnter}
                                 onMouseLeave={onMouseLeave}>
-                                {!!(mode & IndicatorType.FRIEND) && <FriendsIndicator />}
                                 {!!(mode & IndicatorType.SERVER) && <ServersIndicator />}
                             </div>
                         )}
