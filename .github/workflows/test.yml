@@ -26,10 +26,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.ETOKEN }}
 
-  TestForPullRequest:
-    name: Test for PRs
-    if: ${{ github.event_name == 'pull_request' }}
-    runs-on: ubuntu-latest
+  Test:
+    name: Test
+    needs: DetermineRunner
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ${{ needs.DetermineRunner.outputs.runner}}
 
     steps:
       - uses: actions/checkout@v3
@@ -53,11 +54,10 @@ jobs:
       - name: Test if plugin structure is valid
         run: pnpm generatePluginJson
 
-  Test:
-    name: Test
-    needs: DetermineRunner
-    if: ${{ github.event_name == 'push' }}
-    runs-on: ${{ needs.DetermineRunner.outputs.runner}}
+  TestForPRs:
+    name: Test for PRs
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
