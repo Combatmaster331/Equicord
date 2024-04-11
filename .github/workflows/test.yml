@@ -23,7 +23,7 @@ jobs:
           fallback-runner: "ubuntu-latest"
           min-available-runners: 1
         env:
-          GH_TOKEN: ${{ secrets.ETOKEN }}
+          GH_TOKEN: ${{ github.token }}
   Test:
     needs: DetermineRunner
     runs-on: ${{ needs.DetermineRunner.outputs.runner}}
