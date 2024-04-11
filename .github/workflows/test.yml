@@ -10,6 +10,7 @@ on:
 jobs:
   DetermineRunner:
     name: Determine Runner
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     outputs:
       runner: ${{ steps.set-runner.outputs.runner }}
@@ -55,6 +56,7 @@ jobs:
   Test:
     name: Test
     needs: DetermineRunner
+    if: ${{ github.event_name == 'push' }}
     runs-on: ${{ needs.DetermineRunner.outputs.runner}}
 
     steps:
